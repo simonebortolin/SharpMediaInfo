@@ -266,11 +266,18 @@ namespace GetMediaInfo
 
         private void Associate_Click(object sender, EventArgs e)
         {
-           List<string> listext = new List<string>() { ".mkv", "VLC.mkv", ".ac3", "VLC.ac3", ".dts", "VLC.dts", ".avi",
-               "VLC.avi", ".m2ts", "VLC.m2ts", ".dtshd", "VLC.dtshd", ".m4a", "VLC.m4a", ".mp4", "VLC.mp4"};
+           List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
+
+            List<string> completelist = new List<string>();
+
+            foreach(string str in listext)
+            {
+                completelist.Add("VLC" + str);
+                completelist.Add("mpc-be64" + str);
+            }
 
             Microsoft.Win32.RegistryKey key;
-            foreach (string ext in listext)
+            foreach (string ext in completelist)
             {
                 key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true);
                 key = key.CreateSubKey(ext);
@@ -287,11 +294,18 @@ namespace GetMediaInfo
 
         private void RemoveAssociation_Click(object sender, EventArgs e)
         {
-            List<string> listext = new List<string>() { ".mkv", "VLC.mkv", ".ac3", "VLC.ac3", ".dts", "VLC.dts", ".avi",
-               "VLC.avi", ".m2ts", "VLC.m2ts", ".dtshd", "VLC.dtshd", ".m4a", "VLC.m4a", ".mp4", "VLC.mp4"};
+            List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
+
+            List<string> completelist = new List<string>();
+
+            foreach (string str in listext)
+            {
+                completelist.Add("VLC" + str);
+                completelist.Add("mpc-be64" + str);
+            }
 
             Microsoft.Win32.RegistryKey key;
-            foreach (string ext in listext)
+            foreach (string ext in completelist)
             {
                 try
                 {
