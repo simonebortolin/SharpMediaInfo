@@ -1,4 +1,4 @@
-﻿using GetMediaInfos;
+using GetMediaInfos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,10 +19,10 @@ namespace GetMediaInfo
             InitializeComponent();
         }
 
-        private void GetMediaInfo_Load(object sender, EventArgs e)
+        private void PrimoAvvio(object sender, EventArgs e)
         {
             this.DoubleBuffered = true;
-            Version.Text = Application.ProductVersion;
+            Version.Text = "Version " + Application.ProductVersion;
             if (File.Exists(Application.StartupPath + "\\mediainfo.dll"))
             {
                 FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(Application.StartupPath + "\\MediaInfo.dll");
@@ -49,6 +49,67 @@ namespace GetMediaInfo
                 MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
+        }
+
+        private void Associate_Click(object sender, EventArgs e)
+        {
+            List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
+
+            List<string> completelist = new List<string>();
+
+            foreach (string str in listext)
+            {
+                completelist.Add("VLC" + str);
+                completelist.Add("mpc-be64" + str);
+            }
+
+            Microsoft.Win32.RegistryKey key;
+            foreach (string ext in completelist)
+            {
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true);
+                key = key.CreateSubKey(ext);
+                key = key.CreateSubKey("shell");
+                key = key.CreateSubKey("open_with_getmediainfosgui");
+                key.SetValue("", "GetMediaInfos");
+                key.SetValue("Icon", "\"" + Application.StartupPath + "\\icon.ico\"");
+                key = key.CreateSubKey("command");
+                key.SetValue("", "\"" + Application.ExecutablePath + "\" \"%1\"");
+                key.Close();
+            }
+            Associationstatus.Text = "Successufully Added.";
+        }
+
+        private void RemoveAssociation_Click(object sender, EventArgs e)
+        {
+            List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
+
+            List<string> completelist = new List<string>();
+
+            foreach (string str in listext)
+            {
+                completelist.Add("VLC" + str);
+                completelist.Add("mpc-be64" + str);
+            }
+
+            Microsoft.Win32.RegistryKey key;
+            foreach (string ext in completelist)
+            {
+                try
+                {
+                    key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true).OpenSubKey(ext, true).CreateSubKey("shell");
+                    key.DeleteSubKeyTree("open_with_getmediainfosgui");
+                    key.Close();
+                }
+                catch { }
+            }
+            Associationstatus.Text = "Successufully Removed.";
+        }
+
+        private void GetMediaInfo_Shown(object sender, EventArgs e)
+        {
+            this.Update();
+            this.Refresh();
+            ApriDaArgomentoExe();
         }
 
         /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
@@ -89,7 +150,7 @@ namespace GetMediaInfo
 
         }
 
-        public void InputPath_DragDrop(object sender, DragEventArgs e)
+        public void ApriFileDragDrop(object sender, DragEventArgs e)
         {
             DataObject data = (DataObject)e.Data;
             if (data.ContainsFileDropList())
@@ -100,12 +161,12 @@ namespace GetMediaInfo
             }
         }
 
-        public void InputPath_DragEnter(object sender, DragEventArgs e)
+        public void ApriFileDragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
         }
 
-        private void filepathBox_TextChanged(object sender, EventArgs e)
+        private void ApriFileTextBox(object sender, EventArgs e)
         {
             Analisi(filepathBox.Text);
         }
@@ -264,66 +325,7 @@ namespace GetMediaInfo
 
         }
 
-        private void Associate_Click(object sender, EventArgs e)
-        {
-           List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
 
-            List<string> completelist = new List<string>();
-
-            foreach(string str in listext)
-            {
-                completelist.Add("VLC" + str);
-                completelist.Add("mpc-be64" + str);
-            }
-
-            Microsoft.Win32.RegistryKey key;
-            foreach (string ext in completelist)
-            {
-                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true);
-                key = key.CreateSubKey(ext);
-                key = key.CreateSubKey("shell");
-                key = key.CreateSubKey("open_with_getmediainfosgui");
-                key.SetValue("", "GetMediaInfos");
-                key.SetValue("Icon", "\"" + Application.StartupPath + "\\icon.ico\"");
-                key = key.CreateSubKey("command");
-                key.SetValue("", "\"" + Application.ExecutablePath + "\" \"%1\"");
-                key.Close();
-            }
-            Associationstatus.Text = "Successufully Added.";
-        }
-
-        private void RemoveAssociation_Click(object sender, EventArgs e)
-        {
-            List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
-
-            List<string> completelist = new List<string>();
-
-            foreach (string str in listext)
-            {
-                completelist.Add("VLC" + str);
-                completelist.Add("mpc-be64" + str);
-            }
-
-            Microsoft.Win32.RegistryKey key;
-            foreach (string ext in completelist)
-            {
-                try
-                {
-                    key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true).OpenSubKey(ext, true).CreateSubKey("shell");
-                    key.DeleteSubKeyTree("open_with_getmediainfosgui");
-                    key.Close();
-                }
-                catch { }
-            }
-            Associationstatus.Text = "Successufully Removed.";
-        }
-
-        private void GetMediaInfo_Shown(object sender, EventArgs e)
-        {
-            this.Update();
-            this.Refresh();
-            ApriDaArgomentoExe();
-        }
 
         private void RealizzaReportTestuale(MediaInfo tmp) // realizza il report testale
         {

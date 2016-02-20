@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 
 namespace GetMediaInfo
 {
@@ -55,12 +55,12 @@ namespace GetMediaInfo
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.Version = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.Associationstatus = new System.Windows.Forms.Label();
             this.Associate = new System.Windows.Forms.Button();
             this.RemoveAssociation = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.Version = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.GetMediaInfosDLL = new System.Windows.Forms.Label();
             this.StatusMediainfo = new System.Windows.Forms.Label();
@@ -97,8 +97,8 @@ namespace GetMediaInfo
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(403, 417);
             this.panel1.TabIndex = 0;
-            this.panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.InputPath_DragDrop);
-            this.panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.InputPath_DragEnter);
+            this.panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.ApriFileDragDrop);
+            this.panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.ApriFileDragEnter);
             // 
             // btnSalvaReport
             // 
@@ -353,6 +353,17 @@ namespace GetMediaInfo
             this.tabPage3.Text = "Info";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // Version
+            // 
+            this.Version.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.Version.AutoSize = true;
+            this.Version.Location = new System.Drawing.Point(297, 312);
+            this.Version.Name = "Version";
+            this.Version.Size = new System.Drawing.Size(74, 13);
+            this.Version.TabIndex = 5;
+            this.Version.Text = "Version x.x.x.x";
+            this.Version.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            // 
             // groupBox5
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -406,16 +417,6 @@ namespace GetMediaInfo
             this.label2.TabIndex = 6;
             this.label2.Text = "Developed by .\r\nCredits to  for GetMediaInfos.dll, the help, the" +
     " development consultancy, the compiling for all Windows x86/x64.";
-            // 
-            // Version
-            // 
-            this.Version.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Version.AutoSize = true;
-            this.Version.Location = new System.Drawing.Point(302, 312);
-            this.Version.Name = "Version";
-            this.Version.Size = new System.Drawing.Size(66, 13);
-            this.Version.TabIndex = 5;
-            this.Version.Text = "Version x.x.x";
             // 
             // tableLayoutPanel3
             // 
@@ -479,7 +480,7 @@ namespace GetMediaInfo
             this.filepathBox.Name = "filepathBox";
             this.filepathBox.Size = new System.Drawing.Size(227, 20);
             this.filepathBox.TabIndex = 14;
-            this.filepathBox.TextChanged += new System.EventHandler(this.filepathBox_TextChanged);
+            this.filepathBox.TextChanged += new System.EventHandler(this.ApriFileTextBox);
             // 
             // GetMediaInfo
             // 
@@ -491,7 +492,7 @@ namespace GetMediaInfo
             this.MinimumSize = new System.Drawing.Size(419, 456);
             this.Name = "GetMediaInfo";
             this.Text = "Get MediaInfo";
-            this.Load += new System.EventHandler(this.GetMediaInfo_Load);
+            this.Load += new System.EventHandler(this.PrimoAvvio);
             this.Shown += new System.EventHandler(this.GetMediaInfo_Shown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
