@@ -344,6 +344,9 @@ namespace GetMediaInfo
             SaveFileDialog Report = new SaveFileDialog();
             Report.Filter = "Simple Text|*.txt";
             Report.Title = "Select the file you want to use to save the report";
+            Report.DefaultExt = ".txt";
+            Report.FileName = Path.GetFileNameWithoutExtension(filepathBox.Text) + ".txt";
+            Report.InitialDirectory = Path.GetDirectoryName(filepathBox.Text);
             Report.ShowDialog();
             if (Report.FileName != "")
             {
