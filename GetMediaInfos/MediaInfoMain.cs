@@ -807,11 +807,33 @@ namespace GetMediaInfos
                         _tracktemp_.Default = getBoolOrDefault(GetSpecificMediaInfo(MediaInfoStreamKind.Audio, num2, "Default"));
                         _tracktemp_.DefaultString = GetSpecificMediaInfo(MediaInfoStreamKind.Audio, num2, "Default/String");
                         _tracktemp_.Forced = getBoolOrDefault(GetSpecificMediaInfo(MediaInfoStreamKind.Audio, num2, "Forced"));
-                        _tracktemp_.ForcedString = GetSpecificMediaInfo(MediaInfoStreamKind.Audio, num2, "Forced/String");                        
+                        _tracktemp_.ForcedString = GetSpecificMediaInfo(MediaInfoStreamKind.Audio, num2, "Forced/String");   
+                        
+                        if (_tracktemp_.Channels == 0 && !String.IsNullOrEmpty(_tracktemp_.ChannelsString))
+                        {
+                            _tracktemp_.Channels = parseChannelsCount(_tracktemp_.ChannelsString);
+                        }
+                                                        
                         this._Audio.Add(_tracktemp_);
                     }
                 }
             }
+        }
+
+        ///<summary> Helper method to parse channels count from channels string, if fails return default value</summary>
+        private int parseChannelsCount(string channelstring)
+        {
+            System.Text.RegularExpressions.Match mat = new System.Text.RegularExpressions.Regex("(\\d)\\schannels").Match(channelstring);
+
+            if (mat.Success)
+            {
+                int channels = 0;
+                if (int.TryParse(mat.Groups[1].Value, out channels))
+                {
+                    return channels;
+                }
+            }
+            return 0;
         }
 
         ///<summary> List of all the Text streams available in the file, type TextTrack[trackindex] to access a specific track</summary>
