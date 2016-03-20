@@ -239,11 +239,21 @@ namespace GetMediaInfo
 
         }
 
+        private string VediONonVediMS(string TimeFormatted)
+        {
+            if(MilliSec.CheckState == CheckState.Checked)  return TimeFormatted;
+            else
+            {
+                string[] durata = TimeFormatted.Split('.');
+                return durata[0];
+            }
+        }
+
         private string AggiungiQuadreSeNonNullo(string temp)
         {
-            if (temp == "") return "";
-            if (temp == " ") return "";
-            else return " [" + temp + "] - ";
+            if (temp == "") return " - ";
+            if (temp == " ") return " - ";
+            else return " [" + temp + "] ";
         }
 
         private string SistemaBitrete(MediaInfo report)
@@ -272,8 +282,7 @@ namespace GetMediaInfo
 
             GeneralInfo.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
             //general_info1.Text += report.General[0].UniqueID + Environment.NewLine;
-            string[] durata = report.General[0].PlayTimeFormatted.Split('.');
-            GeneralInfo.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + durata[0] + Environment.NewLine;
+            GeneralInfo.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + VediONonVediMS(report.General[0].PlayTimeFormatted) + Environment.NewLine;
             if (report.General[0].OveralBitRateString != "") GeneralInfo.Text += "Overal BitRate: " + report.General[0].OveralBitRateString + Environment.NewLine;
             else GeneralInfo.Text += "Overal BitRate: " + SistemaBitrete(report) + Environment.NewLine;
             if (report.General[0].Title != "") GeneralInfo.Text += "Title: " + report.General[0].Title + Environment.NewLine;
@@ -305,7 +314,7 @@ namespace GetMediaInfo
                 {
                     lang = "Undetermined";
                 }
-                video_info.Text += lang + " - " + report.Video[i].DurationString + " - " + AggiungiQuadreSeNonNullo(report.Video[i].Title);
+                video_info.Text += lang  + AggiungiQuadreSeNonNullo(report.Video[i].Title) + VediONonVediMS(report.Video[i].DurationString) + " - " ;
                 video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
 
                 video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate + " fps, ";
@@ -324,7 +333,7 @@ namespace GetMediaInfo
                 {
                     lang = "Undetermined";
                 }
-                audio_info.Text += lang + " - " + report.Audio[i].DurationStringFormatted + " - " + AggiungiQuadreSeNonNullo(report.Audio[i].Title);
+                audio_info.Text += lang  + AggiungiQuadreSeNonNullo(report.Audio[i].Title) + VediONonVediMS(report.Audio[i].DurationStringFormatted) + " - " ;
                 audio_info.Text += report.Audio[i].BitRateString + " - " + report.Audio[i].BitRateMode + ", " + report.Audio[i].SamplingRateString + ", ";
                 audio_info.Text += report.Audio[i].ChannelsString + ", " + report.Audio[i].Format;
 
@@ -347,7 +356,7 @@ namespace GetMediaInfo
             // sub
             for (int i=0; i< report.Text.Count; i++)
             {
-                sub_info.Text+= report.Text[i].LanguageString + " - " + AggiungiQuadreSeNonNullo(report.Text[i].Title);
+                sub_info.Text+= report.Text[i].LanguageString + AggiungiQuadreSeNonNullo(report.Text[i].Title);
                 sub_info.Text += report.Text[i].Codec + Environment.NewLine;
             }
 
@@ -364,7 +373,7 @@ namespace GetMediaInfo
             {
                 TabSimple.Controls.Add(tableLayoutPanel1);
                 TabSimple.Location = new System.Drawing.Point(4, 22);
-                TabSimple.Name = "tabPage2";
+                TabSimple.Name = "TabSimple";
                 TabSimple.Padding = new System.Windows.Forms.Padding(3);
                 TabSimple.Size = new System.Drawing.Size(374, 328);
                 TabSimple.TabIndex = 1;

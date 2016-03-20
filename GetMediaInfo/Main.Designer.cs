@@ -48,8 +48,8 @@ namespace GetMediaInfo
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.sub_info = new System.Windows.Forms.Label();
             this.TabStandard = new System.Windows.Forms.TabPage();
-            this.TabComplete = new System.Windows.Forms.TabPage();
             this.TextBoxStandard = new System.Windows.Forms.TextBox();
+            this.TabComplete = new System.Windows.Forms.TabPage();
             this.TextBoxComplete = new System.Windows.Forms.TextBox();
             this.TabInfo = new System.Windows.Forms.TabPage();
             this.Setting = new System.Windows.Forms.GroupBox();
@@ -67,6 +67,7 @@ namespace GetMediaInfo
             this.MediainfoDLL = new System.Windows.Forms.Label();
             this.StatusGetMediaInfos = new System.Windows.Forms.Label();
             this.filepathBox = new System.Windows.Forms.TextBox();
+            this.MilliSec = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.TabReport.SuspendLayout();
@@ -76,6 +77,7 @@ namespace GetMediaInfo
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.TabStandard.SuspendLayout();
             this.TabComplete.SuspendLayout();
             this.TabInfo.SuspendLayout();
             this.Setting.SuspendLayout();
@@ -270,17 +272,6 @@ namespace GetMediaInfo
             this.TabStandard.Text = "Standard";
             this.TabStandard.UseVisualStyleBackColor = true;
             // 
-            // TabComplete
-            // 
-            this.TabComplete.Controls.Add(this.TextBoxComplete);
-            this.TabComplete.Location = new System.Drawing.Point(4, 22);
-            this.TabComplete.Name = "TabComplete";
-            this.TabComplete.Padding = new System.Windows.Forms.Padding(3);
-            this.TabComplete.Size = new System.Drawing.Size(374, 328);
-            this.TabComplete.TabIndex = 3;
-            this.TabComplete.Text = "Complete";
-            this.TabComplete.UseVisualStyleBackColor = true;
-            // 
             // TextBoxStandard
             // 
             this.TextBoxStandard.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -291,6 +282,17 @@ namespace GetMediaInfo
             this.TextBoxStandard.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TextBoxStandard.Size = new System.Drawing.Size(368, 322);
             this.TextBoxStandard.TabIndex = 0;
+            // 
+            // TabComplete
+            // 
+            this.TabComplete.Controls.Add(this.TextBoxComplete);
+            this.TabComplete.Location = new System.Drawing.Point(4, 22);
+            this.TabComplete.Name = "TabComplete";
+            this.TabComplete.Padding = new System.Windows.Forms.Padding(3);
+            this.TabComplete.Size = new System.Drawing.Size(374, 328);
+            this.TabComplete.TabIndex = 3;
+            this.TabComplete.Text = "Complete";
+            this.TabComplete.UseVisualStyleBackColor = true;
             // 
             // TextBoxComplete
             // 
@@ -322,11 +324,12 @@ namespace GetMediaInfo
             // 
             this.Setting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Setting.Controls.Add(this.MilliSec);
             this.Setting.Controls.Add(this.DisableSimpleInfo);
             this.Setting.Controls.Add(this.AutoSaveReport);
             this.Setting.Location = new System.Drawing.Point(6, 166);
             this.Setting.Name = "Setting";
-            this.Setting.Size = new System.Drawing.Size(362, 57);
+            this.Setting.Size = new System.Drawing.Size(362, 72);
             this.Setting.TabIndex = 10;
             this.Setting.TabStop = false;
             this.Setting.Text = "Setting";
@@ -481,6 +484,16 @@ namespace GetMediaInfo
             this.filepathBox.TabIndex = 14;
             this.filepathBox.TextChanged += new System.EventHandler(this.ApriFileTextBox);
             // 
+            // MilliSec
+            // 
+            this.MilliSec.AutoSize = true;
+            this.MilliSec.Location = new System.Drawing.Point(7, 49);
+            this.MilliSec.Name = "MilliSec";
+            this.MilliSec.Size = new System.Drawing.Size(115, 17);
+            this.MilliSec.TabIndex = 3;
+            this.MilliSec.Text = "Active milliseconds";
+            this.MilliSec.UseVisualStyleBackColor = true;
+            // 
             // GetMediaInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -504,6 +517,8 @@ namespace GetMediaInfo
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.TabStandard.ResumeLayout(false);
+            this.TabStandard.PerformLayout();
             this.TabComplete.ResumeLayout(false);
             this.TabComplete.PerformLayout();
             this.TabInfo.ResumeLayout(false);
@@ -555,6 +570,7 @@ namespace GetMediaInfo
         private System.Windows.Forms.GroupBox Setting;
         private System.Windows.Forms.CheckBox DisableSimpleInfo;
         private System.Windows.Forms.CheckBox AutoSaveReport;
+        private System.Windows.Forms.CheckBox MilliSec;
     }
 }
 
