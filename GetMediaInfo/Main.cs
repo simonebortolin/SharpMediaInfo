@@ -17,6 +17,7 @@ namespace GetMediaInfo
         public GetMediaInfo()
         {
             InitializeComponent();
+            Reset();
         }
 
         private void PrimoAvvio(object sender, EventArgs e)
@@ -133,6 +134,7 @@ namespace GetMediaInfo
 
         private void ApriFileDialog(object sender, EventArgs e)
         {
+            Reset();
             OpenFileDialog file = new OpenFileDialog();
             file.Filter = "MEDIA FILE|*.*";
             //file.Filter = "Matorska|*.mkv;*.mka;*.mkv;*.mk3d|MPEG-4|*.mp4;*.m4a;*.m4v;*m4b;|AVI|*.avi|FLAC|*.flac|MP3|*.mp3";
@@ -152,6 +154,7 @@ namespace GetMediaInfo
 
         public void ApriFileDragDrop(object sender, DragEventArgs e)
         {
+            Reset();
             DataObject data = (DataObject)e.Data;
             if (data.ContainsFileDropList())
             {
@@ -209,13 +212,11 @@ namespace GetMediaInfo
         {
             btnSalvaReport.Enabled = false;
             toolStripStatusLabel1.Text = "Ready";
-            textBox3.Text = textBox2.Text = "";
+            TextBoxComplete.Text = TextBoxStandard.Text = "";
             this.Text = "Get Media Infos";
-            label3.Text = "";
+            GeneralInfo.Text = "";
             //filepath = "";
             //filename = "";
-            general_info1.Text = "";
-            general_info2.Text = "";
             video_info.Text = "";
             audio_info.Text = "";
             sub_info.Text = "";
@@ -265,32 +266,38 @@ namespace GetMediaInfo
         {
             // info generali
             if (report.General[0].VideoCount == 0) { tableLayoutPanel1.RowStyles.RemoveAt(1); tableLayoutPanel1.RowCount--; groupBox2.Visible = false; removed1 = true; }
-            if (report.General[0].AudioCount == 0) { tableLayoutPanel1.RowStyles.RemoveAt(removed1?1:2); tableLayoutPanel1.RowCount--; groupBox3.Visible = false; removed2 = true; }
+            if (report.General[0].AudioCount == 0) { tableLayoutPanel1.RowStyles.RemoveAt(removed1 ? 1 : 2); tableLayoutPanel1.RowCount--; groupBox3.Visible = false; removed2 = true; }
             if (report.General[0].TextCount == 0) { tableLayoutPanel1.RowStyles.RemoveAt(--tableLayoutPanel1.RowCount); groupBox4.Visible = false; removed3 = true; }
 
-            label3.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension;
+            GeneralInfo.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension;
             //general_info1.Text += report.General[0].UniqueID + Environment.NewLine;
-
             string[] durata = report.General[0].PlayTimeFormatted.Split('.');
+            GeneralInfo.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + durata[0] + Environment.NewLine;
+            if (report.General[0].OveralBitRateString != "") GeneralInfo.Text += "Overal BitRate: " + report.General[0].OveralBitRateString + Environment.NewLine;
+            else GeneralInfo.Text += "Overal BitRate: " + SistemaBitrete(report) + Environment.NewLine;
+            if (report.General[0].Title != "") GeneralInfo.Text += "Title: " + report.General[0].Title + Environment.NewLine;
+
+
             /*if (report.General[0].VideoCount != 0) durata = report.Video[0].DurationString;
             else if (report.General[0].AudioCount != 0) durata = report.Audio[0].DurationStringFormatted;
             else durata = "Indefinite";*/
 
-            general_info1.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + durata[0] + Environment.NewLine;
-            
+
 
             // tracce video gen
-            if (report.General[0].VideoCount == 1) general_info1.Text += "1 video track " + report.General[0].VideoCodecList + Environment.NewLine;
-            else general_info1.Text += report.General[0].VideoCount + " track video " + report.General[0].VideoCodecList + Environment.NewLine;
+            if (report.General[0].VideoCount == 1) GeneralInfo.Text += "1 video track " + report.General[0].VideoCodecList + Environment.NewLine;
+            else GeneralInfo.Text += report.General[0].VideoCount + " track video " + report.General[0].VideoCodecList + Environment.NewLine;
             // tracce audio gen
-            if (report.General[0].AudioCount == 1) general_info1.Text += "1 audio track " + report.General[0].AudioCodecList + Environment.NewLine;
-            else general_info1.Text += report.General[0].AudioCount + " track audio " + report.General[0].AudioCodecList + Environment.NewLine;
-            if(report.General[0].OveralBitRateString!="") general_info2.Text += "Overal BitRate: " + report.General[0].OveralBitRateString + Environment.NewLine;
-            else general_info2.Text += "Overal BitRate: " + SistemaBitrete(report) + Environment.NewLine;
-            general_info2.Text += "Title: " + report.General[0].Title + Environment.NewLine;
-            general_info2.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
-            general_info2.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
+            if (report.General[0].AudioCount == 1) GeneralInfo.Text += "1 audio track " + report.General[0].AudioCodecList + Environment.NewLine;
+            else GeneralInfo.Text += report.General[0].AudioCount + " track audio " + report.General[0].AudioCodecList + Environment.NewLine;
+            // tracce sub gen
+            if (report.General[0].TextCount == 1) GeneralInfo.Text += "1 sub track " + report.General[0].AudioCodecList + Environment.NewLine;
+            else GeneralInfo.Text += report.General[0].TextCount + " sub track " + report.General[0].TextCodecList + Environment.NewLine;
+            //  capitoli
+            if (report.General[0].Chapter != "") GeneralInfo.Text += report.General[0].Chapter + Environment.NewLine;
 
+            if (report.General[0].EncodedDate != "") GeneralInfo.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
+            if (report.General[0].EncodedLibrary != "") GeneralInfo.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
 
             // tracce video
             for (int i = 0; i < report.Video.Count; i++)
@@ -325,12 +332,43 @@ namespace GetMediaInfo
 
         }
 
-
+        private void DisableSimpleInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            if(DisableSimpleInfo.CheckState == CheckState.Checked)
+            {
+                TabSimple.Controls.Remove(tableLayoutPanel1);
+                TabSimple.Controls.Clear();
+            }
+            else
+            {
+                TabSimple.Controls.Add(tableLayoutPanel1);
+                TabSimple.Location = new System.Drawing.Point(4, 22);
+                TabSimple.Name = "tabPage2";
+                TabSimple.Padding = new System.Windows.Forms.Padding(3);
+                TabSimple.Size = new System.Drawing.Size(374, 328);
+                TabSimple.TabIndex = 1;
+                TabSimple.Text = "Simple";
+                TabSimple.UseVisualStyleBackColor = true;
+            }
+        }
 
         private void RealizzaReportTestuale(MediaInfo tmp) // realizza il report testale
         {
-            textBox2.Text = tmp.InfoStandard;
-            textBox3.Text = tmp.InfoComplete;
+            TextBoxStandard.Text = tmp.InfoStandard;
+            TextBoxComplete.Text = tmp.InfoComplete;
+            if(AutoSaveReport.CheckState == CheckState.Checked)
+            {
+                string ReportName = Path.ChangeExtension(filepathBox.Text,".txt");
+                int i = 2;
+                while (File.Exists(ReportName))
+                {
+                    ReportName = Path.ChangeExtension(filepathBox.Text, i+".txt");
+                    i++;
+                }
+                StreamWriter ReportTxt = new StreamWriter(ReportName);
+                ReportTxt.WriteLine(TextBoxStandard.Text);
+                ReportTxt.Close();
+            }
         }
 
         /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
@@ -351,8 +389,8 @@ namespace GetMediaInfo
             if (Report.FileName != "")
             {
                 StreamWriter File = new StreamWriter(Report.FileName);
-                if(tabControl1.SelectedIndex==2) File.WriteLine(textBox3.Text);
-                else File.WriteLine(textBox2.Text);
+                if(TabReport.SelectedIndex==2) File.WriteLine(TextBoxComplete.Text);
+                else File.WriteLine(TextBoxStandard.Text);
                 File.Close();
             }
         }

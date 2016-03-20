@@ -36,27 +36,27 @@ namespace GetMediaInfo
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnApriFileDialog = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.TabReport = new System.Windows.Forms.TabControl();
+            this.TabSimple = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.audio_info = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.general_info2 = new System.Windows.Forms.Label();
-            this.general_info1 = new System.Windows.Forms.Label();
+            this.GeneralInfo = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.video_info = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.sub_info = new System.Windows.Forms.Label();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.TabStandard = new System.Windows.Forms.TabPage();
+            this.TabComplete = new System.Windows.Forms.TabPage();
+            this.TextBoxStandard = new System.Windows.Forms.TextBox();
+            this.TextBoxComplete = new System.Windows.Forms.TextBox();
+            this.TabInfo = new System.Windows.Forms.TabPage();
+            this.Setting = new System.Windows.Forms.GroupBox();
+            this.DisableSimpleInfo = new System.Windows.Forms.CheckBox();
+            this.AutoSaveReport = new System.Windows.Forms.CheckBox();
             this.Version = new System.Windows.Forms.Label();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.ContextMenu = new System.Windows.Forms.GroupBox();
             this.Associationstatus = new System.Windows.Forms.Label();
             this.Associate = new System.Windows.Forms.Button();
             this.RemoveAssociation = new System.Windows.Forms.Button();
@@ -69,18 +69,17 @@ namespace GetMediaInfo
             this.filepathBox = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.TabReport.SuspendLayout();
+            this.TabSimple.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.groupBox5.SuspendLayout();
+            this.TabComplete.SuspendLayout();
+            this.TabInfo.SuspendLayout();
+            this.Setting.SuspendLayout();
+            this.ContextMenu.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,7 +89,7 @@ namespace GetMediaInfo
             this.panel1.Controls.Add(this.btnSalvaReport);
             this.panel1.Controls.Add(this.statusStrip1);
             this.panel1.Controls.Add(this.btnApriFileDialog);
-            this.panel1.Controls.Add(this.tabControl1);
+            this.panel1.Controls.Add(this.TabReport);
             this.panel1.Controls.Add(this.filepathBox);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -138,31 +137,31 @@ namespace GetMediaInfo
             this.btnApriFileDialog.UseVisualStyleBackColor = true;
             this.btnApriFileDialog.Click += new System.EventHandler(this.ApriFileDialog);
             // 
-            // tabControl1
+            // TabReport
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TabReport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(12, 33);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 1;
-            this.tabControl1.Size = new System.Drawing.Size(382, 354);
-            this.tabControl1.TabIndex = 10;
+            this.TabReport.Controls.Add(this.TabSimple);
+            this.TabReport.Controls.Add(this.TabStandard);
+            this.TabReport.Controls.Add(this.TabComplete);
+            this.TabReport.Controls.Add(this.TabInfo);
+            this.TabReport.Location = new System.Drawing.Point(12, 33);
+            this.TabReport.Name = "TabReport";
+            this.TabReport.SelectedIndex = 1;
+            this.TabReport.Size = new System.Drawing.Size(382, 354);
+            this.TabReport.TabIndex = 10;
             // 
-            // tabPage2
+            // TabSimple
             // 
-            this.tabPage2.Controls.Add(this.tableLayoutPanel1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(374, 328);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Simple";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.TabSimple.Controls.Add(this.tableLayoutPanel1);
+            this.TabSimple.Location = new System.Drawing.Point(4, 22);
+            this.TabSimple.Name = "TabSimple";
+            this.TabSimple.Padding = new System.Windows.Forms.Padding(3);
+            this.TabSimple.Size = new System.Drawing.Size(374, 328);
+            this.TabSimple.TabIndex = 1;
+            this.TabSimple.Text = "Simple";
+            this.TabSimple.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
             // 
@@ -205,8 +204,7 @@ namespace GetMediaInfo
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.tableLayoutPanel4);
+            this.groupBox1.Controls.Add(this.GeneralInfo);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
@@ -215,47 +213,13 @@ namespace GetMediaInfo
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "General Info";
             // 
-            // label3
+            // GeneralInfo
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.Location = new System.Drawing.Point(6, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(358, 16);
-            this.label3.TabIndex = 2;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Controls.Add(this.general_info2, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.general_info1, 0, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 36);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(364, 63);
-            this.tableLayoutPanel4.TabIndex = 1;
-            // 
-            // general_info2
-            // 
-            this.general_info2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.general_info2.Location = new System.Drawing.Point(185, 0);
-            this.general_info2.Name = "general_info2";
-            this.general_info2.Size = new System.Drawing.Size(176, 63);
-            this.general_info2.TabIndex = 1;
-            // 
-            // general_info1
-            // 
-            this.general_info1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.general_info1.Location = new System.Drawing.Point(3, 0);
-            this.general_info1.Name = "general_info1";
-            this.general_info1.Size = new System.Drawing.Size(176, 63);
-            this.general_info1.TabIndex = 0;
+            this.GeneralInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GeneralInfo.Location = new System.Drawing.Point(3, 16);
+            this.GeneralInfo.Name = "GeneralInfo";
+            this.GeneralInfo.Size = new System.Drawing.Size(356, 82);
+            this.GeneralInfo.TabIndex = 2;
             // 
             // groupBox2
             // 
@@ -295,63 +259,98 @@ namespace GetMediaInfo
             this.sub_info.Size = new System.Drawing.Size(356, 48);
             this.sub_info.TabIndex = 0;
             // 
-            // tabPage1
+            // TabStandard
             // 
-            this.tabPage1.Controls.Add(this.textBox2);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(374, 328);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Standard";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.TabStandard.Controls.Add(this.TextBoxStandard);
+            this.TabStandard.Location = new System.Drawing.Point(4, 22);
+            this.TabStandard.Name = "TabStandard";
+            this.TabStandard.Padding = new System.Windows.Forms.Padding(3);
+            this.TabStandard.Size = new System.Drawing.Size(374, 328);
+            this.TabStandard.TabIndex = 0;
+            this.TabStandard.Text = "Standard";
+            this.TabStandard.UseVisualStyleBackColor = true;
             // 
-            // textBox2
+            // TabComplete
             // 
-            this.textBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox2.Location = new System.Drawing.Point(3, 3);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox2.Size = new System.Drawing.Size(368, 322);
-            this.textBox2.TabIndex = 2;
+            this.TabComplete.Controls.Add(this.TextBoxComplete);
+            this.TabComplete.Location = new System.Drawing.Point(4, 22);
+            this.TabComplete.Name = "TabComplete";
+            this.TabComplete.Padding = new System.Windows.Forms.Padding(3);
+            this.TabComplete.Size = new System.Drawing.Size(374, 328);
+            this.TabComplete.TabIndex = 3;
+            this.TabComplete.Text = "Complete";
+            this.TabComplete.UseVisualStyleBackColor = true;
             // 
-            // tabPage4
+            // TextBoxStandard
             // 
-            this.tabPage4.Controls.Add(this.textBox3);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(374, 328);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Complete";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.TextBoxStandard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextBoxStandard.Location = new System.Drawing.Point(3, 3);
+            this.TextBoxStandard.Multiline = true;
+            this.TextBoxStandard.Name = "TextBoxStandard";
+            this.TextBoxStandard.ReadOnly = true;
+            this.TextBoxStandard.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.TextBoxStandard.Size = new System.Drawing.Size(368, 322);
+            this.TextBoxStandard.TabIndex = 0;
             // 
-            // textBox3
+            // TextBoxComplete
             // 
-            this.textBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox3.Location = new System.Drawing.Point(3, 3);
-            this.textBox3.Multiline = true;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox3.Size = new System.Drawing.Size(368, 322);
-            this.textBox3.TabIndex = 0;
+            this.TextBoxComplete.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextBoxComplete.Location = new System.Drawing.Point(3, 3);
+            this.TextBoxComplete.Multiline = true;
+            this.TextBoxComplete.Name = "TextBoxComplete";
+            this.TextBoxComplete.ReadOnly = true;
+            this.TextBoxComplete.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.TextBoxComplete.Size = new System.Drawing.Size(368, 322);
+            this.TextBoxComplete.TabIndex = 0;
             // 
-            // tabPage3
+            // TabInfo
             // 
-            this.tabPage3.Controls.Add(this.Version);
-            this.tabPage3.Controls.Add(this.groupBox5);
-            this.tabPage3.Controls.Add(this.label2);
-            this.tabPage3.Controls.Add(this.tableLayoutPanel3);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(374, 328);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Info";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.TabInfo.Controls.Add(this.Setting);
+            this.TabInfo.Controls.Add(this.Version);
+            this.TabInfo.Controls.Add(this.ContextMenu);
+            this.TabInfo.Controls.Add(this.label2);
+            this.TabInfo.Controls.Add(this.tableLayoutPanel3);
+            this.TabInfo.Location = new System.Drawing.Point(4, 22);
+            this.TabInfo.Name = "TabInfo";
+            this.TabInfo.Padding = new System.Windows.Forms.Padding(3);
+            this.TabInfo.Size = new System.Drawing.Size(374, 328);
+            this.TabInfo.TabIndex = 2;
+            this.TabInfo.Text = "Info";
+            this.TabInfo.UseVisualStyleBackColor = true;
+            // 
+            // Setting
+            // 
+            this.Setting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Setting.Controls.Add(this.DisableSimpleInfo);
+            this.Setting.Controls.Add(this.AutoSaveReport);
+            this.Setting.Location = new System.Drawing.Point(6, 166);
+            this.Setting.Name = "Setting";
+            this.Setting.Size = new System.Drawing.Size(362, 57);
+            this.Setting.TabIndex = 10;
+            this.Setting.TabStop = false;
+            this.Setting.Text = "Setting";
+            // 
+            // DisableSimpleInfo
+            // 
+            this.DisableSimpleInfo.AutoSize = true;
+            this.DisableSimpleInfo.Location = new System.Drawing.Point(7, 34);
+            this.DisableSimpleInfo.Name = "DisableSimpleInfo";
+            this.DisableSimpleInfo.Size = new System.Drawing.Size(116, 17);
+            this.DisableSimpleInfo.TabIndex = 2;
+            this.DisableSimpleInfo.Text = "Disable Simple Info";
+            this.DisableSimpleInfo.UseVisualStyleBackColor = true;
+            this.DisableSimpleInfo.CheckedChanged += new System.EventHandler(this.DisableSimpleInfo_CheckedChanged);
+            // 
+            // AutoSaveReport
+            // 
+            this.AutoSaveReport.AutoSize = true;
+            this.AutoSaveReport.Location = new System.Drawing.Point(7, 19);
+            this.AutoSaveReport.Name = "AutoSaveReport";
+            this.AutoSaveReport.Size = new System.Drawing.Size(111, 17);
+            this.AutoSaveReport.TabIndex = 1;
+            this.AutoSaveReport.Text = "Auto Save Report";
+            this.AutoSaveReport.UseVisualStyleBackColor = true;
             // 
             // Version
             // 
@@ -364,19 +363,19 @@ namespace GetMediaInfo
             this.Version.Text = "Version x.x.x.x";
             this.Version.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             // 
-            // groupBox5
+            // ContextMenu
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ContextMenu.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox5.Controls.Add(this.Associationstatus);
-            this.groupBox5.Controls.Add(this.Associate);
-            this.groupBox5.Controls.Add(this.RemoveAssociation);
-            this.groupBox5.Location = new System.Drawing.Point(7, 109);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(361, 50);
-            this.groupBox5.TabIndex = 9;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "ContextMenu Options";
+            this.ContextMenu.Controls.Add(this.Associationstatus);
+            this.ContextMenu.Controls.Add(this.Associate);
+            this.ContextMenu.Controls.Add(this.RemoveAssociation);
+            this.ContextMenu.Location = new System.Drawing.Point(7, 109);
+            this.ContextMenu.Name = "ContextMenu";
+            this.ContextMenu.Size = new System.Drawing.Size(361, 50);
+            this.ContextMenu.TabIndex = 9;
+            this.ContextMenu.TabStop = false;
+            this.ContextMenu.Text = "ContextMenu Options";
             // 
             // Associationstatus
             // 
@@ -498,22 +497,21 @@ namespace GetMediaInfo
             this.panel1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
+            this.TabReport.ResumeLayout(false);
+            this.TabSimple.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
+            this.TabComplete.ResumeLayout(false);
+            this.TabComplete.PerformLayout();
+            this.TabInfo.ResumeLayout(false);
+            this.TabInfo.PerformLayout();
+            this.Setting.ResumeLayout(false);
+            this.Setting.PerformLayout();
+            this.ContextMenu.ResumeLayout(false);
+            this.ContextMenu.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -526,25 +524,22 @@ namespace GetMediaInfo
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Button btnApriFileDialog;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabControl TabReport;
+        private System.Windows.Forms.TabPage TabSimple;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label audio_info;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label general_info2;
-        private System.Windows.Forms.Label general_info1;
+        private System.Windows.Forms.Label GeneralInfo;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label video_info;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label sub_info;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage TabStandard;
+        private System.Windows.Forms.TextBox TextBoxStandard;
+        private System.Windows.Forms.TabPage TabComplete;
+        private System.Windows.Forms.TextBox TextBoxComplete;
+        private System.Windows.Forms.TabPage TabInfo;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label Version;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
@@ -555,8 +550,11 @@ namespace GetMediaInfo
         private System.Windows.Forms.TextBox filepathBox;
         private System.Windows.Forms.Button Associate;
         private System.Windows.Forms.Button RemoveAssociation;
-        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox ContextMenu;
         private System.Windows.Forms.Label Associationstatus;
+        private System.Windows.Forms.GroupBox Setting;
+        private System.Windows.Forms.CheckBox DisableSimpleInfo;
+        private System.Windows.Forms.CheckBox AutoSaveReport;
     }
 }
 
