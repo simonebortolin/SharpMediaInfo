@@ -190,7 +190,7 @@ namespace GetMediaInfo
                 
                 RealizzaReportSemplice(tmp);
                 RealizzaReportTestuale(tmp);
-                this.Text += " (" + path + ")";
+                this.Text += " (" + Path.GetFileName(path) + ")";
                 toolStripStatusLabel1.Text = "Analysis Completed.";
                 btnSalvaReport.Enabled = true;
             }
@@ -220,6 +220,7 @@ namespace GetMediaInfo
             video_info.Text = "";
             audio_info.Text = "";
             sub_info.Text = "";
+
             if(removed1)
             {
                 tableLayoutPanel1.RowStyles.Insert(1, new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F)); tableLayoutPanel1.RowCount++;
@@ -269,7 +270,7 @@ namespace GetMediaInfo
             if (report.General[0].AudioCount == 0) { tableLayoutPanel1.RowStyles.RemoveAt(removed1 ? 1 : 2); tableLayoutPanel1.RowCount--; groupBox3.Visible = false; removed2 = true; }
             if (report.General[0].TextCount == 0) { tableLayoutPanel1.RowStyles.RemoveAt(--tableLayoutPanel1.RowCount); groupBox4.Visible = false; removed3 = true; }
 
-            GeneralInfo.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension;
+            GeneralInfo.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
             //general_info1.Text += report.General[0].UniqueID + Environment.NewLine;
             string[] durata = report.General[0].PlayTimeFormatted.Split('.');
             GeneralInfo.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + durata[0] + Environment.NewLine;
@@ -277,12 +278,9 @@ namespace GetMediaInfo
             else GeneralInfo.Text += "Overal BitRate: " + SistemaBitrete(report) + Environment.NewLine;
             if (report.General[0].Title != "") GeneralInfo.Text += "Title: " + report.General[0].Title + Environment.NewLine;
 
-
             /*if (report.General[0].VideoCount != 0) durata = report.Video[0].DurationString;
             else if (report.General[0].AudioCount != 0) durata = report.Audio[0].DurationStringFormatted;
             else durata = "Indefinite";*/
-
-
 
             // tracce video gen
             if (report.General[0].VideoCount == 1) GeneralInfo.Text += "1 video track " + report.General[0].VideoCodecList + Environment.NewLine;
@@ -302,8 +300,13 @@ namespace GetMediaInfo
             // tracce video
             for (int i = 0; i < report.Video.Count; i++)
             {
-                video_info.Text += report.Video[i].LanguageString + " - " + report.Video[i].DurationMillisec + "s - " + AggiungiQuadreSeNonNullo(report.Video[i].Title);
-                video_info.Text += report.Video[i].BitRateString +", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+                string lang = report.Video[i].LanguageString;
+                if (String.IsNullOrEmpty(lang))
+                {
+                    lang = "Undetermined";
+                }
+                video_info.Text += lang + " - " + report.Video[i].DurationString + " - " + AggiungiQuadreSeNonNullo(report.Video[i].Title);
+                video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
 
                 video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate + " fps, ";
                 video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ") (";
@@ -315,9 +318,27 @@ namespace GetMediaInfo
             string[] codecAudio = report.General[0].AudioCodecList.Split('/');
             for (int i = 0; i < report.Audio.Count; i++)
             {
-                audio_info.Text += report.Audio[i].LanguageString + " - " + report.Audio[i].DurationMillisec + "s - " + AggiungiQuadreSeNonNullo(report.Audio[i].Title);
-                audio_info.Text += report.Audio[i].BitRateString +" " + report.Audio[i].BitRateMode +", " +report.Audio[i].SamplingRateString +  ", " ;
-                audio_info.Text += report.Audio[i].ChannelsString + ", " + codecAudio[i] + Environment.NewLine;
+                string lang = report.Audio[i].LanguageString;
+                int delay = report.Audio[i].Delay;
+                if (String.IsNullOrEmpty(lang))
+                {
+                    lang = "Undetermined";
+                }
+                audio_info.Text += lang + " - " + report.Audio[i].DurationStringFormatted + " - " + AggiungiQuadreSeNonNullo(report.Audio[i].Title);
+                audio_info.Text += report.Audio[i].BitRateString + " - " + report.Audio[i].BitRateMode + ", " + report.Audio[i].SamplingRateString + ", ";
+                audio_info.Text += report.Audio[i].ChannelsString + ", " + report.Audio[i].Format;
+
+                if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) {
+                    audio_info.Text += " - " + report.Audio[i].FormatProfile;
+                }
+
+                if (delay > 0)
+                {
+                    audio_info.Text += ", Delay: " + delay + "ms" + Environment.NewLine;
+                } else
+                {
+                    audio_info.Text += Environment.NewLine;
+                }
                 //audio_info.Text += "Bitrate: " + report.Audio[i].BitRateMinimumString + " - " + report.Audio[i].BitRateNominalString + " - " + report.Audio[i].BitRateMaximumString + Environment.NewLine;
                 //report.Audio[i].CodecIDUrl + report.Audio[i].CodecID + report.Audio[i].CodecIDDescription + report.Audio[i].CodecIDHint non vanno
                 // come cavolo si reperiscono i codec audio -.-
