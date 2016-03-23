@@ -140,7 +140,7 @@ namespace GetMediaInfo
         {
             Reset();
             OpenFileDialog file = new OpenFileDialog();
-            file.Filter = "MEDIA FILE|*.*";
+            file.Filter = "Mediafile|*.*";
             //file.Filter = "Matorska|*.mkv;*.mka;*.mkv;*.mk3d|MPEG-4|*.mp4;*.m4a;*.m4v;*m4b;|AVI|*.avi|FLAC|*.flac|MP3|*.mp3";
             //file.Filter += "|OGM|*.ogg;*.ogm;*.oga;*.ogv;*.ogx|WEB-M|*.weba;*.webv|Windows Media|*.wmv;*.wma|";
             file.Title = "Select a Media File";
@@ -151,9 +151,6 @@ namespace GetMediaInfo
                 filepathBox.Text = file.FileName;
                 Analisi(filepathBox.Text);
             }
-
-
-
         }
 
         public void ApriFileDragDrop(object sender, DragEventArgs e)
