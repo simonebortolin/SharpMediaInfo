@@ -319,7 +319,9 @@ namespace GetMediaInfoGUI
                     lang = "Undetermined";
                 }
                 audio_info.Text += lang + AggiungiQuadreSeNonNullo(report.Audio[i].Title) + report.Audio[i].DurationStringFormatted + " - ";
-                audio_info.Text += report.Audio[i].BitRateString + " - " + report.Audio[i].BitRateMode + ", " + report.Audio[i].SamplingRateString + ", ";
+                audio_info.Text += report.Audio[i].BitRateString;
+                if (report.Audio[i].BitRateMode !="")  audio_info.Text += " - " + report.Audio[i].BitRateMode; 
+                audio_info.Text += ", " + report.Audio[i].SamplingRateString + ", ";
                 audio_info.Text += report.Audio[i].ChannelsString + ", " + report.Audio[i].Format;
 
                 if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile))
