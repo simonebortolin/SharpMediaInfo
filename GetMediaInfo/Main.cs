@@ -54,7 +54,9 @@ namespace GetMediaInfo
 
         private void Associate_Click(object sender, EventArgs e)
         {
-            List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
+            List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
+                ".webm", ".weba", ".ac3", ".dts", ".dtshd", ".thd", ".flac", ".alac", ".aac", ".mp3", ".wav", ".aiff", ".h264",
+                ".h265", ".hevc", ".avc", ".y4m", ".yuv", ".ssif" };
 
             List<string> completelist = new List<string>();
 
@@ -82,7 +84,9 @@ namespace GetMediaInfo
 
         private void RemoveAssociation_Click(object sender, EventArgs e)
         {
-            List<string> listext = new List<string>() { ".mkv", ".ac3", ".dts", ".avi", ".m2ts", ".dtshd", ".m4a", ".mp4" };
+            List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
+                ".webm", ".weba", ".ac3", ".dts", ".dtshd", ".thd", ".flac", ".alac", ".aac", ".mp3", ".wav", ".aiff", ".h264",
+                ".h265", ".hevc", ".avc", ".y4m", ".yuv", ".ssif" };
 
             List<string> completelist = new List<string>();
 

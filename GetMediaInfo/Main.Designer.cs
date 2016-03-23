@@ -48,8 +48,8 @@ namespace GetMediaInfo
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.sub_info = new System.Windows.Forms.Label();
             this.TabStandard = new System.Windows.Forms.TabPage();
-            this.TabComplete = new System.Windows.Forms.TabPage();
             this.TextBoxStandard = new System.Windows.Forms.TextBox();
+            this.TabComplete = new System.Windows.Forms.TabPage();
             this.TextBoxComplete = new System.Windows.Forms.TextBox();
             this.TabInfo = new System.Windows.Forms.TabPage();
             this.Setting = new System.Windows.Forms.GroupBox();
@@ -76,6 +76,7 @@ namespace GetMediaInfo
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.TabStandard.SuspendLayout();
             this.TabComplete.SuspendLayout();
             this.TabInfo.SuspendLayout();
             this.Setting.SuspendLayout();
@@ -94,7 +95,7 @@ namespace GetMediaInfo
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(403, 417);
+            this.panel1.Size = new System.Drawing.Size(453, 476);
             this.panel1.TabIndex = 0;
             this.panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.ApriFileDragDrop);
             this.panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.ApriFileDragEnter);
@@ -102,7 +103,7 @@ namespace GetMediaInfo
             // btnSalvaReport
             // 
             this.btnSalvaReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSalvaReport.Location = new System.Drawing.Point(315, 5);
+            this.btnSalvaReport.Location = new System.Drawing.Point(365, 5);
             this.btnSalvaReport.Name = "btnSalvaReport";
             this.btnSalvaReport.Size = new System.Drawing.Size(75, 23);
             this.btnSalvaReport.TabIndex = 13;
@@ -114,9 +115,9 @@ namespace GetMediaInfo
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 395);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 454);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(403, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(453, 22);
             this.statusStrip1.TabIndex = 11;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -129,7 +130,7 @@ namespace GetMediaInfo
             // btnApriFileDialog
             // 
             this.btnApriFileDialog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnApriFileDialog.Location = new System.Drawing.Point(245, 5);
+            this.btnApriFileDialog.Location = new System.Drawing.Point(295, 5);
             this.btnApriFileDialog.Name = "btnApriFileDialog";
             this.btnApriFileDialog.Size = new System.Drawing.Size(64, 23);
             this.btnApriFileDialog.TabIndex = 12;
@@ -149,7 +150,7 @@ namespace GetMediaInfo
             this.TabReport.Location = new System.Drawing.Point(12, 33);
             this.TabReport.Name = "TabReport";
             this.TabReport.SelectedIndex = 1;
-            this.TabReport.Size = new System.Drawing.Size(382, 354);
+            this.TabReport.Size = new System.Drawing.Size(432, 413);
             this.TabReport.TabIndex = 10;
             // 
             // TabSimple
@@ -158,7 +159,7 @@ namespace GetMediaInfo
             this.TabSimple.Location = new System.Drawing.Point(4, 22);
             this.TabSimple.Name = "TabSimple";
             this.TabSimple.Padding = new System.Windows.Forms.Padding(3);
-            this.TabSimple.Size = new System.Drawing.Size(374, 328);
+            this.TabSimple.Size = new System.Drawing.Size(424, 387);
             this.TabSimple.TabIndex = 1;
             this.TabSimple.Text = "Simple";
             this.TabSimple.UseVisualStyleBackColor = true;
@@ -180,16 +181,16 @@ namespace GetMediaInfo
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(368, 322);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(418, 381);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.audio_info);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(3, 181);
+            this.groupBox3.Location = new System.Drawing.Point(3, 213);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(362, 65);
+            this.groupBox3.Size = new System.Drawing.Size(412, 78);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Track Audio";
@@ -199,7 +200,7 @@ namespace GetMediaInfo
             this.audio_info.Dock = System.Windows.Forms.DockStyle.Fill;
             this.audio_info.Location = new System.Drawing.Point(3, 16);
             this.audio_info.Name = "audio_info";
-            this.audio_info.Size = new System.Drawing.Size(356, 46);
+            this.audio_info.Size = new System.Drawing.Size(406, 59);
             this.audio_info.TabIndex = 0;
             // 
             // groupBox1
@@ -208,7 +209,7 @@ namespace GetMediaInfo
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(362, 101);
+            this.groupBox1.Size = new System.Drawing.Size(412, 120);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "General Info";
@@ -218,16 +219,16 @@ namespace GetMediaInfo
             this.GeneralInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.GeneralInfo.Location = new System.Drawing.Point(3, 16);
             this.GeneralInfo.Name = "GeneralInfo";
-            this.GeneralInfo.Size = new System.Drawing.Size(356, 82);
+            this.GeneralInfo.Size = new System.Drawing.Size(406, 101);
             this.GeneralInfo.TabIndex = 2;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.video_info);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 110);
+            this.groupBox2.Location = new System.Drawing.Point(3, 129);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(362, 65);
+            this.groupBox2.Size = new System.Drawing.Size(412, 78);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Track Video";
@@ -237,16 +238,16 @@ namespace GetMediaInfo
             this.video_info.Dock = System.Windows.Forms.DockStyle.Fill;
             this.video_info.Location = new System.Drawing.Point(3, 16);
             this.video_info.Name = "video_info";
-            this.video_info.Size = new System.Drawing.Size(356, 46);
+            this.video_info.Size = new System.Drawing.Size(406, 59);
             this.video_info.TabIndex = 0;
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.sub_info);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox4.Location = new System.Drawing.Point(3, 252);
+            this.groupBox4.Location = new System.Drawing.Point(3, 297);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(362, 67);
+            this.groupBox4.Size = new System.Drawing.Size(412, 81);
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Subtitle";
@@ -256,7 +257,7 @@ namespace GetMediaInfo
             this.sub_info.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sub_info.Location = new System.Drawing.Point(3, 16);
             this.sub_info.Name = "sub_info";
-            this.sub_info.Size = new System.Drawing.Size(356, 48);
+            this.sub_info.Size = new System.Drawing.Size(406, 62);
             this.sub_info.TabIndex = 0;
             // 
             // TabStandard
@@ -265,21 +266,10 @@ namespace GetMediaInfo
             this.TabStandard.Location = new System.Drawing.Point(4, 22);
             this.TabStandard.Name = "TabStandard";
             this.TabStandard.Padding = new System.Windows.Forms.Padding(3);
-            this.TabStandard.Size = new System.Drawing.Size(374, 328);
+            this.TabStandard.Size = new System.Drawing.Size(424, 387);
             this.TabStandard.TabIndex = 0;
             this.TabStandard.Text = "Standard";
             this.TabStandard.UseVisualStyleBackColor = true;
-            // 
-            // TabComplete
-            // 
-            this.TabComplete.Controls.Add(this.TextBoxComplete);
-            this.TabComplete.Location = new System.Drawing.Point(4, 22);
-            this.TabComplete.Name = "TabComplete";
-            this.TabComplete.Padding = new System.Windows.Forms.Padding(3);
-            this.TabComplete.Size = new System.Drawing.Size(374, 328);
-            this.TabComplete.TabIndex = 3;
-            this.TabComplete.Text = "Complete";
-            this.TabComplete.UseVisualStyleBackColor = true;
             // 
             // TextBoxStandard
             // 
@@ -289,8 +279,19 @@ namespace GetMediaInfo
             this.TextBoxStandard.Name = "TextBoxStandard";
             this.TextBoxStandard.ReadOnly = true;
             this.TextBoxStandard.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBoxStandard.Size = new System.Drawing.Size(368, 322);
+            this.TextBoxStandard.Size = new System.Drawing.Size(418, 381);
             this.TextBoxStandard.TabIndex = 0;
+            // 
+            // TabComplete
+            // 
+            this.TabComplete.Controls.Add(this.TextBoxComplete);
+            this.TabComplete.Location = new System.Drawing.Point(4, 22);
+            this.TabComplete.Name = "TabComplete";
+            this.TabComplete.Padding = new System.Windows.Forms.Padding(3);
+            this.TabComplete.Size = new System.Drawing.Size(424, 387);
+            this.TabComplete.TabIndex = 3;
+            this.TabComplete.Text = "Complete";
+            this.TabComplete.UseVisualStyleBackColor = true;
             // 
             // TextBoxComplete
             // 
@@ -300,7 +301,7 @@ namespace GetMediaInfo
             this.TextBoxComplete.Name = "TextBoxComplete";
             this.TextBoxComplete.ReadOnly = true;
             this.TextBoxComplete.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBoxComplete.Size = new System.Drawing.Size(368, 322);
+            this.TextBoxComplete.Size = new System.Drawing.Size(418, 381);
             this.TextBoxComplete.TabIndex = 0;
             // 
             // TabInfo
@@ -313,7 +314,7 @@ namespace GetMediaInfo
             this.TabInfo.Location = new System.Drawing.Point(4, 22);
             this.TabInfo.Name = "TabInfo";
             this.TabInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.TabInfo.Size = new System.Drawing.Size(374, 328);
+            this.TabInfo.Size = new System.Drawing.Size(424, 387);
             this.TabInfo.TabIndex = 2;
             this.TabInfo.Text = "Info";
             this.TabInfo.UseVisualStyleBackColor = true;
@@ -326,7 +327,7 @@ namespace GetMediaInfo
             this.Setting.Controls.Add(this.AutoSaveReport);
             this.Setting.Location = new System.Drawing.Point(6, 166);
             this.Setting.Name = "Setting";
-            this.Setting.Size = new System.Drawing.Size(362, 57);
+            this.Setting.Size = new System.Drawing.Size(412, 57);
             this.Setting.TabIndex = 10;
             this.Setting.TabStop = false;
             this.Setting.Text = "Setting";
@@ -356,7 +357,7 @@ namespace GetMediaInfo
             // 
             this.Version.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Version.AutoSize = true;
-            this.Version.Location = new System.Drawing.Point(297, 312);
+            this.Version.Location = new System.Drawing.Point(347, 371);
             this.Version.Name = "Version";
             this.Version.Size = new System.Drawing.Size(74, 13);
             this.Version.TabIndex = 5;
@@ -372,7 +373,7 @@ namespace GetMediaInfo
             this.ContextMenu.Controls.Add(this.RemoveAssociation);
             this.ContextMenu.Location = new System.Drawing.Point(7, 109);
             this.ContextMenu.Name = "ContextMenu";
-            this.ContextMenu.Size = new System.Drawing.Size(361, 50);
+            this.ContextMenu.Size = new System.Drawing.Size(411, 50);
             this.ContextMenu.TabIndex = 9;
             this.ContextMenu.TabStop = false;
             this.ContextMenu.Text = "ContextMenu Options";
@@ -412,7 +413,7 @@ namespace GetMediaInfo
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.Location = new System.Drawing.Point(7, 60);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(361, 46);
+            this.label2.Size = new System.Drawing.Size(411, 105);
             this.label2.TabIndex = 6;
             this.label2.Text = "Developed by .\r\nCredits to  for GetMediaInfos.dll, the help, the" +
     " development consultancy, the compiling for all Windows x86/x64.";
@@ -477,7 +478,7 @@ namespace GetMediaInfo
             | System.Windows.Forms.AnchorStyles.Right)));
             this.filepathBox.Location = new System.Drawing.Point(12, 7);
             this.filepathBox.Name = "filepathBox";
-            this.filepathBox.Size = new System.Drawing.Size(227, 20);
+            this.filepathBox.Size = new System.Drawing.Size(277, 20);
             this.filepathBox.TabIndex = 14;
             this.filepathBox.TextChanged += new System.EventHandler(this.ApriFileTextBox);
             // 
@@ -485,7 +486,7 @@ namespace GetMediaInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(403, 417);
+            this.ClientSize = new System.Drawing.Size(453, 476);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(419, 456);
@@ -504,6 +505,8 @@ namespace GetMediaInfo
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.TabStandard.ResumeLayout(false);
+            this.TabStandard.PerformLayout();
             this.TabComplete.ResumeLayout(false);
             this.TabComplete.PerformLayout();
             this.TabInfo.ResumeLayout(false);
@@ -550,7 +553,7 @@ namespace GetMediaInfo
         private System.Windows.Forms.TextBox filepathBox;
         private System.Windows.Forms.Button Associate;
         private System.Windows.Forms.Button RemoveAssociation;
-        private System.Windows.Forms.GroupBox ContextMenu;
+        private new System.Windows.Forms.GroupBox ContextMenu;
         private System.Windows.Forms.Label Associationstatus;
         private System.Windows.Forms.GroupBox Setting;
         private System.Windows.Forms.CheckBox DisableSimpleInfo;
