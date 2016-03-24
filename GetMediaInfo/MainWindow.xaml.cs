@@ -283,7 +283,17 @@ namespace GetMediaInfoGUI
         private void ShowReportsAndSaveToDisk()
         {
             TextBoxStandard.Text = report.InfoStandard;
+                      
             TextBoxComplete.Text = report.InfoComplete;
+
+            if (RemoveSpace.IsChecked.Value)
+            {
+                TextBoxStandard.Text = TextBoxStandard.Text.Replace("  ", "");
+                TextBoxStandard.Text = TextBoxStandard.Text.Replace(" : ", ": ");
+                TextBoxComplete.Text = TextBoxComplete.Text.Replace("  ", "");
+                TextBoxComplete.Text = TextBoxComplete.Text.Replace(" : ", ": ");
+            }
+
             if (AutoSaveReport.IsChecked.Value)
             {
                 string ReportName = System.IO.Path.ChangeExtension(filepathBox.Text, ".txt");
@@ -387,8 +397,6 @@ namespace GetMediaInfoGUI
                             if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString.Split('/')[i])) audio_info.Text += ", " + report.Audio[i].ChannelsString.Split('/')[i];
                             if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString.Split('/')[i])) audio_info.Text += ", " + report.Audio[i].SamplingRateString.Split('/')[i];
                             audio_info.Text += Environment.NewLine;
-
-                            //lo so è triste ma era solo per provare se andava... comunque non mi va il debug a me
                         }
                     } else
                     {
@@ -420,8 +428,31 @@ namespace GetMediaInfoGUI
 
                 if (report.Video.Count == 0) video_info.Text = "No video track";
                 if (report.Audio.Count == 0) audio_info.Text = "No audio track";
-                if (report.Text.Count == 0) sub_info.Text = "No sub track";           
+                if (report.Text.Count == 0) sub_info.Text = "No sub track";
+
+                // tree
+
+                // TREE
+                TreeViewItem temp = null;
+
+                temp = new TreeViewItem();
+
+                temp.Header = "General";
+                temp.Items.Add(new TreeViewItem() { Header = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension });
+                temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.General[0].Format });
+                temp.Items.Add(new TreeViewItem() { Header = "File Size: " + report.General[0].FileSizePrecise });
+                if (!String.IsNullOrEmpty(ManageMillisec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Play Time: " + ManageMillisec(report.General[0].PlayTimeFormatted) });
+                if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
+                if ((!String.IsNullOrEmpty(report.General[0].OveralBitRateString))&&(report.Video.Count > 0)) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
+                if (!String.IsNullOrEmpty(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
+                if (!String.IsNullOrEmpty(report.General[0].Chapter)) temp.Items.Add(new TreeViewItem() { Header = report.General[0].Chapter});
+                if (!String.IsNullOrEmpty(report.General[0].EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + report.General[0].EncodedDate });
+                if (!String.IsNullOrEmpty(report.General[0].EncodedLibrary)) temp.Items.Add(new TreeViewItem() { Header = "Created with: " + report.General[0].EncodedLibrary });
+
+                TreeReport.Items.Add(temp);
+
             }
+
         }
        
         /// <summary>
@@ -486,13 +517,13 @@ namespace GetMediaInfoGUI
 
         /// <summary>
         /// Handles the Unchecked event of the DisableSimpleInfo control. Enable Simple Report generation.
-       /// </summary>
+        /// </summary>
         /// <param name="sender">The source of the event.</param>
-       /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Unchecked(object sender, RoutedEventArgs e)
         {
             var tab = tabControl.Items[3] as TabItem;
-           tab.Visibility = Visibility.Visible;
+            tab.Visibility = Visibility.Visible;
             tab.Width = 72;
         }
         
@@ -573,6 +604,18 @@ namespace GetMediaInfoGUI
                 XmlWriter.WriteEndElement();
 
                 XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "DisableTree");
+                if ((bool)DisableTree.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteStartElement("config");
                 XmlWriter.WriteAttributeString("tag", "ShowMilliSec");
                 if ((bool)MilliSec.IsChecked)
                 {
@@ -584,6 +627,18 @@ namespace GetMediaInfoGUI
                 }
                 XmlWriter.WriteEndElement();
 
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "RemoveSpace");
+                if ((bool)RemoveSpace.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+                
                 XmlWriter.WriteEndElement();
                 XmlWriter.WriteEndDocument();
                 XmlWriter.Close();
@@ -623,8 +678,14 @@ namespace GetMediaInfoGUI
                             case "DisableSimpleReport":
                                 DisableSimpleInfo.IsChecked = value;
                                 break;
+                            case "DisableTree":
+                                DisableTree.IsChecked = value;
+                                break;
                             case "ShowMilliSec":
                                 MilliSec.IsChecked = value;
+                                break;
+                            case "RemoveSpace":
+                                RemoveSpace.IsChecked = value;
                                 break;
                         }
                     }
@@ -638,6 +699,11 @@ namespace GetMediaInfoGUI
             {
                 SaveConfig();
             }
+        }
+
+        private void RemoveSpace_Reload(object sender, RoutedEventArgs e)
+        {
+            ShowReportsAndSaveToDisk();
         }
     }
 }
