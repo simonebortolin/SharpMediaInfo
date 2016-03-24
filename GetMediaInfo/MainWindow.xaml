@@ -65,19 +65,20 @@
             <TabItem Header="Options">
                 <Grid Background="#FFE5E5E5">
                     <GroupBox x:Name="groupBox" Header="ContextMenu Options" Margin="10,106,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
-                        <Grid Margin="4,6,4,8" Width="517" Height="28">
+                        <Grid>
                             <Button x:Name="AddContextMenu" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="AddContextMenu_Click" Height="27"/>
                             <Button x:Name="RemoveContextMenu" Content="Remove" HorizontalAlignment="Left" Margin="80,0,0,0" Width="75" VerticalAlignment="Top" VerticalContentAlignment="Center" Click="RemoveContextMenu_Click" Height="27"/>
                             <Label x:Name="AssociationStatus" Content="" Margin="165,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,176,10,0" VerticalAlignment="Top" Height="127" HorizontalContentAlignment="Stretch">
-                        <Grid Margin="10,0" Width="517">
+                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,176,10,0" VerticalAlignment="Top" Height="134" HorizontalContentAlignment="Stretch">
+                        <Grid>
                             <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
                             <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
                             <CheckBox x:Name="DisableTree" Content="Disable Tree Info" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked" IsChecked="True"/>
                             <CheckBox x:Name="RemoveSpace" Content="Remove Space in The Standard e Complete Report" HorizontalAlignment="Left" Margin="10,90,0,-5" VerticalAlignment="Top" Checked="RemoveSpace_Reload" Unchecked="RemoveSpace_Reload"/>
+                            <Button x:Name="font" Content="Font" HorizontalAlignment="Left" Margin="423,10,0,0" VerticalAlignment="Top" Width="75" Click="font_Click"/>
                         </Grid>
                     </GroupBox>
                     <Label x:Name="Version" Content="Version" HorizontalAlignment="Right" Margin="0,0,46,10" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right"/>
