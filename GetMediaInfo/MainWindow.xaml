@@ -52,10 +52,15 @@
                     <TextBox x:Name="TextBoxStandard" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
                 </Grid>
             </TabItem>
+            
             <TabItem Header="Complete">
                 <Grid Background="#FFE5E5E5">
                     <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                 </Grid>
+            </TabItem>
+            <TabItem Header="Tree (Beta)">
+                <TreeView Name="TreeReport">
+                </TreeView>
             </TabItem>
             <TabItem Header="Options">
                 <Grid Background="#FFE5E5E5">
@@ -66,11 +71,12 @@
                             <Label x:Name="AssociationStatus" Content="" Margin="165,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,176,10,0" VerticalAlignment="Top" Height="99" HorizontalContentAlignment="Stretch">
+                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,176,10,0" VerticalAlignment="Top" Height="122" HorizontalContentAlignment="Stretch">
                         <Grid Margin="10,0" Width="517">
                             <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
-                            <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
+                            <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
+                            <CheckBox x:Name="DisableTree" Content="Disable Tree Info" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked" IsChecked="True"/>
                         </Grid>
                     </GroupBox>
                     <Label x:Name="Version" Content="Version" HorizontalAlignment="Right" Margin="0,0,46,10" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right"/>
