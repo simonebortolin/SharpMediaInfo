@@ -256,7 +256,7 @@ namespace GetMediaInfoGUI
                 ShowReportsAndSaveToDisk();
                 this.Title += " (" + System.IO.Path.GetFileName(path) + ")";
                 toolStripStatusLabel1.Content = "Analysis Completed.";
-                if(!AutoSaveReport.IsChecked.Value) SaveReport.IsEnabled = true;
+                if (!AutoSaveReport.IsChecked.Value) SaveReport.IsEnabled = true;
                 SaveReportActive = true;
             }
             else
@@ -283,7 +283,7 @@ namespace GetMediaInfoGUI
         private void ShowReportsAndSaveToDisk()
         {
             TextBoxStandard.Text = report.InfoStandard;
-                      
+
             TextBoxComplete.Text = report.InfoComplete;
 
             if (RemoveSpace.IsChecked.Value)
@@ -323,7 +323,7 @@ namespace GetMediaInfoGUI
             }
             else return time;
         }
-        
+
         /// <summary>
         /// Add square parentesis if the input string is not null.
         /// </summary>
@@ -334,16 +334,16 @@ namespace GetMediaInfoGUI
             if (String.IsNullOrEmpty(title)) return " - ";
             else return " [" + title + "] ";
         }
-        
+
         /// <summary>
         /// Create the Simple report.
         /// </summary>
-        private void CreateSimpleReport() 
+        private void CreateSimpleReport()
         {
             if (report != null)
             {
                 //general infos
-                GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;               
+                GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
                 GeneralInfoText.Text += "Format: " + report.General[0].Format + Environment.NewLine;
                 GeneralInfoText.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
                 GeneralInfoText.Text += "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
@@ -364,7 +364,7 @@ namespace GetMediaInfoGUI
                     }
                     video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + report.Video[i].DurationString + " - ";
                     video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
-                    video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",",".") + " fps, ";
+                    video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, ";
                     video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", ";
                     video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
                 }
@@ -377,7 +377,8 @@ namespace GetMediaInfoGUI
                     if (String.IsNullOrEmpty(report.Audio[i].LanguageString))
                     {
                         audio_info.Text += "Undetermined";
-                    } else
+                    }
+                    else
                     {
                         audio_info.Text += report.Audio[i].LanguageString;
                     }
@@ -398,7 +399,8 @@ namespace GetMediaInfoGUI
                             if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString.Split('/')[j])) audio_info.Text += ", " + report.Audio[i].SamplingRateString.Split('/')[j].Trim(' ');
                             if (j < numberofsubtracks - 1) { audio_info.Text += Environment.NewLine; }
                         }
-                    } else
+                    }
+                    else
                     {
                         if (!String.IsNullOrEmpty(report.Audio[i].Format)) audio_info.Text += " - " + report.Audio[i].Format;
                         if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) audio_info.Text += " - " + report.Audio[i].FormatProfile;
@@ -407,7 +409,7 @@ namespace GetMediaInfoGUI
                         if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) audio_info.Text += ", " + report.Audio[i].ChannelsString;
                         if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) audio_info.Text += ", " + report.Audio[i].SamplingRateString;
                     }
-             
+
                     //delay if present
                     if (report.Audio[i].Delay > 0)
                     {
@@ -443,9 +445,9 @@ namespace GetMediaInfoGUI
                 temp.Items.Add(new TreeViewItem() { Header = "File Size: " + report.General[0].FileSizePrecise });
                 if (!String.IsNullOrEmpty(ManageMillisec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Play Time: " + ManageMillisec(report.General[0].PlayTimeFormatted) });
                 if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
-                if ((!String.IsNullOrEmpty(report.General[0].OveralBitRateString))&&(report.Video.Count > 0)) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
+                if ((!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) && (report.Video.Count > 0)) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
                 if (!String.IsNullOrEmpty(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
-                if (!String.IsNullOrEmpty(report.General[0].Chapter)) temp.Items.Add(new TreeViewItem() { Header = report.General[0].Chapter});
+                if (!String.IsNullOrEmpty(report.General[0].Chapter)) temp.Items.Add(new TreeViewItem() { Header = report.General[0].Chapter });
                 if (!String.IsNullOrEmpty(report.General[0].EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + report.General[0].EncodedDate });
                 if (!String.IsNullOrEmpty(report.General[0].EncodedLibrary)) temp.Items.Add(new TreeViewItem() { Header = "Created with: " + report.General[0].EncodedLibrary });
 
@@ -454,7 +456,7 @@ namespace GetMediaInfoGUI
             }
 
         }
-       
+
         /// <summary>
         /// Handles the Click event of the SaveReport control. Save the report of the file in the same pa
         /// </summary>
@@ -477,7 +479,7 @@ namespace GetMediaInfoGUI
                 File.Close();
             }
         }
-        
+
         /// <summary>
         /// Handles the Checked event of the DisableSimpleInfo control. Disable Simple Report generation.
         /// </summary>
@@ -501,15 +503,15 @@ namespace GetMediaInfoGUI
             tab.Visibility = Visibility.Visible;
             tab.Visibility = Visibility.Visible;
             tab.Width = 52;
-         }
-        
+        }
+
         /// <summary>
         /// Handles the Checked event of the DisableSimpleInfo control. Disable Simple Report generation.
         /// </summary>
-       /// <param name="sender">The source of the event.</param>
+        /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Checked(object sender, RoutedEventArgs e)
-       {
+        {
             var tab = tabControl.Items[3] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
@@ -526,7 +528,7 @@ namespace GetMediaInfoGUI
             tab.Visibility = Visibility.Visible;
             tab.Width = 72;
         }
-        
+
         /// <summary>
         /// Handles the Change event of the MS control. Enable or disable Milliseconds in simple report.
         /// </summary>
@@ -537,7 +539,7 @@ namespace GetMediaInfoGUI
             sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = String.Empty;
             CreateSimpleReport();
         }
-        
+
         /// <summary>
         /// Handles the Checked event of the AutoSaveReport control. Enable auto file report save.
         /// </summary>
@@ -581,64 +583,65 @@ namespace GetMediaInfoGUI
                 XmlWriter.WriteStartElement("database");
 
                 XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
-                if ((bool)AutoSaveReport.IsChecked)
-                {
-                    XmlWriter.WriteValue("true");
-                } else
-                {
-                    XmlWriter.WriteValue("false");
-                }
-                XmlWriter.WriteEndElement();
+                    XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
+                    if ((bool)AutoSaveReport.IsChecked)
+                    {
+                        XmlWriter.WriteValue("true");
+                    }
+                    else
+                    {
+                        XmlWriter.WriteValue("false");
+                    }
+                    XmlWriter.WriteEndElement();
 
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "DisableSimpleReport");
-                if ((bool)DisableSimpleInfo.IsChecked)
-                {
-                    XmlWriter.WriteValue("true");
-                }
-                else
-                {
-                    XmlWriter.WriteValue("false");
-                }
-                XmlWriter.WriteEndElement();
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "DisableSimpleReport");
+                    if ((bool)DisableSimpleInfo.IsChecked)
+                    {
+                        XmlWriter.WriteValue("true");
+                    }
+                    else
+                    {
+                        XmlWriter.WriteValue("false");
+                    }
+                    XmlWriter.WriteEndElement();
 
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "DisableTree");
-                if ((bool)DisableTree.IsChecked)
-                {
-                    XmlWriter.WriteValue("true");
-                }
-                else
-                {
-                    XmlWriter.WriteValue("false");
-                }
-                XmlWriter.WriteEndElement();
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "DisableTree");
+                    if ((bool)DisableTree.IsChecked)
+                    {
+                        XmlWriter.WriteValue("true");
+                    }
+                    else
+                    {
+                        XmlWriter.WriteValue("false");
+                    }
+                    XmlWriter.WriteEndElement();
 
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "ShowMilliSec");
-                if ((bool)MilliSec.IsChecked)
-                {
-                    XmlWriter.WriteValue("true");
-                }
-                else
-                {
-                    XmlWriter.WriteValue("false");
-                }
-                XmlWriter.WriteEndElement();
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "ShowMilliSec");
+                    if ((bool)MilliSec.IsChecked)
+                    {
+                        XmlWriter.WriteValue("true");
+                    }
+                    else
+                    {
+                        XmlWriter.WriteValue("false");
+                    }
+                    XmlWriter.WriteEndElement();
 
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "RemoveSpace");
-                if ((bool)RemoveSpace.IsChecked)
-                {
-                    XmlWriter.WriteValue("true");
-                }
-                else
-                {
-                    XmlWriter.WriteValue("false");
-                }
-                XmlWriter.WriteEndElement();
-                
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "RemoveSpace");
+                    if ((bool)RemoveSpace.IsChecked)
+                    {
+                        XmlWriter.WriteValue("true");
+                    }
+                    else
+                    {
+                        XmlWriter.WriteValue("false");
+                    }
+                    XmlWriter.WriteEndElement();
+
                 XmlWriter.WriteEndElement();
                 XmlWriter.WriteEndDocument();
                 XmlWriter.Close();
@@ -704,6 +707,33 @@ namespace GetMediaInfoGUI
         private void RemoveSpace_Reload(object sender, RoutedEventArgs e)
         {
             ShowReportsAndSaveToDisk();
+        }
+
+        private void font_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FontDialog fontDialog = new System.Windows.Forms.FontDialog();
+            FontFamilyConverter ffc = new FontFamilyConverter();
+            fontDialog.MinSize = 10;
+            fontDialog.MaxSize = 40;
+
+            if (fontDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                
+
+                this.TextBoxStandard.FontSize = fontDialog.Font.Size;
+                this.TextBoxStandard.FontFamily = (FontFamily)ffc.ConvertFromString(fontDialog.Font.Name);
+                this.TextBoxComplete.FontSize = fontDialog.Font.Size;
+                this.TextBoxComplete.FontFamily = (FontFamily)ffc.ConvertFromString(fontDialog.Font.Name);
+
+                if (fontDialog.Font.Bold) TextBoxComplete.FontWeight = TextBoxStandard.FontWeight = FontWeights.Bold;
+                else
+                    TextBoxComplete.FontWeight = TextBoxStandard.FontWeight = FontWeights.Normal;
+
+                if (fontDialog.Font.Italic)
+                    TextBoxComplete.FontStyle = TextBoxStandard.FontStyle = FontStyles.Italic;
+                else
+                    TextBoxComplete.FontStyle = TextBoxStandard.FontStyle = FontStyles.Normal;
+            }
         }
     }
 }
