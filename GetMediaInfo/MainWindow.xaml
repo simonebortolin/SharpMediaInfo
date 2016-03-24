@@ -8,7 +8,7 @@
         AllowDrop="True"
         Drop="ApriFileDragDrop"
         DragEnter="ApriFileDragEnter"
-        Loaded="PrimoAvvio"
+        Loaded="Inizialize"
         Title="GetMediaInfo" Height="470.821" Width="591.125" MinWidth="419" MinHeight="456">
     <Grid Margin="0,0,2,0">
         <Grid.ColumnDefinitions>
@@ -21,22 +21,26 @@
         <TabControl x:Name="tabControl" Margin="10,38,10,29" VerticalContentAlignment="Stretch">
             <TabItem Header="Simple">
                 <Grid Background="#FFE5E5E5" Name="Grid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="188*"/>
+                        <ColumnDefinition Width="367*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="33*" />
                         <RowDefinition Height="27*" />
                         <RowDefinition Height="22*" />
                         <RowDefinition Height="22*" />
                     </Grid.RowDefinitions>
-                    <GroupBox x:Name="GeneralInfo" Header="General Info" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch">
+                    <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
                         <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TVideo" Header="Track Video" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
                         <TextBlock x:Name="video_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TAudio" Header="Track Audio" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <GroupBox x:Name="TAudio" Header="Audio Tracks" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
                         <TextBlock x:Name="audio_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TSub" Header="Subtitle" Grid.Row="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <GroupBox x:Name="TSub" Header="Subtitles" Grid.Row="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
                         <TextBlock x:Name="sub_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
 
@@ -52,7 +56,7 @@
                     <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Info">
+            <TabItem Header="Options">
                 <Grid Background="#FFE5E5E5">
                     <GroupBox x:Name="groupBox" Header="ContextMenu Options" Margin="10,106,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
                         <Grid Margin="4,6,4,8" Width="517" Height="28">
@@ -63,9 +67,9 @@
                     </GroupBox>
                     <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,176,10,0" VerticalAlignment="Top" Height="99" HorizontalContentAlignment="Stretch">
                         <Grid Margin="10,0" Width="517">
-                            <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
+                            <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
-                            <CheckBox x:Name="MilliSec" Content="Active milliseconds" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
+                            <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
                         </Grid>
                     </GroupBox>
                     <Label x:Name="Version" Content="Version" HorizontalAlignment="Right" Margin="0,0,46,10" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right"/>

@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -22,22 +13,36 @@ namespace GetMediaInfoGUI
     /// <summary>
     /// Logica di interazione per MainWindow.xaml
     /// </summary>
+    /// <seealso cref="System.Windows.Window" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class MainWindow : Window
     {
-        //bool removed1 = false, removed2 = false, removed3 = false;
+        /// <summary>
+        /// Boolean that define if the report should be automatically generated or not
+        /// </summary>
         bool SaveReportActive;
-        MediaInfo report;
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
 
+        /// <summary>
+        /// Generated mediainfo report
+        /// </summary>
+        MediaInfo report;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
-            Reset();
+            ClearAll();
         }
 
-        private void PrimoAvvio(object sender, EventArgs e)
+        /// <summary>
+        /// Function to inizializate program and check for dependencies
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Inizialize(object sender, EventArgs e)
         {
-            //this.DoubleBuffered = true;
             Version.Content = "Version " + System.Windows.Forms.Application.ProductVersion;
             if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\mediainfo.dll"))
             {
@@ -67,6 +72,11 @@ namespace GetMediaInfoGUI
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the AddContextMenu control. It adds context menu GetMediaInfos entry for specific extensions.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AddContextMenu_Click(object sender, RoutedEventArgs e)
         {
             List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
@@ -99,6 +109,11 @@ namespace GetMediaInfoGUI
             AssociationStatus.Content = "Successufully Added.";
         }
 
+        /// <summary>
+        /// Handles the Click event of the RemoveContextMenu control. It removes context menu GetMediaInfos entry for specific extensions.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void RemoveContextMenu_Click(object sender, RoutedEventArgs e)
         {
             List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
@@ -127,6 +142,11 @@ namespace GetMediaInfoGUI
             AssociationStatus.Content = "Successufully Removed.";
         }
 
+        /// <summary>
+        /// Handles the Shown event of the GetMediaInfo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void GetMediaInfo_Shown(object sender, EventArgs e)
         {
             /*this.Update();
@@ -134,19 +154,16 @@ namespace GetMediaInfoGUI
             ApriDaArgomentoExe();*/
         }
 
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
-        ///                                                                                                  ///
-        ///                                          FILE OPEN                                               ///
-        ///                                                                                                  ///
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
-
+        /// <summary>
+        /// Handles the Click event of the OpenFile control. Is used to open a new OpenFileDialog to let user to select the input file.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            Reset();
+            ClearAll();
             OpenFileDialog file = new OpenFileDialog();
             file.Filter = "Mediafile|*.*";
-            //file.Filter = "Matorska|*.mkv;*.mka;*.mkv;*.mk3d|MPEG-4|*.mp4;*.m4a;*.m4v;*m4b;|AVI|*.avi|FLAC|*.flac|MP3|*.mp3";
-            //file.Filter += "|OGM|*.ogg;*.ogm;*.oga;*.ogv;*.ogx|WEB-M|*.weba;*.webv|Windows Media|*.wmv;*.wma|";
             file.Title = "Select a Media File";
             file.Multiselect = false;
 
@@ -155,33 +172,41 @@ namespace GetMediaInfoGUI
                 filepathBox.Text = file.FileName;
                 //Analisi(filepathBox.Text);
             }
-<<<<<<< HEAD:GetMediaInfo/Main.cs
-=======
+
         }
 
-        public void ApriDaArgomentoExe()
+        /// <summary>
+        /// Analyze arguments passed to the application. If the arguments count is greater than 1 analyze the first one.
+        /// </summary>
+        public void ProcessArgs()
         {
             String[] arguments = Environment.GetCommandLineArgs();
             if (arguments.Length > 1)
             {
                 //toolStripStatusLabel1.Text = "Analyzing...";
                 filepathBox.Text = arguments[1];
-                //this.Update();
-                //this.Refresh();
-                Analisi(arguments[1]);
+                AnalyzeFile(arguments[1]);
             }
         }
 
+        /// <summary>
+        /// Apris the file text box.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ApriFileTextBox(object sender, EventArgs e)
         {
-            Analisi(filepathBox.Text);
->>>>>>> 4bd9927c3a942e958602956aa9a1355fc9135b06:GetMediaInfo/MainWindow.xaml.cs
+            AnalyzeFile(filepathBox.Text);
         }
 
-        //drag e drop
+        /// <summary>
+        /// Apris the file drag drop.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
         public void ApriFileDragDrop(object sender, System.Windows.DragEventArgs e)
         {
-            Reset();
+            ClearAll();
             System.Windows.DataObject data = (System.Windows.DataObject)e.Data;
             if (data.ContainsFileDropList())
             {
@@ -191,27 +216,30 @@ namespace GetMediaInfoGUI
             }
         }
 
+        /// <summary>
+        /// Apris the file drag enter.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
         public void ApriFileDragEnter(object sender, System.Windows.DragEventArgs e)
         {
             e.Effects = System.Windows.DragDropEffects.Copy;
         }
 
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
-        ///                                                                                                  ///
-        ///                                              ANALISI                                             ///
-        ///                                                                                                  ///
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
-
-        public void Analisi(string path)
+        /// <summary>
+        /// Analyze the specified path.
+        /// </summary>
+        /// <param name="path">Path to file to analyze</param>
+        public void AnalyzeFile(string path)
         {
-            Reset();
+            ClearAll();
             if (File.Exists(path))
             {
                 toolStripStatusLabel1.Content = "Analysing...";
                 report = new MediaInfo(path);
 
-                RealizzaReportSemplice();
-                RealizzaReportTestuale();
+                CreateSimpleReport();
+                CreateAndSaveReportToDisk();
                 this.Title += " (" + System.IO.Path.GetFileName(path) + ")";
                 toolStripStatusLabel1.Content = "Analysis Completed.";
                 if(!AutoSaveReport.IsChecked.Value) SaveReport.IsEnabled = true;
@@ -224,14 +252,10 @@ namespace GetMediaInfoGUI
             }
         }
 
-        
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
-        ///                                                                                                  ///
-        ///                                  CREAZIONE E RESET REPORT                                        ///
-        ///                                                                                                  ///
-        /// //////////////////////////////////////////////////////////////////////////////////////////////// ///
-
-        private void Reset()
+        /// <summary>
+        /// Clear all variables and the interface.
+        /// </summary>
+        private void ClearAll()
         {
             TextBoxComplete.Text = TextBoxStandard.Text = "";
             this.Title = "GetMediaInfo";
@@ -239,7 +263,10 @@ namespace GetMediaInfoGUI
             sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = "";
         }
 
-        private void RealizzaReportTestuale() // realizza il report testale
+        /// <summary>
+        /// Create the file report and save it to disk as txt file if AutoSaveReport is checked.
+        /// </summary>
+        private void CreateAndSaveReportToDisk() // realizza il report testale
         {
             TextBoxStandard.Text = report.InfoStandard;
             TextBoxComplete.Text = report.InfoComplete;
@@ -257,7 +284,13 @@ namespace GetMediaInfoGUI
                 ReportTxt.Close();
             }
         }
-        private string MSYesOrNo(string time)
+
+        /// <summary>
+        /// Remove milliseconds from the input timecode if MilliSec is checked else return the input string.
+        /// </summary>
+        /// <param name="time">String with timecode</param>
+        /// <returns></returns>
+        private string ManageMillisec(string time)
         {
             if (!MilliSec.IsChecked.Value)
             {
@@ -266,15 +299,25 @@ namespace GetMediaInfoGUI
             }
             else return time;
         }
-        private string AggiungiQuadreSeNonNullo(string title)
+        
+        /// <summary>
+        /// Add square parentesis if the input string is not null.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <returns></returns>
+        private string AddSquareParentesisIfNotNull(string title)
         {
             if (String.IsNullOrEmpty(title)) return " - ";
             else return " [" + title + "] ";
         }
-        private void RealizzaReportSemplice() // realizza il report testale
+        
+        /// <summary>
+        /// Create the Simple report.
+        /// </summary>
+        private void CreateSimpleReport() 
         {
             GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
-            GeneralInfoText.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + MSYesOrNo(report.General[0].PlayTimeFormatted) + Environment.NewLine;
+            GeneralInfoText.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
             if (report.General[0].OveralBitRateString != "") GeneralInfoText.Text += "Overal BitRate: " + report.General[0].OveralBitRateString + Environment.NewLine;
             if (report.General[0].Title != "") GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
 
@@ -302,13 +345,12 @@ namespace GetMediaInfoGUI
                 {
                     lang = "Undetermined";
                 }
-                video_info.Text += lang + AggiungiQuadreSeNonNullo(report.Video[i].Title) + report.Video[i].DurationString + " - ";
+                video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + report.Video[i].DurationString + " - ";
                 video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
 
                 video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate + " fps, ";
                 video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ") (";
                 video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
-                //video_info.Text += "Bitrate: "+report.Video[i].MinimumBitRateString + " - " + report.Video[i].NominalBitRateString + " - " + report.Video[i].MaximumBitRateString + Environment.NewLine;
             }
 
             // tracce audio
@@ -321,7 +363,7 @@ namespace GetMediaInfoGUI
                 {
                     lang = "Undetermined";
                 }
-                audio_info.Text += lang + AggiungiQuadreSeNonNullo(report.Audio[i].Title) + report.Audio[i].DurationStringFormatted + " - ";
+                audio_info.Text += lang + AddSquareParentesisIfNotNull(report.Audio[i].Title) + report.Audio[i].DurationStringFormatted + " - ";
                 audio_info.Text += report.Audio[i].BitRateString;
                 if (report.Audio[i].BitRateMode !="")  audio_info.Text += " - " + report.Audio[i].BitRateMode; 
                 audio_info.Text += ", " + report.Audio[i].SamplingRateString + ", ";
@@ -340,15 +382,12 @@ namespace GetMediaInfoGUI
                 {
                     audio_info.Text += Environment.NewLine;
                 }
-                //audio_info.Text += "Bitrate: " + report.Audio[i].BitRateMinimumString + " - " + report.Audio[i].BitRateNominalString + " - " + report.Audio[i].BitRateMaximumString + Environment.NewLine;
-                //report.Audio[i].CodecIDUrl + report.Audio[i].CodecID + report.Audio[i].CodecIDDescription + report.Audio[i].CodecIDHint non vanno
-                // come cavolo si reperiscono i codec audio -.-
             }
 
             // sub
             for (int i = 0; i < report.Text.Count; i++)
             {
-                sub_info.Text += report.Text[i].LanguageString + AggiungiQuadreSeNonNullo(report.Text[i].Title);
+                sub_info.Text += report.Text[i].LanguageString + AddSquareParentesisIfNotNull(report.Text[i].Title);
                 sub_info.Text += report.Text[i].Codec + Environment.NewLine;
             }
             if (report.Text.Count == 0) sub_info.Text = "No sub track";
@@ -356,7 +395,12 @@ namespace GetMediaInfoGUI
             if (report.Video.Count == 0) video_info.Text = "No video track";
 
         }
-
+       
+        /// <summary>
+        /// Handles the Click event of the SaveReport control. Save the report of the file in the same pa
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SaveReport_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog Report = new SaveFileDialog();
@@ -374,29 +418,57 @@ namespace GetMediaInfoGUI
                 File.Close();
             }
         }
-
+        
+        /// <summary>
+        /// Handles the Checked event of the DisableSimpleInfo control. Disable Simple Report generation.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimpleInfo_Checked(object sender, RoutedEventArgs e)
         {
             var tab = tabControl.Items[0] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
         }
+
+        /// <summary>
+        /// Handles the Unchecked event of the DisableSimpleInfo control. Enable Simple Report generation.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimpleInfo_Unchecked(object sender, RoutedEventArgs e)
         {
             var tab = tabControl.Items[0] as TabItem;
             tab.Visibility = Visibility.Visible;
             tab.Width = 52;
         }
+        
+        /// <summary>
+        /// Handles the Change event of the MS control. Enable or disable Milliseconds in simple report.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MS_Change(object sender, RoutedEventArgs e)
         {
             sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = "";
-            RealizzaReportSemplice();
+            CreateSimpleReport();
         }
-
+        
+        /// <summary>
+        /// Handles the Checked event of the AutoSaveReport control. Enable auto file report save.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AutoSaveReport_Checked(object sender, RoutedEventArgs e)
         {
             SaveReport.IsEnabled = false;
         }
+
+        /// <summary>
+        /// Handles the Unchecked event of the AutoSaveReport control. Disable auto file report save.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AutoSaveReport_Unchecked(object sender, RoutedEventArgs e)
         {
             SaveReport.IsEnabled = SaveReportActive;
