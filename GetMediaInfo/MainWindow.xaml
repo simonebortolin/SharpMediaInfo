@@ -19,7 +19,7 @@
         <StatusBar Height="25" Margin="0,330,10,0" VerticalAlignment="Top" VerticalContentAlignment="Bottom" Grid.ColumnSpan="3"/>
         <Button x:Name="OpenFile" Content="Open File" HorizontalAlignment="Right" Margin="0,10,93,0" VerticalAlignment="Top" Width="75" Height="23" Click="OpenFile_Click"/>
         <Button x:Name="SaveReport" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click"/>
-        <TabControl x:Name="tabControl" Margin="10,38,10,29" VerticalContentAlignment="Stretch">
+        <TabControl x:Name="tabControl" Margin="10,38,10,35" VerticalContentAlignment="Stretch">
             <TabItem Header="Simple">
                 <Grid Background="#FFE5E5E5" Name="Grid">
                     <Grid.ColumnDefinitions>
@@ -88,8 +88,8 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <StatusBar Height="24" Margin="0,401,0,0" VerticalAlignment="Bottom" Width="583" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch">
-            <Label x:Name="toolStripStatusLabel1" Content="" Width="173" Height="24" FontSize="9" />
+        <StatusBar Height="35" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch">
+            <Label x:Name="toolStripStatusLabel1" Content="" Width="173" Height="35" />
         </StatusBar>
 
     </Grid>
