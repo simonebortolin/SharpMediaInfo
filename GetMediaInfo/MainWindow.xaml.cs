@@ -275,10 +275,6 @@ namespace GetMediaInfoGUI
             this.Title = "GetMediaInfo";
             SaveReport.IsEnabled = SaveReportActive = false;
             sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = "";
-            while(TreeReport.HasItems)
-            {
-                TreeReport.Items.RemoveAt(0);
-            }
         }
 
         /// <summary>
@@ -336,9 +332,8 @@ namespace GetMediaInfoGUI
         {
             if (report != null)
             {
-                //SIMPLE
                 //general infos
-                GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
+                GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;               
                 GeneralInfoText.Text += "Format: " + report.General[0].Format + Environment.NewLine;
                 GeneralInfoText.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
                 GeneralInfoText.Text += "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
@@ -359,7 +354,7 @@ namespace GetMediaInfoGUI
                     }
                     video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + report.Video[i].DurationString + " - ";
                     video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
-                    video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, ";
+                    video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",",".") + " fps, ";
                     video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", ";
                     video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
                 }
@@ -372,8 +367,7 @@ namespace GetMediaInfoGUI
                     if (String.IsNullOrEmpty(report.Audio[i].LanguageString))
                     {
                         audio_info.Text += "Undetermined";
-                    }
-                    else
+                    } else
                     {
                         audio_info.Text += report.Audio[i].LanguageString;
                     }
@@ -381,7 +375,7 @@ namespace GetMediaInfoGUI
                     audio_info.Text += AddSquareParentesisIfNotNull(report.Audio[i].Title) + ManageMillisec(report.Audio[i].DurationStringFormatted);
 
                     int numberofsubtracks = report.Audio[i].Format.Split('/').Length;
-                    if (numberofsubtracks > 0)
+                    if (numberofsubtracks > 1)
                     {
                         for (i = 0; i < numberofsubtracks - 1; i++)
                         {
@@ -393,9 +387,10 @@ namespace GetMediaInfoGUI
                             if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString.Split('/')[i])) audio_info.Text += ", " + report.Audio[i].ChannelsString.Split('/')[i];
                             if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString.Split('/')[i])) audio_info.Text += ", " + report.Audio[i].SamplingRateString.Split('/')[i];
                             audio_info.Text += Environment.NewLine;
+
+                            //lo so è triste ma era solo per provare se andava... comunque non mi va il debug a me
                         }
-                    }
-                    else
+                    } else
                     {
                         if (!String.IsNullOrEmpty(report.Audio[i].Format)) audio_info.Text += " - " + report.Audio[i].Format;
                         if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) audio_info.Text += " - " + report.Audio[i].FormatProfile;
@@ -404,7 +399,7 @@ namespace GetMediaInfoGUI
                         if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) audio_info.Text += ", " + report.Audio[i].ChannelsString;
                         if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) audio_info.Text += ", " + report.Audio[i].SamplingRateString;
                     }
-
+             
                     //delay if present
                     if (report.Audio[i].Delay > 0)
                     {
@@ -425,28 +420,8 @@ namespace GetMediaInfoGUI
 
                 if (report.Video.Count == 0) video_info.Text = "No video track";
                 if (report.Audio.Count == 0) audio_info.Text = "No audio track";
-                if (report.Text.Count == 0) sub_info.Text = "No sub track";
-
-                // TREE
-                TreeViewItem temp = null;
-
-                temp = new TreeViewItem();
-
-                temp.Header = "General";
-                temp.Items.Add(new TreeViewItem() { Header = report.General[0].FileName + "." + report.General[0].FileExtension });
-                temp.Items.Add(new TreeViewItem() { Header = report.General[0].Format });
-                temp.Items.Add(new TreeViewItem() { Header = report.General[0].FileSizePrecise });
-                if (!String.IsNullOrEmpty(ManageMillisec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = ManageMillisec(report.General[0].PlayTimeFormatted) });
-                if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = report.General[0].OveralBitRateString });
-                /*temp.Items.Add(new TreeViewItem() { Header = report.General[0].Format });
-                temp.Items.Add(new TreeViewItem() { Header = report.General[0].Format });
-                temp.Items.Add(new TreeViewItem() { Header = report.General[0].Format });*/
-                
-                TreeReport.Items.Add(temp);
-
-
+                if (report.Text.Count == 0) sub_info.Text = "No sub track";           
             }
-            
         }
        
         /// <summary>
@@ -493,16 +468,17 @@ namespace GetMediaInfoGUI
         {
             var tab = tabControl.Items[0] as TabItem;
             tab.Visibility = Visibility.Visible;
+            tab.Visibility = Visibility.Visible;
             tab.Width = 52;
-        }
-
+         }
+        
         /// <summary>
         /// Handles the Checked event of the DisableSimpleInfo control. Disable Simple Report generation.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
+       /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Checked(object sender, RoutedEventArgs e)
-        {
+       {
             var tab = tabControl.Items[3] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
@@ -510,16 +486,16 @@ namespace GetMediaInfoGUI
 
         /// <summary>
         /// Handles the Unchecked event of the DisableSimpleInfo control. Enable Simple Report generation.
-        /// </summary>
+       /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+       /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Unchecked(object sender, RoutedEventArgs e)
         {
             var tab = tabControl.Items[3] as TabItem;
-            tab.Visibility = Visibility.Visible;
+           tab.Visibility = Visibility.Visible;
             tab.Width = 72;
         }
-
+        
         /// <summary>
         /// Handles the Change event of the MS control. Enable or disable Milliseconds in simple report.
         /// </summary>
