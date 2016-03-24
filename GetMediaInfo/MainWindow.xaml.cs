@@ -282,30 +282,33 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void ShowReportsAndSaveToDisk()
         {
-            TextBoxStandard.Text = report.InfoStandard;
-
-            TextBoxComplete.Text = report.InfoComplete;
-
-            if (RemoveSpace.IsChecked.Value)
+            if (report != null)
             {
-                TextBoxStandard.Text = TextBoxStandard.Text.Replace("  ", "");
-                TextBoxStandard.Text = TextBoxStandard.Text.Replace(" : ", ": ");
-                TextBoxComplete.Text = TextBoxComplete.Text.Replace("  ", "");
-                TextBoxComplete.Text = TextBoxComplete.Text.Replace(" : ", ": ");
-            }
+                TextBoxStandard.Text = report.InfoStandard;
 
-            if (AutoSaveReport.IsChecked.Value)
-            {
-                string ReportName = System.IO.Path.ChangeExtension(filepathBox.Text, ".txt");
-                int i = 2;
-                while (File.Exists(ReportName))
+                TextBoxComplete.Text = report.InfoComplete;
+
+                if (RemoveSpace.IsChecked.Value)
                 {
-                    ReportName = System.IO.Path.ChangeExtension(filepathBox.Text, i + ".txt");
-                    i++;
+                    TextBoxStandard.Text = TextBoxStandard.Text.Replace("  ", "");
+                    TextBoxStandard.Text = TextBoxStandard.Text.Replace(" : ", ": ");
+                    TextBoxComplete.Text = TextBoxComplete.Text.Replace("  ", "");
+                    TextBoxComplete.Text = TextBoxComplete.Text.Replace(" : ", ": ");
                 }
-                StreamWriter ReportTxt = new StreamWriter(ReportName);
-                ReportTxt.WriteLine(TextBoxStandard.Text);
-                ReportTxt.Close();
+
+                if (AutoSaveReport.IsChecked.Value)
+                {
+                    string ReportName = System.IO.Path.ChangeExtension(filepathBox.Text, ".txt");
+                    int i = 2;
+                    while (File.Exists(ReportName))
+                    {
+                        ReportName = System.IO.Path.ChangeExtension(filepathBox.Text, i + ".txt");
+                        i++;
+                    }
+                    StreamWriter ReportTxt = new StreamWriter(ReportName);
+                    ReportTxt.WriteLine(TextBoxStandard.Text);
+                    ReportTxt.Close();
+                }
             }
         }
 
