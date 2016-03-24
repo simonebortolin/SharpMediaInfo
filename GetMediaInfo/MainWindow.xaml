@@ -6,15 +6,16 @@
         xmlns:local="clr-namespace:GetMediaInfoGUI"
         mc:Ignorable="d"
         AllowDrop="True"
-        Drop="ApriFileDragDrop"
-        DragEnter="ApriFileDragEnter"
+        Drop="OpenDroppedFile"
+        DragEnter="DragEnter_EventHandler"
         Loaded="Inizialize"
+        Closing="SaveAndClose"
         Title="GetMediaInfo" Height="470.821" Width="591.125" MinWidth="419" MinHeight="456">
     <Grid Margin="0,0,2,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="filepathBox" Height="23" Margin="9,10,174,0" Text="" TextWrapping="NoWrap" VerticalAlignment="Top" Grid.ColumnSpan="3" TextChanged="ApriFileTextBox" />
+        <TextBox x:Name="filepathBox" Height="23" Margin="9,10,174,0" Text="" TextWrapping="NoWrap" VerticalAlignment="Top" Grid.ColumnSpan="3" TextChanged="AnalyzeDeclaredPath" />
         <StatusBar Height="25" Margin="0,330,10,0" VerticalAlignment="Top" VerticalContentAlignment="Bottom" Grid.ColumnSpan="3"/>
         <Button x:Name="OpenFile" Content="Open File" HorizontalAlignment="Right" Margin="0,10,93,0" VerticalAlignment="Top" Width="75" Height="23" Click="OpenFile_Click"/>
         <Button x:Name="SaveReport" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click"/>
@@ -32,16 +33,16 @@
                         <RowDefinition Height="22*" />
                     </Grid.RowDefinitions>
                     <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
+                        <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
                     </GroupBox>
                     <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="video_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
+                        <TextBlock x:Name="video_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
                     </GroupBox>
                     <GroupBox x:Name="TAudio" Header="Audio Tracks" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="audio_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
+                        <TextBlock x:Name="audio_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
                     </GroupBox>
                     <GroupBox x:Name="TSub" Header="Subtitles" Grid.Row="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="sub_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
+                        <TextBlock x:Name="sub_info" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
                     </GroupBox>
 
                 </Grid>

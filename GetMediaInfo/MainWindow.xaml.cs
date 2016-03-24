@@ -7,6 +7,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 using GetMediaInfos;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace GetMediaInfoGUI
 {
@@ -37,7 +39,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Function to inizializate program and check for dependencies
+        /// Handler for application loading event.Contains functions to inizializate program, check for dependencies and restore user config.
         /// </summary>
         /// <param name="sender">The sender</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -70,6 +72,18 @@ namespace GetMediaInfoGUI
                 System.Windows.Forms.MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 System.Windows.Forms.Application.Exit();
             }
+
+            RestoreConfig();
+        }
+
+        /// <summary>
+        /// Handler for application closing event. Saves user configuration.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void SaveAndClose(object sender, EventArgs e)
+        {
+            SaveConfig();
         }
 
         /// <summary>
@@ -190,21 +204,21 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Apris the file text box.
+        /// Analyze declared path in filepathBox.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ApriFileTextBox(object sender, EventArgs e)
+        private void AnalyzeDeclaredPath(object sender, EventArgs e)
         {
             AnalyzeFile(filepathBox.Text);
         }
 
         /// <summary>
-        /// Apris the file drag drop.
+        /// Analyze dropped file.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        public void ApriFileDragDrop(object sender, System.Windows.DragEventArgs e)
+        public void OpenDroppedFile(object sender, System.Windows.DragEventArgs e)
         {
             ClearAll();
             System.Windows.DataObject data = (System.Windows.DataObject)e.Data;
@@ -217,11 +231,11 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Apris the file drag enter.
+        /// Handle for Drag Enter event.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        public void ApriFileDragEnter(object sender, System.Windows.DragEventArgs e)
+        public void DragEnter_EventHandler(object sender, System.Windows.DragEventArgs e)
         {
             e.Effects = System.Windows.DragDropEffects.Copy;
         }
@@ -239,7 +253,7 @@ namespace GetMediaInfoGUI
                 report = new MediaInfo(path);
 
                 CreateSimpleReport();
-                CreateAndSaveReportToDisk();
+                ShowReportsAndSaveToDisk();
                 this.Title += " (" + System.IO.Path.GetFileName(path) + ")";
                 toolStripStatusLabel1.Content = "Analysis Completed.";
                 if(!AutoSaveReport.IsChecked.Value) SaveReport.IsEnabled = true;
@@ -266,7 +280,7 @@ namespace GetMediaInfoGUI
         /// <summary>
         /// Create the file report and save it to disk as txt file if AutoSaveReport is checked.
         /// </summary>
-        private void CreateAndSaveReportToDisk() // realizza il report testale
+        private void ShowReportsAndSaveToDisk()
         {
             TextBoxStandard.Text = report.InfoStandard;
             TextBoxComplete.Text = report.InfoComplete;
@@ -316,84 +330,86 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void CreateSimpleReport() 
         {
-            GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
-            GeneralInfoText.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
-            if (report.General[0].OveralBitRateString != "") GeneralInfoText.Text += "Overal BitRate: " + report.General[0].OveralBitRateString + Environment.NewLine;
-            if (report.General[0].Title != "") GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
-
-            // tracce video gen
-            if (report.General[0].VideoCount == 1) GeneralInfoText.Text += "1 video track " + report.General[0].VideoCodecList + Environment.NewLine;
-            else GeneralInfoText.Text += report.General[0].VideoCount + " track video " + report.General[0].VideoCodecList + Environment.NewLine;
-            // tracce audio gen
-            if (report.General[0].AudioCount == 1) GeneralInfoText.Text += "1 audio track " + report.General[0].AudioCodecList + Environment.NewLine;
-            else GeneralInfoText.Text += report.General[0].AudioCount + " track audio " + report.General[0].AudioCodecList + Environment.NewLine;
-            // tracce sub gen
-            if (report.General[0].TextCount == 1) GeneralInfoText.Text += "1 sub track " + report.General[0].AudioCodecList + Environment.NewLine;
-            else GeneralInfoText.Text += report.General[0].TextCount + " sub track " + report.General[0].TextCodecList + Environment.NewLine;
-            //  capitoli
-            if (report.General[0].Chapter != "") GeneralInfoText.Text += report.General[0].Chapter + Environment.NewLine;
-
-            if (report.General[0].EncodedDate != "") GeneralInfoText.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
-            if (report.General[0].EncodedLibrary != "") GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
-
-
-            // tracce video
-            for (int i = 0; i < report.Video.Count; i++)
+            if (report != null)
             {
-                string lang = report.Video[i].LanguageString;
-                if (String.IsNullOrEmpty(lang))
-                {
-                    lang = "Undetermined";
-                }
-                video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + report.Video[i].DurationString + " - ";
-                video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+                GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
+                GeneralInfoText.Text += report.General[0].Format + ", " + report.General[0].FileSizePrecise + ", " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
+                if (report.General[0].OveralBitRateString != "") GeneralInfoText.Text += "Overal BitRate: " + report.General[0].OveralBitRateString + Environment.NewLine;
+                if (report.General[0].Title != "") GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
 
-                video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate + " fps, ";
-                video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ") (";
-                video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
+                // tracce video gen
+                if (report.General[0].VideoCount == 1) GeneralInfoText.Text += "1 video track " + report.General[0].VideoCodecList + Environment.NewLine;
+                else GeneralInfoText.Text += report.General[0].VideoCount + " track video " + report.General[0].VideoCodecList + Environment.NewLine;
+                // tracce audio gen
+                if (report.General[0].AudioCount == 1) GeneralInfoText.Text += "1 audio track " + report.General[0].AudioCodecList + Environment.NewLine;
+                else GeneralInfoText.Text += report.General[0].AudioCount + " track audio " + report.General[0].AudioCodecList + Environment.NewLine;
+                // tracce sub gen
+                if (report.General[0].TextCount == 1) GeneralInfoText.Text += "1 sub track " + report.General[0].AudioCodecList + Environment.NewLine;
+                else GeneralInfoText.Text += report.General[0].TextCount + " sub track " + report.General[0].TextCodecList + Environment.NewLine;
+                //  capitoli
+                if (report.General[0].Chapter != "") GeneralInfoText.Text += report.General[0].Chapter + Environment.NewLine;
+
+                if (report.General[0].EncodedDate != "") GeneralInfoText.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
+                if (report.General[0].EncodedLibrary != "") GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
+
+
+                // tracce video
+                for (int i = 0; i < report.Video.Count; i++)
+                {
+                    string lang = report.Video[i].LanguageString;
+                    if (String.IsNullOrEmpty(lang))
+                    {
+                        lang = "Undetermined";
+                    }
+                    video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + report.Video[i].DurationString + " - ";
+                    video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+
+                    video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate + " fps, ";
+                    video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ") (";
+                    video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
+                }
+
+                // tracce audio
+                string[] codecAudio = report.General[0].AudioCodecList.Split('/');
+                for (int i = 0; i < report.Audio.Count; i++)
+                {
+                    string lang = report.Audio[i].LanguageString;
+                    int delay = report.Audio[i].Delay;
+                    if (String.IsNullOrEmpty(lang))
+                    {
+                        lang = "Undetermined";
+                    }
+                    audio_info.Text += lang + AddSquareParentesisIfNotNull(report.Audio[i].Title) + report.Audio[i].DurationStringFormatted + " - ";
+                    audio_info.Text += report.Audio[i].BitRateString;
+                    if (report.Audio[i].BitRateMode != "") audio_info.Text += " - " + report.Audio[i].BitRateMode;
+                    audio_info.Text += ", " + report.Audio[i].SamplingRateString + ", ";
+                    audio_info.Text += report.Audio[i].ChannelsString + ", " + report.Audio[i].Format;
+
+                    if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile))
+                    {
+                        audio_info.Text += " - " + report.Audio[i].FormatProfile;
+                    }
+
+                    if (delay > 0)
+                    {
+                        audio_info.Text += ", Delay: " + delay + "ms" + Environment.NewLine;
+                    }
+                    else
+                    {
+                        audio_info.Text += Environment.NewLine;
+                    }
+                }
+
+                // sub
+                for (int i = 0; i < report.Text.Count; i++)
+                {
+                    sub_info.Text += report.Text[i].LanguageString + AddSquareParentesisIfNotNull(report.Text[i].Title);
+                    sub_info.Text += report.Text[i].Codec + Environment.NewLine;
+                }
+                if (report.Text.Count == 0) sub_info.Text = "No sub track";
+                if (report.Audio.Count == 0) audio_info.Text = "No audio track";
+                if (report.Video.Count == 0) video_info.Text = "No video track";
             }
-
-            // tracce audio
-            string[] codecAudio = report.General[0].AudioCodecList.Split('/');
-            for (int i = 0; i < report.Audio.Count; i++)
-            {
-                string lang = report.Audio[i].LanguageString;
-                int delay = report.Audio[i].Delay;
-                if (String.IsNullOrEmpty(lang))
-                {
-                    lang = "Undetermined";
-                }
-                audio_info.Text += lang + AddSquareParentesisIfNotNull(report.Audio[i].Title) + report.Audio[i].DurationStringFormatted + " - ";
-                audio_info.Text += report.Audio[i].BitRateString;
-                if (report.Audio[i].BitRateMode !="")  audio_info.Text += " - " + report.Audio[i].BitRateMode; 
-                audio_info.Text += ", " + report.Audio[i].SamplingRateString + ", ";
-                audio_info.Text += report.Audio[i].ChannelsString + ", " + report.Audio[i].Format;
-
-                if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile))
-                {
-                    audio_info.Text += " - " + report.Audio[i].FormatProfile;
-                }
-
-                if (delay > 0)
-                {
-                    audio_info.Text += ", Delay: " + delay + "ms" + Environment.NewLine;
-                }
-                else
-                {
-                    audio_info.Text += Environment.NewLine;
-                }
-            }
-
-            // sub
-            for (int i = 0; i < report.Text.Count; i++)
-            {
-                sub_info.Text += report.Text[i].LanguageString + AddSquareParentesisIfNotNull(report.Text[i].Title);
-                sub_info.Text += report.Text[i].Codec + Environment.NewLine;
-            }
-            if (report.Text.Count == 0) sub_info.Text = "No sub track";
-            if (report.Audio.Count == 0) audio_info.Text = "No audio track";
-            if (report.Video.Count == 0) video_info.Text = "No video track";
-
         }
        
         /// <summary>
@@ -450,7 +466,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MS_Change(object sender, RoutedEventArgs e)
         {
-            sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = "";
+            sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = String.Empty;
             CreateSimpleReport();
         }
         
@@ -472,6 +488,119 @@ namespace GetMediaInfoGUI
         private void AutoSaveReport_Unchecked(object sender, RoutedEventArgs e)
         {
             SaveReport.IsEnabled = SaveReportActive;
+        }
+
+        /// <summary>
+        /// Saves user configuration.
+        /// </summary>
+        private void SaveConfig()
+        {
+            try
+            {
+                if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\userconfig.xml"))
+                {
+                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\userconfig.xml");
+                }
+
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+
+                XmlWriter XmlWriter = XmlWriter.Create(System.Windows.Forms.Application.StartupPath + "\\userconfig.xml", settings);
+
+                XmlWriter.WriteStartDocument();
+                XmlWriter.WriteComment("GetMediaInfo GUI user configuration");
+                XmlWriter.WriteComment("DO NOT MODIFY VALUES");
+                XmlWriter.WriteStartElement("database");
+
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
+                if ((bool)AutoSaveReport.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                } else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "DisableSimpleReport");
+                if ((bool)DisableSimpleInfo.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "ShowMilliSec");
+                if ((bool)MilliSec.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteEndElement();
+                XmlWriter.WriteEndDocument();
+                XmlWriter.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Unable to save user configuration. (" + ex.Message + ").");
+            }
+        }
+
+        /// <summary>
+        /// Restores user configuration.
+        /// </summary>
+        public void RestoreConfig()
+        {
+            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\userconfig.xml"))
+            {
+                try
+                {
+                    XDocument xml = XDocument.Load(System.Windows.Forms.Application.StartupPath + "\\userconfig.xml");
+
+                    foreach (XElement config in xml.Element("database").Elements("config"))
+                    {
+                        string configuration = config.Attribute("tag").Value;
+                        bool value = false;
+
+                        if (!bool.TryParse(config.Value, out value))
+                        {
+                            System.Windows.Forms.MessageBox.Show("Unable to restore user configuration. XML file is corrupted! (Unable to parse boolean from xml value).");
+                        }
+
+                        switch (configuration)
+                        {
+                            case "AutoSaveReport":
+                                AutoSaveReport.IsChecked = value;
+                                break;
+                            case "DisableSimpleReport":
+                                DisableSimpleInfo.IsChecked = value;
+                                break;
+                            case "ShowMilliSec":
+                                MilliSec.IsChecked = value;
+                                break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Unable to restore user configuration. XML file is corrupted! (" + ex.Message + ").");
+                }
+            }
+            else
+            {
+                SaveConfig();
+            }
         }
     }
 }
