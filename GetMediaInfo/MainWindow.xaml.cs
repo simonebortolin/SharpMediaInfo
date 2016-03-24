@@ -275,6 +275,10 @@ namespace GetMediaInfoGUI
             this.Title = "GetMediaInfo";
             SaveReport.IsEnabled = SaveReportActive = false;
             sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = "";
+            while(TreeReport.HasItems)
+            {
+                TreeReport.Items.RemoveAt(0);
+            }
         }
 
         /// <summary>
@@ -366,7 +370,8 @@ namespace GetMediaInfoGUI
                         lang = "Undetermined";
                     }
                     video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + ManageMillisec(report.Video[i].DurationString) + " - ";
-                    video_info.Text += report.Video[i].BitRateString + ", " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+                    if (!String.IsNullOrEmpty(report.Video[i].BitRateString)) video_info.Text += report.Video[i].BitRateString + ", ";
+                    video_info.Text += + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
                     video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, ";
                     video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", ";
                     video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
@@ -415,14 +420,6 @@ namespace GetMediaInfoGUI
                             try
                             {
                                 if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode.Split('/')[j])) audio_info.Text += ", " + report.Audio[i].BitRateMode.Split('/')[j].Trim(' ');
-                            }
-                            catch
-                            {
-                                if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) audio_info.Text += ", " + report.Audio[i].BitRateMode;
-                            }
-                            try
-                            {
-                                if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) audio_info.Text += ", " + report.Audio[i].BitRateMode;
                             }
                             catch
                             {
@@ -520,7 +517,7 @@ namespace GetMediaInfoGUI
             Report.FileName = System.IO.Path.GetFileNameWithoutExtension(filepathBox.Text) + ".txt";
             Report.InitialDirectory = System.IO.Path.GetDirectoryName(filepathBox.Text);
             Report.ShowDialog();
-            if (Report.FileName != "")
+            if (!String.IsNullOrEmpty(Report.FileName))
             {
                 StreamWriter File = new StreamWriter(Report.FileName);
                 if (tabControl.SelectedIndex == 2) File.WriteLine(TextBoxComplete.Text);
