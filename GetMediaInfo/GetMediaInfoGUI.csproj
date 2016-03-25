@@ -56,6 +56,9 @@
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>GetMediaInfoGUI.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GetMediaInfos, Version=0.0.2.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
