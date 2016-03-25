@@ -222,7 +222,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
         public void OpenDroppedFile(object sender, System.Windows.DragEventArgs e)
         {
-            ClearAll();
+            //ClearAll();
             System.Windows.DataObject data = (System.Windows.DataObject)e.Data;
             if (data.ContainsFileDropList())
             {
@@ -277,7 +277,7 @@ namespace GetMediaInfoGUI
             this.Title = "GetMediaInfo";
             SaveReport.IsEnabled = SaveReportActive = false;
             SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = "";
-            while(TreeReport.HasItems)
+            while (TreeReport.HasItems)
             {
                 TreeReport.Items.RemoveAt(0);
             }
@@ -414,7 +414,7 @@ namespace GetMediaInfoGUI
 
                                 if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) AudioInfoText.Text += report.Audio[i].Format.Trim(' ');
 
-                                if(report.Audio[i].FormatProfile.Contains("/"))
+                                if (report.Audio[i].FormatProfile.Contains("/"))
                                 {
                                     if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j])) AudioInfoText.Text += "-" + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
                                 }
@@ -530,7 +530,7 @@ namespace GetMediaInfoGUI
 
                     if (report.Video.Count == 0) VideoInfoText.Text = "No video tracks";
                     if (report.Audio.Count == 0) AudioInfoText.Text = "No audio tracks";
-                    if (report.Text.Count == 0) SubInfoText.Text = "No subtitle tracks";                 
+                    if (report.Text.Count == 0) SubInfoText.Text = "No subtitle tracks";
                 }
 
                 //resize box
@@ -550,7 +550,7 @@ namespace GetMediaInfoGUI
 
                     if (!String.IsNullOrEmpty(ManageMillisec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Play Time: " + ManageMillisec(report.General[0].PlayTimeFormatted) });
                     if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
-                    if ((!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) && (report.Video.Count > 0)) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
+                    if (report.Video.Count > 0) if (report.Video[0].FrameCount > 0) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
                     if (!String.IsNullOrEmpty(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
                     if (report.Video.Count > 0) if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) temp.Items.Add(new TreeViewItem() { Header = "3D Mode: " + report.Video[0].MultiViewLayout });
                     if (!String.IsNullOrEmpty(report.General[0].EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + report.General[0].EncodedDate });
@@ -601,11 +601,11 @@ namespace GetMediaInfoGUI
                         int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
 
                         //composed tracks with subtracks
-                        if(numberofsubtracks > 1)
+                        if (numberofsubtracks > 1)
                         {
                             TreeViewItem sub = null;
-                            
-                            for (int j=0;j<numberofsubtracks;j++)
+
+                            for (int j = 0; j < numberofsubtracks; j++)
                             {
                                 sub = null;
                                 sub = new TreeViewItem();
@@ -615,7 +615,7 @@ namespace GetMediaInfoGUI
                                     if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j]))
                                     {
                                         sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ') });
-                                        if(!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                        if (!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
                                         else sub.Header = report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
                                     }
                                 }
@@ -670,19 +670,18 @@ namespace GetMediaInfoGUI
                                 }
                                 temp.Items.Add(sub);
                             }
-                            
-                            
+
+
                         }
                         else //single tracks without subtracks
                         {
-                            if (!String.IsNullOrEmpty(report.Audio[i].Format)) temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.Audio[i].Format });
                             if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) temp.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
                             if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) temp.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
                             if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) temp.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
                             if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) temp.Items.Add(new TreeViewItem() { Header = "Channels: " + report.Audio[i].ChannelsString });
                             if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) temp.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
-                            
-                            
+
+
                         }
                         if (report.Audio[i].Delay > 0)
                         {
@@ -710,7 +709,7 @@ namespace GetMediaInfoGUI
                         else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Text[i].LanguageString });
                         if (!String.IsNullOrEmpty(report.Text[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Text[i].Title });
                         temp.Items.Add(new TreeViewItem() { Header = "Codec: " + report.Text[i].Codec });
-                        
+
                         TreeReport.Items.Add(temp);
                     }
                 }
@@ -777,6 +776,10 @@ namespace GetMediaInfoGUI
             var tab = tabControl.Items[3] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
+            while (TreeReport.HasItems)
+            {
+                TreeReport.Items.RemoveAt(0);
+            }
             CreateSimpleReport();
         }
 
@@ -789,7 +792,7 @@ namespace GetMediaInfoGUI
         {
             var tab = tabControl.Items[3] as TabItem;
             tab.Visibility = Visibility.Visible;
-            tab.Width = 72;
+            tab.Width = 38;
             CreateSimpleReport();
         }
 
@@ -847,64 +850,64 @@ namespace GetMediaInfoGUI
                 XmlWriter.WriteStartElement("database");
 
                 XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
-                    if ((bool)AutoSaveReport.IsChecked)
-                    {
-                        XmlWriter.WriteValue("true");
-                    }
-                    else
-                    {
-                        XmlWriter.WriteValue("false");
-                    }
-                    XmlWriter.WriteEndElement();
+                XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
+                if ((bool)AutoSaveReport.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
 
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "DisableSimpleReport");
-                    if ((bool)DisableSimpleInfo.IsChecked)
-                    {
-                        XmlWriter.WriteValue("true");
-                    }
-                    else
-                    {
-                        XmlWriter.WriteValue("false");
-                    }
-                    XmlWriter.WriteEndElement();
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "DisableSimpleReport");
+                if ((bool)DisableSimpleInfo.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
 
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "DisableTree");
-                    if ((bool)DisableTree.IsChecked)
-                    {
-                        XmlWriter.WriteValue("true");
-                    }
-                    else
-                    {
-                        XmlWriter.WriteValue("false");
-                    }
-                    XmlWriter.WriteEndElement();
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "DisableTree");
+                if ((bool)DisableTree.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
 
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "ShowMilliSec");
-                    if ((bool)MilliSec.IsChecked)
-                    {
-                        XmlWriter.WriteValue("true");
-                    }
-                    else
-                    {
-                        XmlWriter.WriteValue("false");
-                    }
-                    XmlWriter.WriteEndElement();
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "ShowMilliSec");
+                if ((bool)MilliSec.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
 
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "RemoveSpace");
-                    if ((bool)RemoveSpace.IsChecked)
-                    {
-                        XmlWriter.WriteValue("true");
-                    }
-                    else
-                    {
-                        XmlWriter.WriteValue("false");
-                    }
-                    XmlWriter.WriteEndElement();
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "RemoveSpace");
+                if ((bool)RemoveSpace.IsChecked)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
 
                 XmlWriter.WriteEndElement();
                 XmlWriter.WriteEndDocument();
@@ -992,7 +995,7 @@ namespace GetMediaInfoGUI
 
             if (fontDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                
+
 
                 this.TextBoxStandard.FontSize = fontDialog.Font.Size;
                 this.TextBoxStandard.FontFamily = (FontFamily)ffc.ConvertFromString(fontDialog.Font.Name);
@@ -1017,7 +1020,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">instance containing the event data.</param>
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            if(File.Exists(System.Windows.Forms.Application.StartupPath + "\\7z.dll")&& File.Exists(System.Windows.Forms.Application.StartupPath + "\\SevenZipSharp.dll"))
+            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\7z.dll") && File.Exists(System.Windows.Forms.Application.StartupPath + "\\SevenZipSharp.dll"))
             {
                 string currmediainfo = String.Empty;
 
@@ -1116,9 +1119,9 @@ namespace GetMediaInfoGUI
             else
             {
                 UpdaterProgress.Content = "Can't update, libraries 7z.dll and/or  SevenZipSharp.dll absent.";
-                System.Windows.Forms.MessageBox.Show("libraries 7z.dll and/or  SevenZipSharp.dll absent.", "Can't update",MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                System.Windows.Forms.MessageBox.Show("libraries 7z.dll and/or  SevenZipSharp.dll absent.", "Can't update", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            
+
         }
 
         /// <summary>
@@ -1134,6 +1137,7 @@ namespace GetMediaInfoGUI
             latest = latest.Replace("MediaInfo ", "");
             return latest;
         }
+
     }
 
     /// <summary>

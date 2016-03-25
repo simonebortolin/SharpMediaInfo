@@ -26,7 +26,7 @@
         <Button x:Name="SaveReport" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" />
         <TabControl x:Name="tabControl" Margin="10,38,10,35" VerticalContentAlignment="Stretch" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" >
             <TabItem Header="Simple">
-                <Grid Background="#FFE5E5E5" Name="Grid">
+                <Grid Name="Grid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="188*"/>
                         <ColumnDefinition Width="367*"/>
@@ -81,7 +81,7 @@
                             <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
                             <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
-                            <CheckBox x:Name="DisableTree" Content="Disable Tree Info" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked" IsChecked="True"/>
+                            <CheckBox x:Name="DisableTree" Content="Disable Tree Info" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked"/>
                             <CheckBox x:Name="RemoveSpace" Content="Remove Space in The Standard e Complete Report" HorizontalAlignment="Left" Margin="10,90,0,-5" VerticalAlignment="Top" Checked="RemoveSpace_Reload" Unchecked="RemoveSpace_Reload"/>
                             <Button x:Name="font" Content="Font" Margin="0,5,10,87" Click="font_Click" HorizontalAlignment="Right" Width="75"/>
                         </Grid>
