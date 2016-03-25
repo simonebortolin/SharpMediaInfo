@@ -10,7 +10,12 @@
         DragEnter="DragEnter_EventHandler"
         Loaded="Inizialize"
         Closing="SaveAndClose"
-        Title="GetMediaInfo" Height="470.821" Width="591.125" MinWidth="419" MinHeight="456">
+        Icon="icon.ico"
+        Title="GetMediaInfo" 
+        Height="584.836" 
+        Width="522.918" 
+        MinWidth="522" 
+        MinHeight="584">
     <Grid Margin="0,0,2,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -27,35 +32,35 @@
                         <ColumnDefinition Width="367*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="33*" />
-                        <RowDefinition Height="27*" />
-                        <RowDefinition Height="22*" />
-                        <RowDefinition Height="22*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
+                    <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap"  Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="VideoInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
+                    <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="VideoInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TAudio" Header="Audio Tracks" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="AudioInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
+                    <GroupBox x:Name="TAudio" Header="Audio Tracks" Grid.Row="2" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="AudioInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TSub" Header="Subtitles" Grid.Row="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="SubInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0" IsManipulationEnabled="True"/>
+                    <GroupBox x:Name="TSub" Header="Subtitles" Grid.Row="3" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="SubInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
 
                 </Grid>
             </TabItem>
             <TabItem Header="Standard">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="TextBoxStandard" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+                    <TextBox x:Name="TextBoxStandard" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontFamily="Courier New"/>
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="Complete">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                    <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontFamily="Courier New" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Tree (Beta)">
@@ -64,35 +69,34 @@
             </TabItem>
             <TabItem Header="Options">
                 <Grid Background="#FFE5E5E5">
-                    <GroupBox x:Name="groupBox" Header="ContextMenu Options" Margin="10,106,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+                    <GroupBox x:Name="groupBox" Header="ContextMenu Options" Margin="10,259,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="64">
                         <Grid>
-                            <Button x:Name="AddContextMenu" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="AddContextMenu_Click" Height="27"/>
-                            <Button x:Name="RemoveContextMenu" Content="Remove" HorizontalAlignment="Left" Margin="80,0,0,0" Width="75" VerticalAlignment="Top" VerticalContentAlignment="Center" Click="RemoveContextMenu_Click" Height="27"/>
-                            <Label x:Name="AssociationStatus" Content="" Margin="165,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
+                            <Button x:Name="AddContextMenu" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="AddContextMenu_Click" Height="27" Margin="10,8,0,0"/>
+                            <Button x:Name="RemoveContextMenu" Content="Remove" HorizontalAlignment="Left" Margin="90,8,0,0" Width="75" VerticalAlignment="Top" VerticalContentAlignment="Center" Click="RemoveContextMenu_Click" Height="27"/>
+                            <Label x:Name="AssociationStatus" Content="Ready." Margin="170,9,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,176,10,0" VerticalAlignment="Top" Height="134" HorizontalContentAlignment="Stretch">
+                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,54,10,0" VerticalAlignment="Top" Height="134" HorizontalContentAlignment="Stretch">
                         <Grid>
                             <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
                             <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
                             <CheckBox x:Name="DisableTree" Content="Disable Tree Info" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked" IsChecked="True"/>
                             <CheckBox x:Name="RemoveSpace" Content="Remove Space in The Standard e Complete Report" HorizontalAlignment="Left" Margin="10,90,0,-5" VerticalAlignment="Top" Checked="RemoveSpace_Reload" Unchecked="RemoveSpace_Reload"/>
-                            <Button x:Name="font" Content="Font" HorizontalAlignment="Left" Margin="423,10,0,0" VerticalAlignment="Top" Width="75" Click="font_Click"/>
+                            <Button x:Name="font" Content="Font" Margin="0,5,10,87" Click="font_Click" HorizontalAlignment="Right" Width="75"/>
                         </Grid>
                     </GroupBox>
-                    <Label x:Name="Version" Content="Version" HorizontalAlignment="Right" Margin="0,0,46,10" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right"/>
-                    <Grid HorizontalAlignment="Left" Height="74" Margin="10,10,0,0" VerticalAlignment="Top" Width="253">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="14*"/>
-                            <ColumnDefinition Width="9*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Status GetMediaInfos.dll" VerticalAlignment="Top" Height="37" Width="154"/>
-                        <TextBlock x:Name="StatusGetMediaInfos" Grid.Column="1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="37" Width="99" FontWeight="Bold"/>
-                        <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="0,37,0,0" TextWrapping="Wrap" Text="Status MediaInfo.dll" VerticalAlignment="Top" Height="37" Width="154"/>
-                        <TextBlock x:Name="StatusMediainfo" Grid.Column="1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="37" Width="99" Margin="0,37,0,0" FontWeight="Bold"/>
-                    </Grid>
-
+                    <Label x:Name="Version" Content="Version" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" Width="86"/>
+                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="GetMediainfos Version:" VerticalAlignment="Top" Height="17" Width="154" Margin="10,10,0,0"/>
+                    <TextBlock x:Name="StatusGetMediaInfos" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" FontWeight="Bold" Margin="147,10,0,0"/>
+                    <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="10,32,0,0" TextWrapping="Wrap" Text="Mediainfo Version:" VerticalAlignment="Top" Height="17" Width="154"/>
+                    <TextBlock x:Name="StatusMediainfo" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" Margin="147,32,0,0" FontWeight="Bold"/>
+                    <GroupBox x:Name="UpdaterBox" Header="Updates Options" Margin="10,193,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="61">
+                        <Grid>
+                            <Button x:Name="UpdateButton" Content="Check for Updates" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Click="UpdateButton_Click" Height="27" Margin="10,7,0,0"/>
+                            <Label x:Name="UpdaterProgress" Content="Ready." Margin="121,8,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
