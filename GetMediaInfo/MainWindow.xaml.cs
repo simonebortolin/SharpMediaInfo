@@ -72,7 +72,7 @@ namespace GetMediaInfoGUI
                 System.Windows.Forms.MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 System.Windows.Forms.Application.Exit();
             }
-
+            ProcessArgs();
             RestoreConfig();
         }
 
