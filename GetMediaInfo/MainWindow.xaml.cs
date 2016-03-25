@@ -274,7 +274,7 @@ namespace GetMediaInfoGUI
             TextBoxComplete.Text = TextBoxStandard.Text = "";
             this.Title = "GetMediaInfo";
             SaveReport.IsEnabled = SaveReportActive = false;
-            sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = "";
+            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = "";
             while(TreeReport.HasItems)
             {
                 TreeReport.Items.RemoveAt(0);
@@ -364,36 +364,41 @@ namespace GetMediaInfoGUI
                     if (!String.IsNullOrEmpty(report.General[0].EncodedLibrary)) GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
 
                     //video tracks
+                    VideoInfoText.Text = "";
                     for (int i = 0; i < report.Video.Count; i++)
                     {
-                        string lang = report.Video[i].LanguageString;
-                        if (String.IsNullOrEmpty(lang))
+                        if (String.IsNullOrEmpty(report.Video[i].LanguageString))
                         {
-                            lang = "Undetermined";
+                            VideoInfoText.Text += "Undetermined";
                         }
-                        video_info.Text += lang + AddSquareParentesisIfNotNull(report.Video[i].Title) + ManageMillisec(report.Video[i].DurationString) + " - ";
-                        if (!String.IsNullOrEmpty(report.Video[i].BitRateString)) video_info.Text += report.Video[i].BitRateString + ", ";
-                        video_info.Text += +report.Video[i].Width + "×" + report.Video[i].Height + ", ";
-                        video_info.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, ";
-                        video_info.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", ";
-                        video_info.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
+                        else
+                        {
+                            VideoInfoText.Text += report.Video[i].LanguageString;
+                        }
+                        VideoInfoText.Text += AddSquareParentesisIfNotNull(report.Video[i].Title) + ManageMillisec(report.Video[i].DurationString) + " - ";
+                        if (!String.IsNullOrEmpty(report.Video[i].BitRateString)) VideoInfoText.Text += report.Video[i].BitRateString + ", ";
+                        VideoInfoText.Text += +report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+                        VideoInfoText.Text += report.Video[i].AspectRatioString + ", " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, ";
+                        VideoInfoText.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", ";
+                        VideoInfoText.Text += report.Video[i].FormatSettings + ")" + Environment.NewLine;
                     }
 
                     //audio tracks
+                    AudioInfoText.Text = "";
                     string[] codecAudio = report.General[0].AudioCodecList.Split('/');
 
                     for (int i = 0; i < report.Audio.Count; i++)
                     {
                         if (String.IsNullOrEmpty(report.Audio[i].LanguageString))
                         {
-                            audio_info.Text += "Undetermined";
+                            AudioInfoText.Text += "Undetermined";
                         }
                         else
                         {
-                            audio_info.Text += report.Audio[i].LanguageString;
+                            AudioInfoText.Text += report.Audio[i].LanguageString;
                         }
 
-                        audio_info.Text += AddSquareParentesisIfNotNull(report.Audio[i].Title) + ManageMillisec(report.Audio[i].DurationStringFormatted) + " - ";
+                        AudioInfoText.Text += AddSquareParentesisIfNotNull(report.Audio[i].Title) + ManageMillisec(report.Audio[i].DurationStringFormatted) + " - ";
 
                         int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
 
@@ -401,56 +406,56 @@ namespace GetMediaInfoGUI
                         {
                             for (int j = 0; j < numberofsubtracks; j++)
                             {
-                                for (int k = 0; k < j; k++) { audio_info.Text += "    "; }
-                                if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) audio_info.Text += report.Audio[i].Format.Trim(' ');
+                                for (int k = 0; k < j; k++) { AudioInfoText.Text += "    "; }
+                                if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) AudioInfoText.Text += report.Audio[i].Format.Trim(' ');
                                 if(report.Audio[i].FormatProfile.Contains("/"))
                                 {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j])) audio_info.Text += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j])) AudioInfoText.Text += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) audio_info.Text += " - " + report.Audio[i].FormatProfile;
+                                    if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) AudioInfoText.Text += " - " + report.Audio[i].FormatProfile;
                                 }
                                 if (report.Audio[i].BitRateString.Contains("/"))
                                 {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString.Split('/')[j])) audio_info.Text += ", " + report.Audio[i].BitRateString.Split('/')[j].Trim(' ');
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString.Split('/')[j])) AudioInfoText.Text += ", " + report.Audio[i].BitRateString.Split('/')[j].Trim(' ');
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) audio_info.Text += ", " + report.Audio[i].BitRateString;
+                                    if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) AudioInfoText.Text += ", " + report.Audio[i].BitRateString;
                                 }
                                 if (report.Audio[i].BitRateMode.Contains("/"))
                                 {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode.Split('/')[j])) audio_info.Text += ", " + report.Audio[i].BitRateMode.Split('/')[j].Trim(' ');
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode.Split('/')[j])) AudioInfoText.Text += ", " + report.Audio[i].BitRateMode.Split('/')[j].Trim(' ');
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) audio_info.Text += ", " + report.Audio[i].BitRateMode;
+                                    if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) AudioInfoText.Text += ", " + report.Audio[i].BitRateMode;
                                 }
                                 if (report.Audio[i].ChannelsString.Contains("/"))
                                 {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString.Split('/')[j])) audio_info.Text += ", " + report.Audio[i].ChannelsString.Split('/')[j].Trim(' ');
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString.Split('/')[j])) AudioInfoText.Text += ", " + report.Audio[i].ChannelsString.Split('/')[j].Trim(' ');
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) audio_info.Text += ", " + report.Audio[i].ChannelsString;
+                                    if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) AudioInfoText.Text += ", " + report.Audio[i].ChannelsString;
                                 }
                                 if (report.Audio[i].SamplingRateString.Contains("/"))
                                 {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString.Split('/')[j])) audio_info.Text += ", " + report.Audio[i].SamplingRateString.Split('/')[j].Trim(' ');
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString.Split('/')[j])) AudioInfoText.Text += ", " + report.Audio[i].SamplingRateString.Split('/')[j].Trim(' ');
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) audio_info.Text += ", " + report.Audio[i].SamplingRateString;
+                                    if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) AudioInfoText.Text += ", " + report.Audio[i].SamplingRateString;
                                 }
                                 //delay if present
                                 if (report.Audio[i].Delay > 0)
                                 {
-                                    audio_info.Text += ", Delay: " + report.Audio[i].Delay + "ms" + Environment.NewLine;
+                                    AudioInfoText.Text += ", Delay: " + report.Audio[i].Delay + "ms" + Environment.NewLine;
                                 }
                                 else
                                 {
-                                    audio_info.Text += Environment.NewLine;
+                                    AudioInfoText.Text += Environment.NewLine;
                                 }
 
                                 //if (j < numberofsubtracks - 1) { audio_info.Text += Environment.NewLine; }
@@ -458,40 +463,38 @@ namespace GetMediaInfoGUI
                         }
                         else
                         {
-                            if (!String.IsNullOrEmpty(report.Audio[i].Format)) audio_info.Text += " - " + report.Audio[i].Format;
-                            if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) audio_info.Text += " - " + report.Audio[i].FormatProfile;
-                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) audio_info.Text += ", " + report.Audio[i].BitRateString;
-                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) audio_info.Text += ", " + report.Audio[i].BitRateMode;
-                            if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) audio_info.Text += ", " + report.Audio[i].ChannelsString;
-                            if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) audio_info.Text += ", " + report.Audio[i].SamplingRateString;
+                            if (!String.IsNullOrEmpty(report.Audio[i].Format)) AudioInfoText.Text += " - " + report.Audio[i].Format;
+                            if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) AudioInfoText.Text += " - " + report.Audio[i].FormatProfile;
+                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) AudioInfoText.Text += ", " + report.Audio[i].BitRateString;
+                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) AudioInfoText.Text += ", " + report.Audio[i].BitRateMode;
+                            if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) AudioInfoText.Text += ", " + report.Audio[i].ChannelsString;
+                            if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) AudioInfoText.Text += ", " + report.Audio[i].SamplingRateString;
                             //delay if present
                             if (report.Audio[i].Delay > 0)
                             {
-                                audio_info.Text += ", Delay: " + report.Audio[i].Delay + "ms" + Environment.NewLine;
+                                AudioInfoText.Text += ", Delay: " + report.Audio[i].Delay + "ms" + Environment.NewLine;
                             }
                             else
                             {
-                                audio_info.Text += Environment.NewLine;
+                                AudioInfoText.Text += Environment.NewLine;
                             }
                         }
-
-
-
 
                     }
 
                     //subtitles
+                    SubInfoText.Text = "";
                     for (int i = 0; i < report.Text.Count; i++)
                     {
-                        sub_info.Text += report.Text[i].LanguageString + AddSquareParentesisIfNotNull(report.Text[i].Title);
-                        sub_info.Text += report.Text[i].Codec + Environment.NewLine;
+                        SubInfoText.Text += report.Text[i].LanguageString + AddSquareParentesisIfNotNull(report.Text[i].Title);
+                        SubInfoText.Text += report.Text[i].Codec + Environment.NewLine;
                     }
 
-                    if (report.Video.Count == 0) video_info.Text = "No video track";
-                    if (report.Audio.Count == 0) audio_info.Text = "No audio track";
-                    if (report.Text.Count == 0) sub_info.Text = "No sub track";
+                    if (report.Video.Count == 0) VideoInfoText.Text = "No video track";
+                    if (report.Audio.Count == 0) AudioInfoText.Text = "No audio track";
+                    if (report.Text.Count == 0) SubInfoText.Text = "No sub track";
 
-                    // tree
+                    
                 }
                 if (!DisableTree.IsChecked.Value) {
                     TreeViewItem temp = null;
@@ -513,17 +516,123 @@ namespace GetMediaInfoGUI
                     TreeReport.Items.Add(temp);
                     for (int i = 0; i < report.Video.Count; i++)
                     {
+                        temp = null;
                         temp = new TreeViewItem();
                         temp.Header = "Video " + (i + 1);
                         if (String.IsNullOrEmpty(report.Video[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
                         else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Video[i].LanguageString });
-                        if (!String.IsNullOrEmpty(report.Video[i].Title)) temp.Items.Add(new TreeViewItem() { Header = report.Video[i].Title });
+                        if (!String.IsNullOrEmpty(report.Video[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Video[i].Title });
                         temp.Items.Add(new TreeViewItem() { Header = "Resolution: " + report.Video[i].Width + "×" + report.Video[i].Height });
                         temp.Items.Add(new TreeViewItem() { Header = "Aspect Ratio: " + report.Video[i].AspectRatioString });
                         temp.Items.Add(new TreeViewItem() { Header = "Framerate: " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps" });
                         temp.Items.Add(new TreeViewItem() { Header = "Codec Video: " + report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", " + report.Video[i].FormatSettings + ")" });
 
-                       
+                       TreeReport.Items.Add(temp);
+
+                    }
+                    for (int i = 0; i < report.Audio.Count; i++)
+                    {
+                        temp = null;
+                        temp = new TreeViewItem();
+                        temp.Header = "Audio " + (i + 1);
+                        if (String.IsNullOrEmpty(report.Audio[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
+                        else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Audio[i].LanguageString });
+                        if (!String.IsNullOrEmpty(report.Audio[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Audio[i].Title });
+                        if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.Audio[i].Format.Trim(' ') });
+                        int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
+                        if(numberofsubtracks > 1)
+                        {
+                            TreeViewItem sub = null;
+                            
+                            for (int j=0;j<numberofsubtracks;j++)
+                            {
+                                sub = null;
+                                sub = new TreeViewItem();
+                                if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) sub.Header = report.Audio[i].Format;
+                                if (report.Audio[i].FormatProfile.Contains("/"))
+                                {
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j]))
+                                    {
+                                        sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ') });
+                                        if(!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                        else sub.Header = report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                    }
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile))
+                                    {
+                                        sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
+                                        if (!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile;
+                                        else sub.Header = report.Audio[i].FormatProfile;
+                                    }
+                                }
+                                if (report.Audio[i].BitRateString.Contains("/"))
+                                {
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString.Split('/')[j].Trim(' ') });
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) sub.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
+                                }
+                                if (report.Audio[i].BitRateMode.Contains("/"))
+                                {
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode.Split('/')[j].Trim(' ') });
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) sub.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
+                                }
+                                if (report.Audio[i].ChannelsString.Contains("/"))
+                                {
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Channel: " + report.Audio[i].ChannelsString.Split('/')[j].Trim(' ') });
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) sub.Items.Add(new TreeViewItem() { Header = "Channel: " + report.Audio[i].ChannelsString });
+                                }
+                                if (report.Audio[i].SamplingRateString.Contains("/"))
+                                {
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString.Split('/')[j].Trim(' ') });
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) sub.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
+                                }
+                                temp.Items.Add(sub);
+                            }
+                            if (report.Audio[i].Delay > 0)
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Delay: " + report.Audio[i].Delay + "ms" });
+                            }
+                        }
+                        else
+                        {
+                            if (!String.IsNullOrEmpty(report.Audio[i].Format)) temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.Audio[i].Format });
+                            if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) temp.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
+                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) temp.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
+                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) temp.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
+                            if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) temp.Items.Add(new TreeViewItem() { Header = "Channels: " + report.Audio[i].ChannelsString });
+                            if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) temp.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
+                            //delay if present
+                            if (report.Audio[i].Delay > 0)
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Delay: " + report.Audio[i].Delay + "ms" });
+                            }
+                        }
+                        TreeReport.Items.Add(temp);
+
+                    }
+                    for (int i = 0; i < report.Text.Count; i++)
+                    {
+                        temp = null;
+                        temp = new TreeViewItem();
+                        temp.Header = "Subtitle " + (i + 1);
+                        if (String.IsNullOrEmpty(report.Text[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
+                        else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Text[i].LanguageString });
+                        if (!String.IsNullOrEmpty(report.Text[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Text[i].Title });
+                        temp.Items.Add(new TreeViewItem() { Header = "Codec: " + report.Text[i].Codec });
+                        
                         TreeReport.Items.Add(temp);
 
                     }
@@ -616,7 +725,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MS_Change(object sender, RoutedEventArgs e)
         {
-            sub_info.Text = audio_info.Text = video_info.Text = GeneralInfoText.Text = String.Empty;
+            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = String.Empty;
             CreateSimpleReport();
         }
 
