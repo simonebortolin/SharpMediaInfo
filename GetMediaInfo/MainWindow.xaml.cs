@@ -360,8 +360,8 @@ namespace GetMediaInfoGUI
                     GeneralInfoText.Text += "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
                     if (report.Video.Count > 0) GeneralInfoText.Text += "Frame Count: " + report.Video[0].FrameCount + Environment.NewLine;
                     if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) GeneralInfoText.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
+                    if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) GeneralInfoText.Text += "3D Mode: " + report.Video[0].MultiViewLayout + Environment.NewLine;
                     if (!String.IsNullOrEmpty(report.General[0].Title)) GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
-                    if (!String.IsNullOrEmpty(report.General[0].Chapter)) GeneralInfoText.Text += report.General[0].Chapter + Environment.NewLine;
                     if (!String.IsNullOrEmpty(report.General[0].EncodedDate)) GeneralInfoText.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
                     if (!String.IsNullOrEmpty(report.General[0].EncodedLibrary)) GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
 
@@ -413,7 +413,7 @@ namespace GetMediaInfoGUI
                         {
                             for (int j = 0; j < numberofsubtracks; j++)
                             {
-                                for (int k = 0; k < j; k++) { AudioInfoText.Text += "    "; }
+                                if (j > 0) AudioInfoText.Text += '\t';
 
                                 if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) AudioInfoText.Text += report.Audio[i].Format.Trim(' ');
 
@@ -471,7 +471,7 @@ namespace GetMediaInfoGUI
                                     //delay if present
                                     if (report.Audio[i].Delay > 0)
                                     {
-                                        AudioInfoText.Text += ", Delay: " + report.Audio[i].Delay + "ms";
+                                        AudioInfoText.Text += " - Delay: " + report.Audio[i].Delay + "ms";
                                     }
                                 }
 
@@ -491,7 +491,7 @@ namespace GetMediaInfoGUI
                             //delay if present
                             if (report.Audio[i].Delay > 0)
                             {
-                                AudioInfoText.Text += ", Delay: " + report.Audio[i].Delay + "ms" + Environment.NewLine;
+                                AudioInfoText.Text += " - Delay: " + report.Audio[i].Delay + "ms" + Environment.NewLine;
                             }
                             else
                             {
@@ -508,7 +508,19 @@ namespace GetMediaInfoGUI
                         SubInfoText.Text += "> ";
                         SubInfoText.Text += report.Text[i].LanguageString;
                         if (!String.IsNullOrWhiteSpace(report.Text[i].Title)) SubInfoText.Text += " - [" + report.Text[i].Title + "]";
-                        SubInfoText.Text += " - " + report.Text[i].Codec + Environment.NewLine;
+                        SubInfoText.Text += " - " + report.Text[i].Codec;
+                        SubInfoText.Text += ", Default: " + report.Text[i].DefaultString;
+                        SubInfoText.Text += ", Forced: " + report.Text[i].ForcedString;
+
+                        //delay if present
+                        if (report.Text[i].Delay > 0)
+                        {
+                            SubInfoText.Text += " - Delay: " + report.Text[i].Delay + "ms" + Environment.NewLine;
+                        }
+                        else
+                        {
+                            SubInfoText.Text += Environment.NewLine;
+                        }
                     }
 
                     if (report.Video.Count == 0) VideoInfoText.Text = "No video tracks";
@@ -535,7 +547,7 @@ namespace GetMediaInfoGUI
                     if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
                     if ((!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) && (report.Video.Count > 0)) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
                     if (!String.IsNullOrEmpty(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
-                    if (!String.IsNullOrEmpty(report.General[0].Chapter)) temp.Items.Add(new TreeViewItem() { Header = report.General[0].Chapter });
+                    if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) temp.Items.Add(new TreeViewItem() { Header = "3D Mode: " + report.Video[0].MultiViewLayout });
                     if (!String.IsNullOrEmpty(report.General[0].EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + report.General[0].EncodedDate });
                     if (!String.IsNullOrEmpty(report.General[0].EncodedLibrary)) temp.Items.Add(new TreeViewItem() { Header = "Created with: " + report.General[0].EncodedLibrary });
 
@@ -681,14 +693,6 @@ namespace GetMediaInfoGUI
                     }
                 }
             }
-        }
-
-        private void ResizeBox()
-        {
-            GeneralInfoText.Height = GeneralInfo.Height = new List<string>(TextUtils.GetLines(GeneralInfoText)).Count * GeneralInfoText.LineHeight;
-            TVideo.Height = VideoInfoText.Height = new List<string>(TextUtils.GetLines(VideoInfoText)).Count * VideoInfoText.LineHeight;
-            TAudio.Height = AudioInfoText.Height = new List<string>(TextUtils.GetLines(AudioInfoText)).Count * AudioInfoText.LineHeight;
-            TSub.Height = SubInfoText.Height = new List<string>(TextUtils.GetLines(SubInfoText)).Count * SubInfoText.LineHeight;
         }
 
         /// <summary>
