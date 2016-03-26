@@ -346,20 +346,20 @@ namespace GetMediaInfoGUI
                     GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
                     GeneralInfoText.Text += "Format: " + report.General[0].Format + Environment.NewLine;
                     GeneralInfoText.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
-                    GeneralInfoText.Text += "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
+                    if (!String.IsNullOrWhiteSpace(report.General[0].PlayTimeFormatted)) GeneralInfoText.Text += "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
                     if (report.Video.Count > 0) GeneralInfoText.Text += "Frame Count: " + report.Video[0].FrameCount + Environment.NewLine;
-                    if (!String.IsNullOrEmpty(report.General[0].OveralBitRateString)) GeneralInfoText.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
+                    if (!String.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) GeneralInfoText.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
                     if (report.Video.Count > 0) if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) GeneralInfoText.Text += "3D Mode: " + report.Video[0].MultiViewLayout + Environment.NewLine;
-                    if (!String.IsNullOrEmpty(report.General[0].Title)) GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
-                    if (!String.IsNullOrEmpty(report.General[0].EncodedDate)) GeneralInfoText.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
-                    if (!String.IsNullOrEmpty(report.General[0].EncodedLibrary)) GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
+                    if (!String.IsNullOrWhiteSpace(report.General[0].Title)) GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
+                    if (!String.IsNullOrWhiteSpace(report.General[0].EncodedDate)) GeneralInfoText.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
+                    if (!String.IsNullOrWhiteSpace(report.General[0].EncodedLibrary)) GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
 
                     //video tracks
                     VideoInfoText.Text = "";
                     for (int i = 0; i < report.Video.Count; i++)
                     {
                         VideoInfoText.Text += "> ";
-                        if (String.IsNullOrEmpty(report.Video[i].LanguageString))
+                        if (String.IsNullOrWhiteSpace(report.Video[i].LanguageString))
                         {
                             VideoInfoText.Text += "Undetermined";
                         }
@@ -367,13 +367,13 @@ namespace GetMediaInfoGUI
                         {
                             VideoInfoText.Text += report.Video[i].LanguageString;
                         }
-                        if (!String.IsNullOrEmpty(report.Video[i].Title)) VideoInfoText.Text += " - [" + report.Video[i].Title + "]";
-                        VideoInfoText.Text += " - " + ManageMillisec(report.Video[i].DurationString) + " - ";
+                        if (!String.IsNullOrWhiteSpace(report.Video[i].Title)) VideoInfoText.Text += " - [" + report.Video[i].Title + "]";
+                        if (!String.IsNullOrWhiteSpace(report.Video[i].DurationString)) VideoInfoText.Text += " - " + ManageMillisec(report.Video[i].DurationString) + " - ";
                         VideoInfoText.Text += report.Video[i].Width + "×" + report.Video[i].Height + ", ";
                         VideoInfoText.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + "), ";
-                        if (!String.IsNullOrEmpty(report.Video[i].BitRateString)) VideoInfoText.Text += report.Video[i].BitRateString + ", ";
+                        if (!String.IsNullOrWhiteSpace(report.Video[i].BitRateString)) VideoInfoText.Text += report.Video[i].BitRateString + ", ";
                         VideoInfoText.Text += report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, " + report.Video[i].AspectRatioString + ", ";
-                        if (!String.IsNullOrEmpty(report.Video[i].FormatSettings)) VideoInfoText.Text += "(" + report.Video[i].FormatSettings + ")" + Environment.NewLine;
+                        if (!String.IsNullOrWhiteSpace(report.Video[i].FormatSettings)) VideoInfoText.Text += "(" + report.Video[i].FormatSettings + ")" + Environment.NewLine;
                         if (report.Video[i].Delay > 0)
                         {
                             VideoInfoText.Text += " - Delay: " + report.Audio[i].Delay + "ms";
@@ -402,7 +402,7 @@ namespace GetMediaInfoGUI
 
                         if (!String.IsNullOrWhiteSpace(report.Audio[i].Title)) AudioInfoText.Text += " - [" + report.Audio[i].Title + "]";
 
-                        AudioInfoText.Text += " - " + ManageMillisec(report.Audio[i].DurationStringFormatted) + " - ";
+                        if (!String.IsNullOrWhiteSpace(report.Audio[i].DurationStringFormatted)) AudioInfoText.Text += " - " + ManageMillisec(report.Audio[i].DurationStringFormatted) + " - ";
 
                         int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
 
@@ -460,7 +460,7 @@ namespace GetMediaInfoGUI
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) AudioInfoText.Text += ", " + report.Audio[i].SamplingRateString;
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString)) AudioInfoText.Text += ", " + report.Audio[i].SamplingRateString;
                                 }
 
                                 if (j == 0)
@@ -514,8 +514,8 @@ namespace GetMediaInfoGUI
                         }
                         if (!String.IsNullOrWhiteSpace(report.Text[i].Title)) SubInfoText.Text += " - [" + report.Text[i].Title + "]";
                         SubInfoText.Text += " - " + report.Text[i].Codec;
-                        SubInfoText.Text += ", Default: " + report.Text[i].DefaultString;
-                        SubInfoText.Text += ", Forced: " + report.Text[i].ForcedString;
+                        if (!String.IsNullOrWhiteSpace(report.Text[i].DefaultString)) SubInfoText.Text += ", Default: " + report.Text[i].DefaultString;
+                        if (!String.IsNullOrWhiteSpace(report.Text[i].ForcedString)) SubInfoText.Text += ", Forced: " + report.Text[i].ForcedString;
 
                         //delay if present
                         if (report.Text[i].Delay > 0)
