@@ -63,7 +63,7 @@
                     <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontFamily="Courier New" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Tree (Beta)">
+            <TabItem Header="Tree">
                 <TreeView Name="TreeReport">
                 </TreeView>
             </TabItem>
