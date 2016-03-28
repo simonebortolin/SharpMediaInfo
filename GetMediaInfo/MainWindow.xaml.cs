@@ -378,10 +378,8 @@ namespace GetMediaInfoGUI
                         {
                             VideoInfoText.Text += " - Delay: " + report.Audio[i].Delay + "ms";
                         }
-                        if (report.Video[i].Default) VideoInfoText.Text += " - Default Track";
-                        if (report.Video[i].Forced) VideoInfoText.Text += " - Forced Track";
-
-                        AudioInfoText.Text += Environment.NewLine;
+                        if (report.Video[i].Default) VideoInfoText.Text += " - Default Track: Yes";
+                        if (report.Video[i].Forced) VideoInfoText.Text += " - Forced Track: Yes";           
                     }
 
                     //audio tracks
@@ -463,6 +461,8 @@ namespace GetMediaInfoGUI
                                     if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString)) AudioInfoText.Text += ", " + report.Audio[i].SamplingRateString;
                                 }
 
+                                AudioInfoText.Text = AudioInfoText.Text.Trim(',').Trim(' ');
+
                                 if (j == 0)
                                 {
                                     if (report.Audio[i].Delay > 0)
@@ -485,6 +485,8 @@ namespace GetMediaInfoGUI
                             if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString)) AudioInfoText.Text += report.Audio[i].ChannelsString + ", ";
                             if (!String.IsNullOrWhiteSpace(report.Audio[i].BitDepthString)) AudioInfoText.Text += report.Audio[i].BitDepthString + ", ";
                             if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString)) AudioInfoText.Text += report.Audio[i].SamplingRateString;
+
+                            AudioInfoText.Text = AudioInfoText.Text.Trim(',').Trim(' ');
 
                             //delay if present
                             if (report.Audio[i].Delay > 0)
@@ -516,6 +518,8 @@ namespace GetMediaInfoGUI
                         SubInfoText.Text += " - " + report.Text[i].Codec;
                         if (!String.IsNullOrWhiteSpace(report.Text[i].DefaultString)) SubInfoText.Text += ", Default: " + report.Text[i].DefaultString;
                         if (!String.IsNullOrWhiteSpace(report.Text[i].ForcedString)) SubInfoText.Text += ", Forced: " + report.Text[i].ForcedString;
+
+                        AudioInfoText.Text = AudioInfoText.Text.Trim(' ');
 
                         //delay if present
                         if (report.Text[i].Delay > 0)
