@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ using System.Xml.Linq;
 using System.Net;
 using SevenZip;
 using GetMediaInfos;
+using System.Windows.Media.Imaging;
 
 namespace GetMediaInfoGUI
 {
@@ -21,6 +23,16 @@ namespace GetMediaInfoGUI
     /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Boolean that define if standard / complete report are bold
+        /// </summary>
+        bool Bold;
+
+        /// <summary>
+        /// Boolean that define if standard / complete report are italic
+        /// </summary>
+        bool Italic;
+
         /// <summary>
         /// Boolean that define if the report should be automatically generated or not
         /// </summary>
@@ -75,7 +87,10 @@ namespace GetMediaInfoGUI
                 System.Windows.Forms.Application.Exit();
             }
             ProcessArgs();
+            ComboBoxFont.SelectedValue = TextBoxComplete.FontFamily;
+            ComboBoxSize.SelectedValue = TextBoxComplete.FontSize;
             RestoreConfig();
+            toolStripStatusLabel1.Content = "Ready.";
         }
 
         /// <summary>
@@ -159,25 +174,12 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Shown event of the GetMediaInfo control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void GetMediaInfo_Shown(object sender, EventArgs e)
-        {
-            /*this.Update();
-            this.Refresh();
-            ApriDaArgomentoExe();*/
-        }
-
-        /// <summary>
         /// Handles the Click event of the OpenFile control. Is used to open a new OpenFileDialog to let user to select the input file.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            ClearAll();
             OpenFileDialog file = new OpenFileDialog();
             file.Filter = "Mediafile|*.*";
             file.Title = "Select a Media File";
@@ -196,7 +198,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         public void ProcessArgs()
         {
-            String[] arguments = Environment.GetCommandLineArgs();
+            string[] arguments = Environment.GetCommandLineArgs();
             if (arguments.Length > 1)
             {
                 //toolStripStatusLabel1.Text = "Analyzing...";
@@ -258,13 +260,17 @@ namespace GetMediaInfoGUI
                 ShowReportsAndSaveToDisk();
                 this.Title += " (" + System.IO.Path.GetFileName(path) + ")";
                 toolStripStatusLabel1.Content = "Analysis Completed.";
-                if (!AutoSaveReport.IsChecked.Value) SaveReport.IsEnabled = true;
-                SaveReportActive = true;
+                if (!AutoSaveReport.IsChecked.Value) SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReport.IsEnabled = true;
+                SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReportActive = true;
+            }
+            else if(String.IsNullOrWhiteSpace(path))
+            {
+                toolStripStatusLabel1.Content = "Ready.";
             }
             else
             {
                 toolStripStatusLabel1.Content = "Not existing file.";
-                SaveReport.IsEnabled = SaveReportActive = false;
+                SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReport.IsEnabled = SaveReportActive = false;
             }
         }
 
@@ -273,7 +279,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void ClearAll()
         {
-            TextBoxComplete.Text = TextBoxStandard.Text = String.Empty;
+            TextBoxComplete.Text = TextBoxStandard.Text = string.Empty;
             this.Title = "GetMediaInfo";
             SaveReport.IsEnabled = SaveReportActive = false;
             SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = String.Empty;
@@ -332,7 +338,34 @@ namespace GetMediaInfoGUI
             }
             else return time;
         }
-
+        
+        /// <summary>
+        /// (in dev) If there is takes the image attached (Cover) to the report ( base64 ) and converts it into BitmapImage.
+        /// </summary>
+        /// <returns>Image Covert.</returns>
+        private BitmapImage Cover()
+        {
+            if (report.General[0].Cover == "Yes")
+            {
+                string base64 = report.InfoComplete.Substring(report.InfoComplete.IndexOf("Cover_Data                               : ") + "Cover_Data                               : ".Length).Split(' ', '\n', '\r')[0];
+                byte[] image = Convert.FromBase64String(base64);
+                var cover = new BitmapImage();
+                using (var mem = new MemoryStream(image))
+                {
+                    mem.Position = 0;
+                    cover.BeginInit();
+                    cover.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                    cover.CacheOption = BitmapCacheOption.OnLoad;
+                    cover.UriSource = null;
+                    cover.StreamSource = mem;
+                    cover.EndInit();
+                }
+                cover.Freeze();
+                return cover;
+            }
+            else return null;
+        }
+        
         /// <summary>
         /// Create the Simple report.
         /// </summary>
@@ -368,8 +401,8 @@ namespace GetMediaInfoGUI
                             VideoInfoText.Text += report.Video[i].LanguageString;
                         }
                         if (!String.IsNullOrWhiteSpace(report.Video[i].Title)) VideoInfoText.Text += " - [" + report.Video[i].Title + "]";
-                        if (!String.IsNullOrWhiteSpace(report.Video[i].DurationString)) VideoInfoText.Text += " - " + ManageMillisec(report.Video[i].DurationString) + " - ";
-                        VideoInfoText.Text += report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+                        if (!String.IsNullOrWhiteSpace(report.Video[i].DurationString)) VideoInfoText.Text += " - " + ManageMillisec(report.Video[i].DurationString) + " -";
+                        VideoInfoText.Text += " " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
                         VideoInfoText.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + "), ";
                         if (!String.IsNullOrWhiteSpace(report.Video[i].BitRateString)) VideoInfoText.Text += report.Video[i].BitRateString + ", ";
                         VideoInfoText.Text += report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, " + report.Video[i].AspectRatioString + ", ";
@@ -721,7 +754,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the SaveReport control. Save the report of the file in the same pa
+        /// Handles the Click event of the SaveReport control. Save the report of the file in the same directory.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
@@ -733,13 +766,15 @@ namespace GetMediaInfoGUI
             Report.DefaultExt = ".txt";
             Report.FileName = System.IO.Path.GetFileNameWithoutExtension(filepathBox.Text) + ".txt";
             Report.InitialDirectory = System.IO.Path.GetDirectoryName(filepathBox.Text);
-            Report.ShowDialog();
-            if (!String.IsNullOrEmpty(Report.FileName))
+            if (Report.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                StreamWriter File = new StreamWriter(Report.FileName);
-                if (tabControl.SelectedIndex == 2) File.WriteLine(TextBoxComplete.Text);
-                else File.WriteLine(TextBoxStandard.Text);
-                File.Close();
+                if (!String.IsNullOrEmpty(Report.FileName))
+                {
+                    StreamWriter File = new StreamWriter(Report.FileName);
+                    if (tabControl.SelectedIndex == 2) File.WriteLine(TextBoxComplete.Text);
+                    else File.WriteLine(TextBoxStandard.Text);
+                    File.Close();
+                }
             }
         }
 
@@ -820,7 +855,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AutoSaveReport_Checked(object sender, RoutedEventArgs e)
         {
-            SaveReport.IsEnabled = false;
+            SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReport.IsEnabled = false;
         }
 
         /// <summary>
@@ -830,7 +865,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AutoSaveReport_Unchecked(object sender, RoutedEventArgs e)
         {
-            SaveReport.IsEnabled = SaveReportActive;
+            SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReport.IsEnabled = SaveReportActive;
         }
 
         /// <summary>
@@ -915,6 +950,44 @@ namespace GetMediaInfoGUI
                 }
                 XmlWriter.WriteEndElement();
 
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "Bold");
+                if ((bool)Bold)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("tag", "Italic");
+                if ((bool)Italic)
+                {
+                    XmlWriter.WriteValue("true");
+                }
+                else
+                {
+                    XmlWriter.WriteValue("false");
+                }
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("font", "Size");
+
+                XmlWriter.WriteValue((int)TextBoxComplete.FontSize);
+                
+                XmlWriter.WriteEndElement();
+
+                XmlWriter.WriteStartElement("config");
+                XmlWriter.WriteAttributeString("font", "Name");
+
+                XmlWriter.WriteValue(TextBoxComplete.FontFamily.ToString());
+
+                XmlWriter.WriteEndElement();
+
                 XmlWriter.WriteEndElement();
                 XmlWriter.WriteEndDocument();
                 XmlWriter.Close();
@@ -935,10 +1008,22 @@ namespace GetMediaInfoGUI
                 try
                 {
                     XDocument xml = XDocument.Load(System.Windows.Forms.Application.StartupPath + "\\userconfig.xml");
-
-                    foreach (XElement config in xml.Element("database").Elements("config"))
+                    List<XElement> settings = xml.Element("database").Elements("config").ToList();
+                    IEnumerable<XElement> configs = from setting in settings
+                                                    let attrs = setting.Attributes()
+                                                    from attr in attrs
+                                                    where attr.Name == "tag"
+                                                    select setting;
+                    IEnumerable<XElement> fonts = from setting in settings
+                                                  let attrs = setting.Attributes()
+                                                  from attr in attrs
+                                                  where attr.Name == "font"
+                                                  select setting;
+                    foreach (XElement config in configs)
                     {
+
                         string configuration = config.Attribute("tag").Value;
+                        
                         bool value = false;
 
                         if (!bool.TryParse(config.Value, out value))
@@ -963,7 +1048,46 @@ namespace GetMediaInfoGUI
                             case "RemoveSpace":
                                 RemoveSpace.IsChecked = value;
                                 break;
+                            case "Italic":
+                                Italic = value;
+                                ItalicChange();
+                                break; 
+                            case "Bold":
+                                Bold = value;
+                                BoldChange();
+                                break;
                         }
+                    }
+                    foreach(XElement font in fonts)
+                    {
+                        string configuration = font.Attribute("font").Value;
+                        switch(configuration)
+                        {
+                            case "Size":
+                                int size;
+                                if (!int.TryParse(font.Value, out size))
+                                {
+                                    System.Windows.Forms.MessageBox.Show("Unable to restore user configuration. XML file is corrupted! (Unable to parse int from xml).");
+                                }
+                                else
+                                {
+                                    ComboBoxSize.SelectedValue = TextBoxComplete.FontSize = TextBoxStandard.FontSize = (double)size;
+                                    //ComboBoxSize.SetValue
+                                }
+                                break;
+                            case "Name":
+                                try
+                                {
+                                    ComboBoxFont.SelectedValue = TextBoxComplete.FontFamily = TextBoxStandard.FontFamily = new FontFamily(font.Value);
+
+                                }
+                                catch
+                                {
+                                    System.Windows.Forms.MessageBox.Show("Unable to restore user configuration. XML file is corrupted! (Unable to parse font from xml).");
+                                }
+                                break;
+                        }
+
                     }
                 }
                 catch (Exception ex)
@@ -985,38 +1109,6 @@ namespace GetMediaInfoGUI
         private void RemoveSpace_Reload(object sender, RoutedEventArgs e)
         {
             ShowReportsAndSaveToDisk();
-        }
-
-        /// <summary>
-        /// Open the FontDialog
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">instance containing the event data.</param>
-        private void font_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.FontDialog fontDialog = new System.Windows.Forms.FontDialog();
-            FontFamilyConverter ffc = new FontFamilyConverter();
-            fontDialog.MinSize = 10;
-            fontDialog.MaxSize = 40;
-
-            if (fontDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-
-
-                this.TextBoxStandard.FontSize = fontDialog.Font.Size;
-                this.TextBoxStandard.FontFamily = (FontFamily)ffc.ConvertFromString(fontDialog.Font.Name);
-                this.TextBoxComplete.FontSize = fontDialog.Font.Size;
-                this.TextBoxComplete.FontFamily = (FontFamily)ffc.ConvertFromString(fontDialog.Font.Name);
-
-                if (fontDialog.Font.Bold) TextBoxComplete.FontWeight = TextBoxStandard.FontWeight = FontWeights.Bold;
-                else
-                    TextBoxComplete.FontWeight = TextBoxStandard.FontWeight = FontWeights.Normal;
-
-                if (fontDialog.Font.Italic)
-                    TextBoxComplete.FontStyle = TextBoxStandard.FontStyle = FontStyles.Italic;
-                else
-                    TextBoxComplete.FontStyle = TextBoxStandard.FontStyle = FontStyles.Normal;
-            }
         }
 
         /// <summary>
@@ -1144,6 +1236,122 @@ namespace GetMediaInfoGUI
             return latest;
         }
 
+        /// <summary>
+        /// Select all and copy text from contextual menu in the standard/complete report.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event.</param>
+        private void CopyAllText(object sender, RoutedEventArgs e)
+        {
+            if (tabControl.SelectedIndex == 2)
+            {
+                TextBoxComplete.SelectAll();
+                TextBoxComplete.Copy();
+                
+            }
+            else if(tabControl.SelectedIndex == 1)
+            {
+                TextBoxStandard.SelectAll();
+                TextBoxStandard.Copy();
+            }
+        }
+
+        /// <summary>
+        /// Bold setting Click.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event.</param>
+        private void BoldClick(object sender, RoutedEventArgs e)
+        {
+            Bold = !Bold;
+            BoldChange();
+        }
+
+        /// <summary>
+        /// Bold/un-Bold apply in the standard/complete report.
+        /// </summary>
+        private void BoldChange()
+        {
+            if (Bold)
+            {
+                TextBoxComplete.FontWeight = TextBoxStandard.FontWeight = FontWeights.Bold;
+                B.Background = new SolidColorBrush(Color.FromArgb((byte)255, (byte)221, (byte)221, (byte)221));
+                B.BorderBrush = new SolidColorBrush(Color.FromArgb((byte)255, (byte)112, (byte)112, (byte)112));
+            }
+            else
+            {
+                TextBoxComplete.FontWeight = TextBoxStandard.FontWeight = FontWeights.Normal;
+                B.Background = Brushes.Transparent;
+                B.BorderBrush = Brushes.Transparent;
+            }
+        }
+
+        /// <summary>
+        /// Italic setting Click.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event.</param>
+        private void ItalicClick(object sender, RoutedEventArgs e)
+        {
+            Italic = !Italic;
+            ItalicChange();
+        }
+
+        /// <summary>
+        /// Italic/un-Italic apply in the standard/complete report.
+        /// </summary>
+        private void ItalicChange()
+        {
+            if(Italic)
+            {
+                TextBoxComplete.FontStyle = TextBoxStandard.FontStyle = FontStyles.Italic;
+                I.Background = new SolidColorBrush(Color.FromArgb((byte)255,(byte)221,(byte)221,(byte)221));
+                I.BorderBrush = new SolidColorBrush(Color.FromArgb((byte)255, (byte)112, (byte)112, (byte)112));
+            }
+            else
+            {
+                TextBoxComplete.FontStyle = TextBoxStandard.FontStyle = FontStyles.Normal;
+                I.Background = Brushes.Transparent;
+                I.BorderBrush = Brushes.Transparent;
+            }
+        }
+
+        /// <summary>
+        /// Set the text size in the standard/complete report.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event.</param>
+        private void SizeChange(object sender, EventArgs e)
+        {
+            if(ComboBoxSize.SelectedValue != null)
+                TextBoxComplete.FontSize = TextBoxStandard.FontSize = (double)ComboBoxSize.SelectedValue;
+        }
+
+        /// <summary>
+        /// Set the font size in the standard/complete report
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event.</param>
+        private void FontChange(object sender, EventArgs e)
+        {
+            if (ComboBoxFont.SelectedValue != null)
+                TextBoxComplete.FontFamily = TextBoxStandard.FontFamily = (FontFamily)ComboBoxFont.SelectedValue;
+        }
+
+        /// <summary>
+        /// Show the changelog
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event.</param>
+        private void VersionClick(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.MessageBox.Show(
+                "- Full new Font/Size/Bold/Italic selector (for Standard/Complete Report)" + Environment.NewLine +
+                "- Save/Restore Font Option" + Environment.NewLine +
+                "- Contextual menu Option (Copy/Copy All/Save for Standard/Complete Report)" + Environment.NewLine +
+                "- .NET 4.61" + Environment.NewLine +
+                "- Some Bug Fix","New in 1.0.4.0");
+        }
     }
 
     /// <summary>
