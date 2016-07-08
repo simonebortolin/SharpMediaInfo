@@ -8,10 +8,10 @@
         xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase" x:Class="GetMediaInfoGUI.MainWindow"
         mc:Ignorable="d"
         AllowDrop="True"
-        Drop="OpenDroppedFile"
+        Drop="OpenDroppedFile_Event"
         DragEnter="DragEnter_EventHandler"
-        Loaded="Inizialize"
-        Closing="SaveAndClose"
+        Loaded="Inizialize_Loaded"
+        Closing="SaveAndClose_Event"
         Icon="icon.ico"
         Title="GetMediaInfo" 
         Height="584.836" 
@@ -22,16 +22,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="filepathBox" Height="23" Margin="9,10,174,0" Text="" TextWrapping="NoWrap" VerticalAlignment="Top" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" Grid.ColumnSpan="3" TextChanged="AnalyzeDeclaredPath" AllowDrop="True" />
-        <StatusBar Height="25" Margin="0,330,10,0" VerticalAlignment="Top" VerticalContentAlignment="Bottom" Grid.ColumnSpan="3" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" />
-        <Button x:Name="OpenFile" Content="Open File" HorizontalAlignment="Right" Margin="0,10,93,0" VerticalAlignment="Top" Width="75" Height="23" Click="OpenFile_Click" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" />
-        <Button x:Name="SaveReport" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" />
-        <TabControl x:Name="tabControl" Margin="10,38,10,35" VerticalContentAlignment="Stretch" Drop="OpenDroppedFile" DragEnter="DragEnter_EventHandler" >
+        <TextBox x:Name="filepathBox" Height="23" Margin="9,10,174,0" Text="" TextWrapping="NoWrap" VerticalAlignment="Top" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" Grid.ColumnSpan="3" TextChanged="AnalyzeDeclaredPath_Event" AllowDrop="True" />
+        <StatusBar Height="25" Margin="0,330,10,0" VerticalAlignment="Top" VerticalContentAlignment="Bottom" Grid.ColumnSpan="3" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" />
+        <Button x:Name="OpenFile" Content="Open File" HorizontalAlignment="Right" Margin="0,10,93,0" VerticalAlignment="Top" Width="75" Height="23" Click="OpenFile_Click" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" />
+        <Button x:Name="SaveReport" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" />
+        <TabControl x:Name="tabControl" Margin="10,38,10,35" VerticalContentAlignment="Stretch" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" >
             <TabItem Header="Simple">
                 <Grid x:Name="Grid">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="188*"/>
-                        <ColumnDefinition Width="367*"/>
+                        <ColumnDefinition Width="100*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -40,7 +39,10 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
+                        <Grid x:Name="GeneralInfoColl">
+                            <Image x:Name="image" />
+                            <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
+                        </Grid>
                     </GroupBox>
                     <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
                         <TextBlock x:Name="VideoInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
@@ -60,7 +62,7 @@
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Command="Copy" />
-                                <MenuItem Header="Copy All" Click="CopyAllText"/>
+                                <MenuItem Header="Copy All" Click="CopyAllText_Click"/>
                                 <Separator />
                                 <MenuItem x:Name="SaveMenu" Header="Save" Click="SaveReport_Click" IsEnabled="False" />
                             </ContextMenu>
@@ -75,7 +77,7 @@
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Command="Copy" />
-                                <MenuItem Header="Copy All" Click="CopyAllText"/>
+                                <MenuItem Header="Copy All" Click="CopyAllText_Click"/>
                                 <Separator />
                                 <MenuItem x:Name="SaveMenu_1" Header="Save" Click="SaveReport_Click" IsEnabled="False" />
                             </ContextMenu>
@@ -99,10 +101,10 @@
                         <Grid>
                             <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
-                            <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="MS_Change" Unchecked="MS_Change"/>
+                            <CheckBox x:Name="MilliSec" Content="Activate milliseconds" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="MilliSec_Reload" Unchecked="MilliSec_Reload"/>
                             <CheckBox x:Name="DisableTree" Content="Disable Tree Info" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked"/>
                             <CheckBox x:Name="RemoveSpace" Content="Remove Space in The Standard e Complete Report" HorizontalAlignment="Left" Margin="10,90,0,-5" VerticalAlignment="Top" Checked="RemoveSpace_Reload" Unchecked="RemoveSpace_Reload"/>
-                            <ComboBox x:Name="ComboBoxSize" HorizontalAlignment="Left" Margin="167,110,0,0" VerticalAlignment="Top" Width="91" Height="27" UseLayoutRounding="True" FontSize="16" SelectedItem="" DropDownClosed="SizeChange">
+                            <ComboBox x:Name="ComboBoxSize" HorizontalAlignment="Left" Margin="167,110,0,0" VerticalAlignment="Top" Width="91" Height="27" UseLayoutRounding="True" FontSize="16" SelectedItem="" DropDownClosed="Size_Change">
                                 <ComboBox.ItemsSource>
                                     <x:Array Type="{x:Type System:Double}">
                                         <System:Double>10</System:Double>
@@ -117,10 +119,10 @@
                                     </x:Array>
                                 </ComboBox.ItemsSource>
                             </ComboBox>
-                            <Button x:Name="B" Content="B" HorizontalAlignment="Left" Margin="263,110,0,0" VerticalAlignment="Top" Width="25" Height="27" Click="BoldClick" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16" FontWeight="Bold"/>
-                            <Button x:Name="I" Content="I" HorizontalAlignment="Left" Margin="293,110,0,0" VerticalAlignment="Top" Width="25" Height="27" Click="ItalicClick" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16" FontStyle="Italic"/>
+                            <Button x:Name="B" Content="B" HorizontalAlignment="Left" Margin="263,110,0,0" VerticalAlignment="Top" Width="25" Height="27" Click="Bold_Click" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16" FontWeight="Bold"/>
+                            <Button x:Name="I" Content="I" HorizontalAlignment="Left" Margin="293,110,0,0" VerticalAlignment="Top" Width="25" Height="27" Click="Italic_Click" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16" FontStyle="Italic"/>
                             <ComboBox x:Name="ComboBoxFont"
-                            	ItemTemplate="{DynamicResource FontTemplate}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,0" Height="27" Width="151" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" DropDownClosed="FontChange">
+                            	ItemTemplate="{DynamicResource FontTemplate}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,0" Height="27" Width="151" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" DropDownClosed="Font_Change">
                                 <ComboBox.Resources>
 
                                     <CollectionViewSource x:Key="myFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}">
@@ -150,7 +152,7 @@
                             </ComboBox>
                         </Grid>
                     </GroupBox>
-                    <Button x:Name="Version" Content="Version" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" Width="86" Click="VersionClick"/>
+                    <Button x:Name="Version" Content="Version" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" Width="86" Click="Version_Click"/>
                     <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="GetMediainfos Version:" VerticalAlignment="Top" Height="17" Width="154" Margin="10,10,0,0"/>
                     <TextBlock x:Name="StatusGetMediaInfos" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" FontWeight="Bold" Margin="147,10,0,0"/>
                     <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="10,32,0,0" TextWrapping="Wrap" Text="Mediainfo Version:" VerticalAlignment="Top" Height="17" Width="154"/>
@@ -164,6 +166,7 @@
                     
                 </Grid>
             </TabItem>
+            
         </TabControl>
         <StatusBar Height="35" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch">
             <Label x:Name="toolStripStatusLabel1" Content="" Width="173" Height="35" />

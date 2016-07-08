@@ -57,7 +57,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Inizialize(object sender, EventArgs e)
+        private void Inizialize_Loaded(object sender, EventArgs e)
         {
             Version.Content = "Version " + System.Windows.Forms.Application.ProductVersion;
             if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\mediainfo.dll"))
@@ -98,7 +98,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void SaveAndClose(object sender, EventArgs e)
+        private void SaveAndClose_Event(object sender, EventArgs e)
         {
             SaveConfig();
         }
@@ -110,7 +110,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AddContextMenu_Click(object sender, RoutedEventArgs e)
         {
-            List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
+            /*List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
                 ".webm", ".weba", ".ac3", ".dts", ".dtshd", ".thd", ".flac", ".alac", ".aac", ".mp3", ".wav", ".aiff", ".h264",
                 ".h265", ".hevc", ".avc", ".y4m", ".yuv", ".ssif" };
 
@@ -121,8 +121,8 @@ namespace GetMediaInfoGUI
                 completelist.Add("VLC" + str);
                 completelist.Add("mpc-be64" + str);
             }
-
-            Microsoft.Win32.RegistryKey key;
+            */
+            Microsoft.Win32.RegistryKey key;/*
             foreach (string ext in completelist)
             {
                 key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true);
@@ -136,7 +136,21 @@ namespace GetMediaInfoGUI
                 key.SetValue("", "\"" + System.Windows.Forms.Application.ExecutablePath + "\" \"%1\"");
 
                 key.Close();
-            }
+            }*/
+            // for all files
+            key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true);
+            key = key.CreateSubKey("*");
+            key = key.CreateSubKey("shell");
+            key = key.CreateSubKey("open_with_getmediainfosgui_all");
+            key.SetValue("", "GetMediaInfos");
+            key.SetValue("Icon", "\"" + System.Windows.Forms.Application.StartupPath + "\\icon.ico\"");
+
+            key = key.CreateSubKey("command");
+            key.SetValue("", "\"" + System.Windows.Forms.Application.ExecutablePath + "\" \"%1\"");
+
+            key.Close();
+
+            // end 
             AssociationStatus.Content = "Successufully Added.";
         }
 
@@ -147,7 +161,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void RemoveContextMenu_Click(object sender, RoutedEventArgs e)
         {
-            List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
+            /*List<string> listext = new List<string>() { ".mkv", ".mka", ".mk3d", ".mp4", ".m4v", ".m4a", ".m2ts", ".ts", ".avi",
                 ".webm", ".weba", ".ac3", ".dts", ".dtshd", ".thd", ".flac", ".alac", ".aac", ".mp3", ".wav", ".aiff", ".h264",
                 ".h265", ".hevc", ".avc", ".y4m", ".yuv", ".ssif" };
 
@@ -158,8 +172,9 @@ namespace GetMediaInfoGUI
                 completelist.Add("VLC" + str);
                 completelist.Add("mpc-be64" + str);
             }
-
+            */
             Microsoft.Win32.RegistryKey key;
+            /*
             foreach (string ext in completelist)
             {
                 try
@@ -169,7 +184,14 @@ namespace GetMediaInfoGUI
                     key.Close();
                 }
                 catch { }
+            }*/
+            try
+            {
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true).OpenSubKey("*", true).CreateSubKey("shell");
+                key.DeleteSubKeyTree("open_with_getmediainfosgui");
+                key.Close();
             }
+            catch { }
             AssociationStatus.Content = "Successufully Removed.";
         }
 
@@ -212,7 +234,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void AnalyzeDeclaredPath(object sender, EventArgs e)
+        private void AnalyzeDeclaredPath_Event(object sender, EventArgs e)
         {
             AnalyzeFile(filepathBox.Text);
         }
@@ -222,7 +244,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        public void OpenDroppedFile(object sender, System.Windows.DragEventArgs e)
+        public void OpenDroppedFile_Event(object sender, System.Windows.DragEventArgs e)
         {
             //ClearAll();
             System.Windows.DataObject data = (System.Windows.DataObject)e.Data;
@@ -255,6 +277,20 @@ namespace GetMediaInfoGUI
             {
                 toolStripStatusLabel1.Content = "Analysing...";
                 report = new MediaInfo(path);
+                BitmapImage cover = Cover();
+                if(cover != null)
+                {
+                    image.Source = cover;
+                    //image.Width = 100;
+                    image.Height = 150;
+                    image.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                    
+                }
+                else
+                {
+                    image.Width = 0;
+                    image.Height = 0;
+                }
 
                 CreateSimpleReport();
                 ShowReportsAndSaveToDisk();
@@ -329,7 +365,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="time">String with timecode</param>
         /// <returns></returns>
-        private string ManageMillisec(string time)
+        private string ManageMilliSec(string time)
         {
             if (!MilliSec.IsChecked.Value)
             {
@@ -340,17 +376,17 @@ namespace GetMediaInfoGUI
         }
         
         /// <summary>
-        /// (in dev) If there is takes the image attached (Cover) to the report ( base64 ) and converts it into BitmapImage.
+        /// If there is takes the image attached (Cover) to the report ( base64 ) and converts it into BitmapImage.
         /// </summary>
-        /// <returns>Image Covert.</returns>
+        /// <returns>Image Cover.</returns>
         private BitmapImage Cover()
         {
             if (report.General[0].Cover == "Yes")
             {
                 string base64 = report.InfoComplete.Substring(report.InfoComplete.IndexOf("Cover_Data                               : ") + "Cover_Data                               : ".Length).Split(' ', '\n', '\r')[0];
                 byte[] image = Convert.FromBase64String(base64);
-                var cover = new BitmapImage();
-                using (var mem = new MemoryStream(image))
+                BitmapImage cover = new BitmapImage();
+                using (MemoryStream mem = new MemoryStream(image))
                 {
                     mem.Position = 0;
                     cover.BeginInit();
@@ -360,6 +396,13 @@ namespace GetMediaInfoGUI
                     cover.StreamSource = mem;
                     cover.EndInit();
                 }
+                // test to save in a file
+                /*PixelFormat data = cover.Format;
+                PngBitmapEncoder png = new PngBitmapEncoder();
+                png.Frames.Add(BitmapFrame.Create(cover));
+                FileStream save = new FileStream("immagine.png", FileMode.Create);
+                png.Save(save);
+                save.Close();*/
                 cover.Freeze();
                 return cover;
             }
@@ -379,7 +422,7 @@ namespace GetMediaInfoGUI
                     GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
                     GeneralInfoText.Text += "Format: " + report.General[0].Format + Environment.NewLine;
                     GeneralInfoText.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
-                    if (!String.IsNullOrWhiteSpace(report.General[0].PlayTimeFormatted)) GeneralInfoText.Text += "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
+                    if (!String.IsNullOrWhiteSpace(report.General[0].PlayTimeFormatted)) GeneralInfoText.Text += "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
                     if (report.Video.Count > 0) GeneralInfoText.Text += "Frame Count: " + report.Video[0].FrameCount + Environment.NewLine;
                     if (!String.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) GeneralInfoText.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
                     if (report.Video.Count > 0) if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) GeneralInfoText.Text += "3D Mode: " + report.Video[0].MultiViewLayout + Environment.NewLine;
@@ -401,7 +444,7 @@ namespace GetMediaInfoGUI
                             VideoInfoText.Text += report.Video[i].LanguageString;
                         }
                         if (!String.IsNullOrWhiteSpace(report.Video[i].Title)) VideoInfoText.Text += " - [" + report.Video[i].Title + "]";
-                        if (!String.IsNullOrWhiteSpace(report.Video[i].DurationString)) VideoInfoText.Text += " - " + ManageMillisec(report.Video[i].DurationString) + " -";
+                        if (!String.IsNullOrWhiteSpace(report.Video[i].DurationString)) VideoInfoText.Text += " - " + ManageMilliSec(report.Video[i].DurationString) + " -";
                         VideoInfoText.Text += " " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
                         VideoInfoText.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + "), ";
                         if (!String.IsNullOrWhiteSpace(report.Video[i].BitRateString)) VideoInfoText.Text += report.Video[i].BitRateString + ", ";
@@ -433,7 +476,7 @@ namespace GetMediaInfoGUI
 
                         if (!String.IsNullOrWhiteSpace(report.Audio[i].Title)) AudioInfoText.Text += " - [" + report.Audio[i].Title + "]";
 
-                        if (!String.IsNullOrWhiteSpace(report.Audio[i].DurationStringFormatted)) AudioInfoText.Text += " - " + ManageMillisec(report.Audio[i].DurationStringFormatted) + " - ";
+                        if (!String.IsNullOrWhiteSpace(report.Audio[i].DurationStringFormatted)) AudioInfoText.Text += " - " + ManageMilliSec(report.Audio[i].DurationStringFormatted) + " - ";
 
                         int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
 
@@ -585,7 +628,7 @@ namespace GetMediaInfoGUI
                     temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.General[0].Format });
                     temp.Items.Add(new TreeViewItem() { Header = "File Size: " + report.General[0].FileSizePrecise });
 
-                    if (!String.IsNullOrWhiteSpace(ManageMillisec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Duration: " + ManageMillisec(report.General[0].PlayTimeFormatted) });
+                    if (!String.IsNullOrWhiteSpace(ManageMilliSec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) });
                     if (!String.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
                     if (report.Video.Count > 0) if (report.Video[0].FrameCount > 0) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
                     if (!String.IsNullOrWhiteSpace(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
@@ -785,7 +828,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimpleInfo_Checked(object sender, RoutedEventArgs e)
         {
-            var tab = tabControl.Items[0] as TabItem;
+            TabItem tab = tabControl.Items[0] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
             SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = String.Empty;
@@ -798,7 +841,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimpleInfo_Unchecked(object sender, RoutedEventArgs e)
         {
-            var tab = tabControl.Items[0] as TabItem;
+            TabItem tab = tabControl.Items[0] as TabItem;
             tab.Visibility = Visibility.Visible;
             tab.Width = 52;
             CreateSimpleReport();
@@ -811,7 +854,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Checked(object sender, RoutedEventArgs e)
         {
-            var tab = tabControl.Items[3] as TabItem;
+            TabItem tab = tabControl.Items[3] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
         }
@@ -823,7 +866,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Unchecked(object sender, RoutedEventArgs e)
         {
-            var tab = tabControl.Items[3] as TabItem;
+            TabItem tab = tabControl.Items[3] as TabItem;
             tab.Visibility = Visibility.Visible;
             tab.Width = 38;
             while (TreeReport.HasItems)
@@ -838,7 +881,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void MS_Change(object sender, RoutedEventArgs e)
+        private void MilliSec_Reload(object sender, RoutedEventArgs e)
         {
             SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = String.Empty;
             while (TreeReport.HasItems)
@@ -1176,7 +1219,7 @@ namespace GetMediaInfoGUI
 
                         UpdaterProgress.Content = "Extracting...";
 
-                        var fileStream = File.Create(newfilepath);
+                        FileStream fileStream = File.Create(newfilepath);
 
                         foreach (string file in archive.ArchiveFileNames)
                         {
@@ -1241,7 +1284,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event.</param>
-        private void CopyAllText(object sender, RoutedEventArgs e)
+        private void CopyAllText_Click(object sender, RoutedEventArgs e)
         {
             if (tabControl.SelectedIndex == 2)
             {
@@ -1261,7 +1304,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event.</param>
-        private void BoldClick(object sender, RoutedEventArgs e)
+        private void Bold_Click(object sender, RoutedEventArgs e)
         {
             Bold = !Bold;
             BoldChange();
@@ -1291,7 +1334,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event.</param>
-        private void ItalicClick(object sender, RoutedEventArgs e)
+        private void Italic_Click(object sender, RoutedEventArgs e)
         {
             Italic = !Italic;
             ItalicChange();
@@ -1321,7 +1364,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event.</param>
-        private void SizeChange(object sender, EventArgs e)
+        private void Size_Change(object sender, EventArgs e)
         {
             if(ComboBoxSize.SelectedValue != null)
                 TextBoxComplete.FontSize = TextBoxStandard.FontSize = (double)ComboBoxSize.SelectedValue;
@@ -1332,7 +1375,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event.</param>
-        private void FontChange(object sender, EventArgs e)
+        private void Font_Change(object sender, EventArgs e)
         {
             if (ComboBoxFont.SelectedValue != null)
                 TextBoxComplete.FontFamily = TextBoxStandard.FontFamily = (FontFamily)ComboBoxFont.SelectedValue;
@@ -1343,15 +1386,17 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event.</param>
-        private void VersionClick(object sender, RoutedEventArgs e)
+        private void Version_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.MessageBox.Show(
                 "- Full new Font/Size/Bold/Italic selector (for Standard/Complete Report)" + Environment.NewLine +
                 "- Save/Restore Font Option" + Environment.NewLine +
                 "- Contextual menu Option (Copy/Copy All/Save for Standard/Complete Report)" + Environment.NewLine +
+                "- Cover Image in Simple Report" + Environment.NewLine +
                 "- .NET 4.61" + Environment.NewLine +
                 "- Some Bug Fix","New in 1.0.4.0");
         }
+        
     }
 
     /// <summary>
@@ -1366,7 +1411,7 @@ namespace GetMediaInfoGUI
         /// <returns>Enumerable collection of all lines in the input control</returns>
         public static IEnumerable<string> GetLines(this TextBlock source)
         {
-            var text = source.Text;
+            string text = source.Text;
             int offset = 0;
             System.Windows.Documents.TextPointer lineStart = source.ContentStart.GetPositionAtOffset(1, System.Windows.Documents.LogicalDirection.Forward);
             do
