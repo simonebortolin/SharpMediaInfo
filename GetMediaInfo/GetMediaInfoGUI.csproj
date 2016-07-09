@@ -61,12 +61,11 @@
     <StartupObject>GetMediaInfoGUI.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GetMediaInfos, Version=0.0.2.5, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="GetMediaInfos">
       <HintPath>..\..\Projects\GetMediaInfosDLL\GetMediaInfos\bin\Release\GetMediaInfos.dll</HintPath>
     </Reference>
     <Reference Include="SevenZipSharp">
-      <HintPath>..\..\Projects\Updater\Updater\bin\Release\SevenZipSharp.dll</HintPath>
+      <HintPath>Resources\SevenZipSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

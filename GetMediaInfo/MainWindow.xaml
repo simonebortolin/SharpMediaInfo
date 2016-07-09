@@ -40,7 +40,13 @@
                     </Grid.RowDefinitions>
                     <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2">
                         <Grid x:Name="GeneralInfoColl">
-                            <Image x:Name="image" />
+                            <Image x:Name="image" RenderOptions.BitmapScalingMode="Fant">
+                                <Image.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem x:Name="SaveCover" Header="Save" Click="SaveCover_Click" IsEnabled="False"/>
+                                    </ContextMenu>
+                                </Image.ContextMenu>
+                            </Image>
                             <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
                         </Grid>
                     </GroupBox>
@@ -169,7 +175,7 @@
             
         </TabControl>
         <StatusBar Height="35" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch">
-            <Label x:Name="toolStripStatusLabel1" Content="" Width="173" Height="35" />
+            <Label x:Name="toolStripStatusLabel1" Content="" Height="35" />
         </StatusBar>
 
     </Grid>
