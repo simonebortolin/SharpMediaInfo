@@ -110,7 +110,6 @@ namespace GetMediaInfos
             {
                 MediaInfo.MediaInfo_Close(this.Handle);
             }
-
         }
 
         #region Disposable Pattern
@@ -191,14 +190,29 @@ namespace GetMediaInfos
         private unsafe string GetSpecificMediaInfo(MediaInfoStreamKind KindOfStream, int trackindex, string NameOfParameter)
         {
             IntPtr p = MediaInfo.MediaInfo_Get(this.Handle, KindOfStream, Convert.ToUInt32(trackindex), NameOfParameter, MediaInfoInfoKind.Text, MediaInfoInfoKind.Name);
-            char* p2 = (char*)p.ToPointer();
-            string s = "";
-            while (*p2 != '\0')
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            int len = 8192;
+            int index = 0;          
+            char* ptr = (char*)p.ToPointer();       
+            char[] buffer = new char[len];
+            
+            while (*ptr != '\0')
             {
-                s += *p2;
-                ++p2;
+                if (index == len)
+                {
+                    sb.Append(buffer);
+                    index = 0;
+                }
+                buffer[index] = *ptr;
+                ++ptr;
+                index++;
             }
-            return s;
+
+            buffer[index] = '\0';
+            sb.Append(buffer, 0, index);
+
+            return sb.ToString();
         }
 
         private void getStreamCount()
@@ -359,7 +373,7 @@ namespace GetMediaInfos
                     int num3 = num1 - 1;
                     for (int num2 = 0; num2 <= num3; num2++)
                     {
-                        GeneralTrack _tracktemp_ = new GeneralTrack();              
+                        GeneralTrack _tracktemp_ = new GeneralTrack();           
                         _tracktemp_.Count= getIntOrDefault(GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"Count"));
                         _tracktemp_.StreamCount= getIntOrDefault(GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"StreamCount"));
                         _tracktemp_.StreamKind= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"StreamKind");
@@ -502,8 +516,9 @@ namespace GetMediaInfos
                         _tracktemp_.LCCN= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"LCCN");
                         _tracktemp_.CatalogNumber= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"CatalogNumber");
                         _tracktemp_.LabelCode= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"LabelCode");
-                        _tracktemp_.Cover= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"Cover");
-                        _tracktemp_.CoverDatas= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"Cover_Datas");
+                        _tracktemp_.Cover = GetSpecificMediaInfo(MediaInfoStreamKind.General, num2, "Cover") == "Yes" ? true : false;
+                        _tracktemp_.CoverType = GetSpecificMediaInfo(MediaInfoStreamKind.General, num2, "Cover_MIME");
+                        _tracktemp_.CoverData= Convert.FromBase64String(GetSpecificMediaInfo(MediaInfoStreamKind.General, num2, "Cover_Data"));
                         _tracktemp_.BPM= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"BPM");
                         _tracktemp_.VideoCodecList= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"Video_Codec_List");
                         _tracktemp_.VideoLanguageList= GetSpecificMediaInfo(MediaInfoStreamKind.General,num2,"Video_Language_List");

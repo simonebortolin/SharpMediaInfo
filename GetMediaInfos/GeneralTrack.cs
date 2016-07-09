@@ -149,8 +149,9 @@ namespace GetMediaInfos
         private string _LCCN;
         private string _CatalogNumber;
         private string _LabelCode;
-        private string _Cover;
-        private string _CoverDatas;
+        private bool _Cover;
+        private string _CoverType;
+        private byte[] _CoverData;
         private string _BPM;
         private string _VideoCodecList;
         private string _VideoLanguageList;
@@ -2297,12 +2298,10 @@ namespace GetMediaInfos
         }
 
         ///<summary> Is there a cover </summary>
-        public string Cover
+        public bool Cover
         {
             get
             {
-                if (String.IsNullOrEmpty(this._Cover))
-                    this._Cover = "";
                 return _Cover;
             }
             set
@@ -2311,18 +2310,33 @@ namespace GetMediaInfos
             }
         }
 
-        ///<summary> Cover, in binary format encoded BASE64 </summary>
-        public string CoverDatas
+        ///<summary> Cover format </summary>
+        public string CoverType
         {
             get
             {
-                if (String.IsNullOrEmpty(this._CoverDatas))
-                    this._CoverDatas = "";
-                return _CoverDatas;
+                if (String.IsNullOrEmpty(this._CoverType))
+                    this._CoverType = "";
+                return _CoverType;
             }
             set
             {
-                this._CoverDatas = value;
+                this._CoverType = value;
+            }
+        }
+
+        ///<summary> Cover, in binary format </summary>
+        public byte[] CoverData
+        {
+            get
+            {
+                if (this._CoverData.Length == 0)
+                    this._CoverData = new byte[0];
+                return _CoverData;
+            }
+            set
+            {
+                this._CoverData = value;
             }
         }
 
