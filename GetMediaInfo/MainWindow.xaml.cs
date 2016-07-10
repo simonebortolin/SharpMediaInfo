@@ -647,6 +647,7 @@ namespace GetMediaInfoGUI
                     for (int i = 0; i < report.Video.Count; i++)
                     {
                         VideoInfoText.Text += "> ";
+
                         if (string.IsNullOrWhiteSpace(report.Video[i].LanguageString))
                         {
                             VideoInfoText.Text += "Undetermined";
@@ -655,18 +656,35 @@ namespace GetMediaInfoGUI
                         {
                             VideoInfoText.Text += report.Video[i].LanguageString;
                         }
+
                         if (!string.IsNullOrWhiteSpace(report.Video[i].Title)) VideoInfoText.Text += " - [" + report.Video[i].Title + "]";
-                        if (!string.IsNullOrWhiteSpace(report.Video[i].DurationString)) VideoInfoText.Text += " - " + ManageMilliSec(report.Video[i].DurationString) + " -";
+
+                        if (!string.IsNullOrWhiteSpace(report.Video[i].DurationString))
+                        {
+                            VideoInfoText.Text += " - " + ManageMilliSec(report.Video[i].DurationString) + " -";
+                        }
+                        else
+                        {
+                            VideoInfoText.Text += " -";
+                        }
+
                         VideoInfoText.Text += " " + report.Video[i].Width + "×" + report.Video[i].Height + ", ";
+
                         VideoInfoText.Text += report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + "), ";
+
                         if (!string.IsNullOrWhiteSpace(report.Video[i].BitRateString)) VideoInfoText.Text += report.Video[i].BitRateString + ", ";
+
                         VideoInfoText.Text += report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps, " + report.Video[i].AspectRatioString + ", ";
+
                         if (!string.IsNullOrWhiteSpace(report.Video[i].FormatSettings)) VideoInfoText.Text += "(" + report.Video[i].FormatSettings + ")" + Environment.NewLine;
+
                         if (report.Video[i].Delay > 0)
                         {
                             VideoInfoText.Text += " - Delay: " + report.Audio[i].Delay + "ms";
                         }
+
                         if (report.Video[i].Default) VideoInfoText.Text += " - Default Track: Yes";
+
                         if (report.Video[i].Forced) VideoInfoText.Text += " - Forced Track: Yes";
                     }
 
@@ -698,7 +716,14 @@ namespace GetMediaInfoGUI
 
                         if (!string.IsNullOrWhiteSpace(report.Audio[i].Title)) AudioInfoText.Text += " - [" + report.Audio[i].Title + "]";
 
-                        if (!string.IsNullOrWhiteSpace(report.Audio[i].DurationStringFormatted)) AudioInfoText.Text += " - " + ManageMilliSec(report.Audio[i].DurationStringFormatted) + " - ";
+                        if (!string.IsNullOrWhiteSpace(report.Audio[i].DurationStringFormatted))
+                        {
+                            AudioInfoText.Text += " - " + ManageMilliSec(report.Audio[i].DurationStringFormatted) + " - ";
+                        }
+                        else
+                        {
+                            AudioInfoText.Text += " - ";
+                        }
 
                         int numberofsubtracks = 0;
 
@@ -1441,32 +1466,5 @@ namespace GetMediaInfoGUI
             return updateDLL.status;
         }
         #endregion
-    }
-
-    /// <summary>
-    /// TextUtils Class
-    /// </summary>
-    public static class TextUtils
-    {
-        /// <summary>
-        /// Gets the lines.
-        /// </summary>
-        /// <param name="source">The source of text as TextBlock</param>
-        /// <returns>Enumerable collection of all lines in the input control</returns>
-        public static IEnumerable<string> GetLines(this TextBlock source)
-        {
-            string text = source.Text;
-            int offset = 0;
-            System.Windows.Documents.TextPointer lineStart = source.ContentStart.GetPositionAtOffset(1, System.Windows.Documents.LogicalDirection.Forward);
-            do
-            {
-                System.Windows.Documents.TextPointer lineEnd = lineStart != null ? lineStart.GetLineStartPosition(1) : null;
-                int length = lineEnd != null ? lineStart.GetOffsetToPosition(lineEnd) : text.Length - offset;
-                yield return text.Substring(offset, length);
-                offset += length;
-                lineStart = lineEnd;
-            }
-            while (lineStart != null);
-        }
     }
 }
