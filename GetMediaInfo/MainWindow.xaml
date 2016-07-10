@@ -105,14 +105,14 @@
             </TabItem>
             <TabItem Header="Options">
                 <Grid Background="#FFE5E5E5">
-                    <GroupBox x:Name="AddRemContextMenu" Header="Association Options" Margin="10,305,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="64">
+                    <GroupBox x:Name="AssociationOptions" Header="Association Options" Margin="10,305,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="64">
                         <Grid>
                             <Button x:Name="AddContextMenu" Content="Associate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="AddContextMenu_Click" Height="27" Margin="10,8,0,0"/>
                             <Button x:Name="RemoveContextMenu" Content="Remove" HorizontalAlignment="Left" Margin="90,8,0,0" Width="75" VerticalAlignment="Top" VerticalContentAlignment="Center" Click="RemoveContextMenu_Click" Height="27"/>
                             <Label x:Name="AssociationStatus" Content="Ready." Margin="170,9,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="Setting" Header="General Settings" Margin="10,54,10,0" VerticalAlignment="Top" Height="131" HorizontalContentAlignment="Stretch">
+                    <GroupBox x:Name="GeneralSetting" Header="General Settings" Margin="10,54,10,0" VerticalAlignment="Top" Height="131" HorizontalContentAlignment="Stretch">
                         <Grid>
                             <CheckBox x:Name="AutoSaveReport" Content="Auto save Standard Report to disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Report" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
@@ -126,13 +126,13 @@
                     <TextBlock x:Name="StatusGetMediaInfos" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" FontWeight="Bold" Margin="147,10,0,0"/>
                     <TextBlock x:Name="textMediainfo" HorizontalAlignment="Left" Margin="10,32,0,0" TextWrapping="Wrap" Text="Mediainfo Version:" VerticalAlignment="Top" Height="17" Width="154"/>
                     <TextBlock x:Name="StatusMediainfo" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" Margin="147,32,0,0" FontWeight="Bold"/>
-                    <GroupBox x:Name="UpdaterBox" Header="Mediainfo Library Updater" Margin="10,244,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="61">
-                        <Grid>
-                            <Button x:Name="UpdateButton" Content="Run Updater" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Click="UpdateButton_Click" Height="27" Margin="10,7,0,0"/>
-                            <Label x:Name="UpdaterProgress" Content="Ready." Margin="121,8,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
+                    <GroupBox x:Name="UpdaterBox" Header="Updater Options&#xD;&#xA;" Margin="10,244,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="61">
+                        <Grid Margin="0,-12,0,-2">
+                            <Button x:Name="UpdateButton" Content="Run Updater" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Click="UpdateButton_Click" Height="27" Margin="10,5,0,0"/>
+                            <Label x:Name="UpdaterProgress" Content="Ready." Margin="121,6,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="groupBox" Header="Text Settings" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Height="59" Width="469">
+                    <GroupBox x:Name="TextSettings" Header="Text Settings" Margin="10,185,10,0" Height="59" VerticalAlignment="Top">
                         <Grid HorizontalAlignment="Left" Height="41" Margin="0,0,0,0" VerticalAlignment="Top" Width="459">
                             <ComboBox x:Name="ComboBoxSize" HorizontalAlignment="Left" Margin="196,7,0,0" VerticalAlignment="Top" Width="133" Height="27" UseLayoutRounding="True" FontSize="16" SelectedItem="" DropDownClosed="Size_Change">
                                 <ComboBox.ItemsSource>
