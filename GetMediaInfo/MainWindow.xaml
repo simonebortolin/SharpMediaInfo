@@ -18,7 +18,7 @@
         Width="522.918" 
         MinWidth="522" 
         MinHeight="584">
-    <Grid Margin="0,0,0,0">
+    <Grid x:Name="GeneralGrid" Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
@@ -40,15 +40,24 @@
                     </Grid.RowDefinitions>
                     <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2">
                         <Grid x:Name="GeneralInfoColl">
-                            <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
-                            <Image x:Name="cover" RenderOptions.BitmapScalingMode="Fant">
-                                <Image.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem x:Name="SaveCover" Header="Save" Click="SaveCover_Click"/>
-                                    </ContextMenu>
-                                </Image.ContextMenu>
-                            </Image>
-                            
+                            <TextBlock x:Name="GeneralInfoTextWithoutCover" TextWrapping="Wrap" Margin="0,0,-2,0"/>
+                            <Grid x:Name="GeneralInfoGrid">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100*"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock x:Name="GeneralInfoTextWhitCover" TextWrapping="Wrap" Margin="0,0,-2,0" Grid.Column="0"/>
+                                <Image x:Name="cover" RenderOptions.BitmapScalingMode="Fant" RenderTransformOrigin="2,0" Width="150" Grid.Column="1">
+                                    <Image.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem x:Name="SaveCover" Header="Save" Click="SaveCover_Click"/>
+                                        </ContextMenu>
+                                    </Image.ContextMenu>
+                                </Image>
+                            </Grid>
+
+
                         </Grid>
                     </GroupBox>
                     <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
@@ -169,10 +178,10 @@
                             <Label x:Name="UpdaterProgress" Content="Ready." Margin="121,8,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    
+
                 </Grid>
             </TabItem>
-            
+
         </TabControl>
         <StatusBar Height="35" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch">
             <Label x:Name="StatusLab" Content="" Height="35" />

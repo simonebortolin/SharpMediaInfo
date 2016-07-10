@@ -58,6 +58,17 @@ namespace GetMediaInfoGUI
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             worker.CancelAsync();
+            this.Close();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            worker.CancelAsync();
         }
         #endregion
 
@@ -409,8 +420,8 @@ namespace GetMediaInfoGUI
             }
 
             CancelButton.IsEnabled = false;
-            //System.Threading.Thread.Sleep(2000);
-            //this.Close();
+            System.Threading.Thread.Sleep(2000);
+            this.Close();
         }
 
 #endregion

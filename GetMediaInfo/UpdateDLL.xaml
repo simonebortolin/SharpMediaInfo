@@ -10,6 +10,7 @@
         Topmost="True" 
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize" 
+        Closing="Window_Closing"
         Width="322" Height="181">
     <Grid Margin="0">
         <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="125,125,125,6"/>
