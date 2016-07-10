@@ -11,6 +11,7 @@ using System.Xml;
 using System.Xml.Linq;
 using GetMediaInfos;
 using System.Windows.Media.Imaging;
+using System.Text;
 
 namespace GetMediaInfoGUI
 {
@@ -71,45 +72,6 @@ namespace GetMediaInfoGUI
             ComboBoxSize.SelectedValue = TextBoxComplete.FontSize;
             RestoreConfig();
             StatusLab.Content = "Ready.";
-        }
-
-        /// <summary>
-        /// Verifies the mediainfo version.
-        /// </summary>
-        private void VerifyMediaInfoVersion()
-        {
-            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\mediainfo.dll"))
-            {
-                FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\MediaInfo.dll");
-                StatusMediainfo.Text = "v" + tmp.FileVersion;
-                StatusMediainfo.Foreground = Brushes.Green;
-            }
-            else
-            {
-                UpdateButton_Click(null, null);
-            }
-        }
-
-        /// <summary>
-        /// Verifies the getmediainfos version.
-        /// </summary>
-        private void VerifyGetMediaInfosVersion()
-        {
-            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll"))
-            {
-                FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll");
-                StatusGetMediaInfos.Text = "v" + tmp.FileVersion;
-                StatusGetMediaInfos.Foreground = Brushes.Green;
-            }
-            else
-            {
-                StatusGetMediaInfos.Text = "ERROR";
-                StatusGetMediaInfos.Foreground = Brushes.Red;
-                System.Windows.Forms.MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Windows.Forms.Application.Exit();
-                System.Windows.Application.Current.Shutdown();
-                Environment.Exit(0);
-            }
         }
        
         /// <summary>
@@ -219,7 +181,7 @@ namespace GetMediaInfoGUI
             TabItem tab = Pages.Items[0] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
-            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = string.Empty;
+            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoTextWithoutCover.Text = string.Empty;
         }
 
         /// <summary>
@@ -275,7 +237,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MilliSec_Reload(object sender, RoutedEventArgs e)
         {
-            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = string.Empty;
+            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoTextWithoutCover.Text = string.Empty;
 
             StatusLab.Content = "Creating Simple Report...";
             StatusLab.InvalidateVisual();
@@ -373,10 +335,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">instance containing the event data.</param>
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            UpdateDLL updateDLL = new UpdateDLL();
-            updateDLL.ShowDialog();
-            UpdaterProgress.Content = updateDLL.status;
-            VerifyMediaInfoVersion();
+            UpdateDLL();
         }
 
         /// <summary>
@@ -541,12 +500,6 @@ namespace GetMediaInfoGUI
                 cover.Source = bitmapImage;
                 cover.Width = 150;
                 cover.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-                Size sizeGeneralInfoText = MeasureTextSize(GeneralInfoText.Text, GeneralInfoText.FontFamily, GeneralInfoText.FontStyle, GeneralInfoText.FontWeight, GeneralInfoText.FontStretch, GeneralInfoText.FontSize);
-                Size space = GeneralInfoText.RenderSize;
-                if(sizeGeneralInfoText.Width + cover.Width > space.Width)
-                {
-                    //TODO
-                }
             }
             else
             {
@@ -565,9 +518,9 @@ namespace GetMediaInfoGUI
             StatusLab.InvalidateVisual();
             TextBoxComplete.Text = TextBoxStandard.Text = string.Empty;
             this.Title = "GetMediaInfo";
-            cover.Width = 0;
+            cover.Source = null;
             SaveReport.IsEnabled = SaveReportActive = false;
-            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = string.Empty;
+            SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoTextWithoutCover.Text = GeneralInfoTextWhitCover.Text = string.Empty;
             while (TreeReport.HasItems)
             {
                 TreeReport.Items.RemoveAt(0);
@@ -660,18 +613,34 @@ namespace GetMediaInfoGUI
                 if (!DisableSimpleInfo.IsChecked.Value)
                 {
                     //general infos
-                    GeneralInfoText.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
-                    GeneralInfoText.Text += "Format: " + report.General[0].Format + Environment.NewLine;
-                    GeneralInfoText.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
-                    if (!string.IsNullOrWhiteSpace(report.General[0].PlayTimeFormatted)) GeneralInfoText.Text += "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
-                    if (report.Video.Count > 0) GeneralInfoText.Text += "Frame Count: " + report.Video[0].FrameCount + Environment.NewLine;
-                    if (!string.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) GeneralInfoText.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
-                    if (report.Video.Count > 0) if (!string.IsNullOrEmpty(report.Video[0].MultiViewLayout)) GeneralInfoText.Text += "3D Mode: " + report.Video[0].MultiViewLayout + Environment.NewLine;
-                    if (!string.IsNullOrWhiteSpace(report.General[0].Title)) GeneralInfoText.Text += "Title: " + report.General[0].Title + Environment.NewLine;
-                    if (!string.IsNullOrWhiteSpace(report.General[0].EncodedDate)) GeneralInfoText.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
-                    if (!string.IsNullOrWhiteSpace(report.General[0].EncodedLibrary)) GeneralInfoText.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
-                    CreateCoverSimpleReport();
-                    
+                    if(report.General[0].Cover)
+                    {
+                        GeneralInfoTextWhitCover.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
+                        GeneralInfoTextWhitCover.Text += "Format: " + report.General[0].Format + Environment.NewLine;
+                        GeneralInfoTextWhitCover.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].PlayTimeFormatted)) GeneralInfoTextWhitCover.Text += "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
+                        if (report.Video.Count > 0) GeneralInfoTextWhitCover.Text += "Frame Count: " + report.Video[0].FrameCount + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) GeneralInfoTextWhitCover.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
+                        if (report.Video.Count > 0) if (!string.IsNullOrEmpty(report.Video[0].MultiViewLayout)) GeneralInfoTextWhitCover.Text += "3D Mode: " + report.Video[0].MultiViewLayout + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].Title)) GeneralInfoTextWhitCover.Text += "Title: " + report.General[0].Title + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].EncodedDate)) GeneralInfoTextWhitCover.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].EncodedLibrary)) GeneralInfoTextWhitCover.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
+                        cover.Source = LoadCover();
+                    }
+                    else
+                    {
+                        GeneralInfoTextWithoutCover.Text = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension + Environment.NewLine;
+                        GeneralInfoTextWithoutCover.Text += "Format: " + report.General[0].Format + Environment.NewLine;
+                        GeneralInfoTextWithoutCover.Text += "File Size: " + report.General[0].FileSizePrecise + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].PlayTimeFormatted)) GeneralInfoTextWithoutCover.Text += "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) + Environment.NewLine;
+                        if (report.Video.Count > 0) GeneralInfoTextWithoutCover.Text += "Frame Count: " + report.Video[0].FrameCount + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) GeneralInfoTextWithoutCover.Text += "Overral Bitrate: " + report.General[0].OveralBitRateString + Environment.NewLine;
+                        if (report.Video.Count > 0) if (!string.IsNullOrEmpty(report.Video[0].MultiViewLayout)) GeneralInfoTextWithoutCover.Text += "3D Mode: " + report.Video[0].MultiViewLayout + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].Title)) GeneralInfoTextWithoutCover.Text += "Title: " + report.General[0].Title + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].EncodedDate)) GeneralInfoTextWithoutCover.Text += "Date Encoded: " + report.General[0].EncodedDate + Environment.NewLine;
+                        if (!string.IsNullOrWhiteSpace(report.General[0].EncodedLibrary)) GeneralInfoTextWithoutCover.Text += "Created with: " + report.General[0].EncodedLibrary + Environment.NewLine;
+
+                    }
 
                     //video tracks
                     VideoInfoText.Text = string.Empty;
@@ -936,12 +905,6 @@ namespace GetMediaInfoGUI
                     if (report.Audio.Count == 0) AudioInfoText.Text = "No audio tracks";
                     if (report.Text.Count == 0) SubInfoText.Text = "No subtitle tracks";
                 }
-
-                //resize box
-                //ResizeBox();
-                
-
-
             }
         }
         
@@ -950,191 +913,195 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void CreateTreeReport()
         {
+
             while (TreeReport.HasItems)
             {
                 TreeReport.Items.RemoveAt(0);
             }
-            //TREE
-            if (!DisableTree.IsChecked.Value)
+            if (report != null)
             {
+                
+                //TREE
                 if (!DisableTree.IsChecked.Value)
                 {
-                    TreeViewItem temp = null;
-
-                    temp = new TreeViewItem();
-
-                    temp.Header = "General";
-                    temp.Items.Add(new TreeViewItem() { Header = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension });
-                    temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.General[0].Format });
-                    temp.Items.Add(new TreeViewItem() { Header = "File Size: " + report.General[0].FileSizePrecise });
-
-                    if (!String.IsNullOrWhiteSpace(ManageMilliSec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) });
-                    if (!String.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
-                    if (report.Video.Count > 0) if (report.Video[0].FrameCount > 0) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
-                    if (!String.IsNullOrWhiteSpace(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
-                    if (report.Video.Count > 0) if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) temp.Items.Add(new TreeViewItem() { Header = "3D Mode: " + report.Video[0].MultiViewLayout });
-                    if (!String.IsNullOrWhiteSpace(report.General[0].EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + report.General[0].EncodedDate });
-                    if (!String.IsNullOrWhiteSpace(report.General[0].EncodedLibrary)) temp.Items.Add(new TreeViewItem() { Header = "Created with: " + report.General[0].EncodedLibrary });
-
-                    TreeReport.Items.Add(temp);
-
-                    //video tracks tree
-                    for (int i = 0; i < report.Video.Count; i++)
+                    if (!DisableTree.IsChecked.Value)
                     {
-                        temp = null;
+                        TreeViewItem temp = null;
+
                         temp = new TreeViewItem();
-                        temp.Header = "Video " + (i + 1);
-                        if (String.IsNullOrWhiteSpace(report.Video[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
-                        else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Video[i].LanguageString });
-                        if (!String.IsNullOrWhiteSpace(report.Video[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Video[i].Title });
-                        temp.Items.Add(new TreeViewItem() { Header = "Resolution: " + report.Video[i].Width + "×" + report.Video[i].Height });
-                        temp.Items.Add(new TreeViewItem() { Header = "Aspect Ratio: " + report.Video[i].AspectRatioString });
-                        temp.Items.Add(new TreeViewItem() { Header = "Framerate: " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps" });
-                        temp.Items.Add(new TreeViewItem() { Header = "Codec Video: " + report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", " + report.Video[i].FormatSettings + ")" });
-                        if (report.Video[i].Delay > 0)
-                        {
-                            temp.Items.Add(new TreeViewItem() { Header = "Delay: " + report.Video[i].Delay + "ms" });
-                        }
-                        if (!String.IsNullOrWhiteSpace(report.Video[i].DefaultString))
-                        {
-                            temp.Items.Add(new TreeViewItem() { Header = "Default: " + report.Video[i].DefaultString });
-                        }
-                        if (!String.IsNullOrWhiteSpace(report.Video[i].ForcedString))
-                        {
-                            temp.Items.Add(new TreeViewItem() { Header = "Forced: " + report.Video[i].ForcedString });
-                        }
+
+                        temp.Header = "General";
+                        temp.Items.Add(new TreeViewItem() { Header = "File Name: " + report.General[0].FileName + "." + report.General[0].FileExtension });
+                        temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.General[0].Format });
+                        temp.Items.Add(new TreeViewItem() { Header = "File Size: " + report.General[0].FileSizePrecise });
+
+                        if (!String.IsNullOrWhiteSpace(ManageMilliSec(report.General[0].PlayTimeFormatted))) temp.Items.Add(new TreeViewItem() { Header = "Duration: " + ManageMilliSec(report.General[0].PlayTimeFormatted) });
+                        if (!String.IsNullOrWhiteSpace(report.General[0].OveralBitRateString)) temp.Items.Add(new TreeViewItem() { Header = "Overal BitRate: " + report.General[0].OveralBitRateString });
+                        if (report.Video.Count > 0) if (report.Video[0].FrameCount > 0) temp.Items.Add(new TreeViewItem() { Header = "Frame Count: " + report.Video[0].FrameCount });
+                        if (!String.IsNullOrWhiteSpace(report.General[0].Title)) temp.Items.Add(new TreeViewItem() { Header = "Title: " + report.General[0].Title });
+                        if (report.Video.Count > 0) if (!String.IsNullOrEmpty(report.Video[0].MultiViewLayout)) temp.Items.Add(new TreeViewItem() { Header = "3D Mode: " + report.Video[0].MultiViewLayout });
+                        if (!String.IsNullOrWhiteSpace(report.General[0].EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + report.General[0].EncodedDate });
+                        if (!String.IsNullOrWhiteSpace(report.General[0].EncodedLibrary)) temp.Items.Add(new TreeViewItem() { Header = "Created with: " + report.General[0].EncodedLibrary });
+
                         TreeReport.Items.Add(temp);
 
-                    }
-
-                    //audio tracks tree
-                    for (int i = 0; i < report.Audio.Count; i++)
-                    {
-                        temp = null;
-                        temp = new TreeViewItem();
-                        temp.Header = "Audio " + (i + 1);
-                        if (String.IsNullOrWhiteSpace(report.Audio[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
-                        else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Audio[i].LanguageString });
-                        if (!String.IsNullOrWhiteSpace(report.Audio[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Audio[i].Title });
-                        if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.Audio[i].Format.Trim(' ') });
-
-                        int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
-
-                        //composed tracks with subtracks
-                        if (numberofsubtracks > 1)
+                        //video tracks tree
+                        for (int i = 0; i < report.Video.Count; i++)
                         {
-                            TreeViewItem sub = null;
-
-                            for (int j = 0; j < numberofsubtracks; j++)
+                            temp = null;
+                            temp = new TreeViewItem();
+                            temp.Header = "Video " + (i + 1);
+                            if (String.IsNullOrWhiteSpace(report.Video[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
+                            else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Video[i].LanguageString });
+                            if (!String.IsNullOrWhiteSpace(report.Video[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Video[i].Title });
+                            temp.Items.Add(new TreeViewItem() { Header = "Resolution: " + report.Video[i].Width + "×" + report.Video[i].Height });
+                            temp.Items.Add(new TreeViewItem() { Header = "Aspect Ratio: " + report.Video[i].AspectRatioString });
+                            temp.Items.Add(new TreeViewItem() { Header = "Framerate: " + report.Video[i].FrameRate.ToString().Replace(",", ".") + " fps" });
+                            temp.Items.Add(new TreeViewItem() { Header = "Codec Video: " + report.Video[i].CodecString + " (" + report.Video[i].FormatProfile + ", " + report.Video[i].FormatSettings + ")" });
+                            if (report.Video[i].Delay > 0)
                             {
-                                sub = null;
-                                sub = new TreeViewItem();
-                                if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) sub.Header = report.Audio[i].Format;
-                                if (report.Audio[i].FormatProfile.Contains("/"))
+                                temp.Items.Add(new TreeViewItem() { Header = "Delay: " + report.Video[i].Delay + "ms" });
+                            }
+                            if (!String.IsNullOrWhiteSpace(report.Video[i].DefaultString))
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Default: " + report.Video[i].DefaultString });
+                            }
+                            if (!String.IsNullOrWhiteSpace(report.Video[i].ForcedString))
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Forced: " + report.Video[i].ForcedString });
+                            }
+                            TreeReport.Items.Add(temp);
+
+                        }
+
+                        //audio tracks tree
+                        for (int i = 0; i < report.Audio.Count; i++)
+                        {
+                            temp = null;
+                            temp = new TreeViewItem();
+                            temp.Header = "Audio " + (i + 1);
+                            if (String.IsNullOrWhiteSpace(report.Audio[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
+                            else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Audio[i].LanguageString });
+                            if (!String.IsNullOrWhiteSpace(report.Audio[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Audio[i].Title });
+                            if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) temp.Items.Add(new TreeViewItem() { Header = "Format: " + report.Audio[i].Format.Trim(' ') });
+
+                            int numberofsubtracks = report.Audio[i].FormatProfile.Split('/').Length;
+
+                            //composed tracks with subtracks
+                            if (numberofsubtracks > 1)
+                            {
+                                TreeViewItem sub = null;
+
+                                for (int j = 0; j < numberofsubtracks; j++)
                                 {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j]))
+                                    sub = null;
+                                    sub = new TreeViewItem();
+                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].Format)) sub.Header = report.Audio[i].Format;
+                                    if (report.Audio[i].FormatProfile.Contains("/"))
                                     {
-                                        sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ') });
-                                        if (!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
-                                        else sub.Header = report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile.Split('/')[j]))
+                                        {
+                                            sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ') });
+                                            if (!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                            else sub.Header = report.Audio[i].FormatProfile.Split('/')[j].Trim(' ');
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile))
+                                    else
                                     {
-                                        sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
-                                        if (!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile;
-                                        else sub.Header = report.Audio[i].FormatProfile;
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].FormatProfile))
+                                        {
+                                            sub.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
+                                            if (!String.IsNullOrWhiteSpace(sub.Header.ToString())) sub.Header += " - " + report.Audio[i].FormatProfile;
+                                            else sub.Header = report.Audio[i].FormatProfile;
+                                        }
                                     }
+                                    if (report.Audio[i].BitRateString.Contains("/"))
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString.Split('/')[j].Trim(' ') });
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString)) sub.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
+                                    }
+                                    if (report.Audio[i].BitRateMode.Contains("/"))
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode.Split('/')[j].Trim(' ') });
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode)) sub.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
+                                    }
+                                    if (report.Audio[i].ChannelsString.Contains("/"))
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Channel: " + report.Audio[i].ChannelsString.Split('/')[j].Trim(' ') });
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString)) sub.Items.Add(new TreeViewItem() { Header = "Channel: " + report.Audio[i].ChannelsString });
+                                    }
+                                    if (report.Audio[i].BitDepthString.Contains("/"))
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].BitDepthString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Bit Depth: " + report.Audio[i].BitDepthString.Split('/')[j].Trim(' ') });
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].BitDepthString)) sub.Items.Add(new TreeViewItem() { Header = "Bit Depth: " + report.Audio[i].BitDepthString });
+                                    }
+                                    if (report.Audio[i].SamplingRateString.Contains("/"))
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString.Split('/')[j].Trim(' ') });
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString)) sub.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
+                                    }
+                                    temp.Items.Add(sub);
                                 }
-                                if (report.Audio[i].BitRateString.Contains("/"))
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString.Split('/')[j].Trim(' ') });
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateString)) sub.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
-                                }
-                                if (report.Audio[i].BitRateMode.Contains("/"))
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode.Split('/')[j].Trim(' ') });
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitRateMode)) sub.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
-                                }
-                                if (report.Audio[i].ChannelsString.Contains("/"))
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Channel: " + report.Audio[i].ChannelsString.Split('/')[j].Trim(' ') });
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].ChannelsString)) sub.Items.Add(new TreeViewItem() { Header = "Channel: " + report.Audio[i].ChannelsString });
-                                }
-                                if (report.Audio[i].BitDepthString.Contains("/"))
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitDepthString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Bit Depth: " + report.Audio[i].BitDepthString.Split('/')[j].Trim(' ') });
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].BitDepthString)) sub.Items.Add(new TreeViewItem() { Header = "Bit Depth: " + report.Audio[i].BitDepthString });
-                                }
-                                if (report.Audio[i].SamplingRateString.Contains("/"))
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString.Split('/')[j])) sub.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString.Split('/')[j].Trim(' ') });
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrWhiteSpace(report.Audio[i].SamplingRateString)) sub.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
-                                }
-                                temp.Items.Add(sub);
+
+
+                            }
+                            else //single tracks without subtracks
+                            {
+                                if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) temp.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
+                                if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) temp.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
+                                if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) temp.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
+                                if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) temp.Items.Add(new TreeViewItem() { Header = "Channels: " + report.Audio[i].ChannelsString });
+                                if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) temp.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
+
+
+                            }
+                            if (report.Audio[i].Delay > 0)
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Delay: " + report.Audio[i].Delay + "ms" });
+                            }
+                            if (!String.IsNullOrEmpty(report.Audio[i].DefaultString))
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Default: " + report.Audio[i].DefaultString });
+                            }
+                            if (!String.IsNullOrEmpty(report.Audio[i].ForcedString))
+                            {
+                                temp.Items.Add(new TreeViewItem() { Header = "Forced: " + report.Audio[i].ForcedString });
                             }
 
-
+                            TreeReport.Items.Add(temp);
                         }
-                        else //single tracks without subtracks
+
+                        //subtitle tracks tree 
+                        for (int i = 0; i < report.Text.Count; i++)
                         {
-                            if (!String.IsNullOrEmpty(report.Audio[i].FormatProfile)) temp.Items.Add(new TreeViewItem() { Header = "Profile: " + report.Audio[i].FormatProfile });
-                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateString)) temp.Items.Add(new TreeViewItem() { Header = "BitRate: " + report.Audio[i].BitRateString });
-                            if (!String.IsNullOrEmpty(report.Audio[i].BitRateMode)) temp.Items.Add(new TreeViewItem() { Header = "BitRate Mode: " + report.Audio[i].BitRateMode });
-                            if (!String.IsNullOrEmpty(report.Audio[i].ChannelsString)) temp.Items.Add(new TreeViewItem() { Header = "Channels: " + report.Audio[i].ChannelsString });
-                            if (!String.IsNullOrEmpty(report.Audio[i].SamplingRateString)) temp.Items.Add(new TreeViewItem() { Header = "Sampling Rate: " + report.Audio[i].SamplingRateString });
+                            temp = null;
+                            temp = new TreeViewItem();
+                            temp.Header = "Subtitle " + (i + 1);
+                            if (String.IsNullOrEmpty(report.Text[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
+                            else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Text[i].LanguageString });
+                            if (!String.IsNullOrEmpty(report.Text[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Text[i].Title });
+                            temp.Items.Add(new TreeViewItem() { Header = "Codec: " + report.Text[i].Codec });
 
-
+                            TreeReport.Items.Add(temp);
                         }
-                        if (report.Audio[i].Delay > 0)
-                        {
-                            temp.Items.Add(new TreeViewItem() { Header = "Delay: " + report.Audio[i].Delay + "ms" });
-                        }
-                        if (!String.IsNullOrEmpty(report.Audio[i].DefaultString))
-                        {
-                            temp.Items.Add(new TreeViewItem() { Header = "Default: " + report.Audio[i].DefaultString });
-                        }
-                        if (!String.IsNullOrEmpty(report.Audio[i].ForcedString))
-                        {
-                            temp.Items.Add(new TreeViewItem() { Header = "Forced: " + report.Audio[i].ForcedString });
-                        }
-
-                        TreeReport.Items.Add(temp);
-                    }
-
-                    //subtitle tracks tree 
-                    for (int i = 0; i < report.Text.Count; i++)
-                    {
-                        temp = null;
-                        temp = new TreeViewItem();
-                        temp.Header = "Subtitle " + (i + 1);
-                        if (String.IsNullOrEmpty(report.Text[i].LanguageString)) temp.Items.Add(new TreeViewItem() { Header = "Undetermined Language" });
-                        else temp.Items.Add(new TreeViewItem() { Header = "Language: " + report.Text[i].LanguageString });
-                        if (!String.IsNullOrEmpty(report.Text[i].Title)) temp.Items.Add(new TreeViewItem() { Header = "Track Title: " + report.Text[i].Title });
-                        temp.Items.Add(new TreeViewItem() { Header = "Codec: " + report.Text[i].Codec });
-
-                        TreeReport.Items.Add(temp);
                     }
                 }
             }
-        
         }
 
         /// <summary>
@@ -1409,42 +1376,69 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Get the required height and width of the specified text. Uses FortammedText
+        /// Verifies the mediainfo version.
         /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontFamily">The font family.</param>
-        /// <param name="fontStyle">The font style.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        /// <param name="fontStretch">The font stretch.</param>
-        /// <param name="fontSize">Size of the font.</param>
-        /// <returns></returns>
-        public static Size MeasureTextSize(string text, FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize)
+        private void VerifyMediaInfoVersion()
         {
-            FormattedText ft = new FormattedText(text,
-                                                 System.Globalization.CultureInfo.CurrentCulture,
-                                                 System.Windows.FlowDirection.LeftToRight,
-                                                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch),
-                                                 fontSize,
-                                                 Brushes.Black);
-            return new Size(ft.Width, ft.Height);
+            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\mediainfo.dll"))
+            {
+                FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\MediaInfo.dll");
+                StatusMediainfo.Text = "v" + tmp.FileVersion;
+                StatusMediainfo.Foreground = Brushes.Green;
+            }
+            else
+            {
+                GeneralGrid.IsEnabled = false;
+                if (UpdateDLL() == "Mediainfo.dll was successfully updated.")
+                {
+                    GeneralGrid.IsEnabled = true;
+                }
+                else
+                {
+                    StatusGetMediaInfos.Text = "ERROR";
+                    StatusGetMediaInfos.Foreground = Brushes.Red;
+                    System.Windows.Forms.MessageBox.Show("Library Mediainfo.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.Application.Exit();
+                    System.Windows.Application.Current.Shutdown();
+                    Environment.Exit(0);
+                }
+
+            }
         }
         
         /// <summary>
-        /// Measures the size of the text.
+        /// Verifies the getmediainfos version.
         /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="typeface">The typeface.</param>
-        /// <param name="fontSize">Size of the font.</param>
-        /// <returns></returns>
-        public static Size MeasureTextSize(string text, Typeface typeface, double fontSize)
+        private void VerifyGetMediaInfosVersion()
         {
-            FormattedText ft = new FormattedText(text,
-                                                 System.Globalization.CultureInfo.CurrentCulture,
-                                                 System.Windows.FlowDirection.LeftToRight,
-                                                 typeface,
-                                                 fontSize,
-                                                 Brushes.Black);
-            return new Size(ft.Width, ft.Height);
+            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll"))
+            {
+                FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll");
+                StatusGetMediaInfos.Text = "v" + tmp.FileVersion;
+                StatusGetMediaInfos.Foreground = Brushes.Green;
+            }
+            else
+            {
+                StatusGetMediaInfos.Text = "ERROR";
+                StatusGetMediaInfos.Foreground = Brushes.Red;
+                System.Windows.Forms.MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.Application.Exit();
+                System.Windows.Application.Current.Shutdown();
+                Environment.Exit(0);
+            }
+        }
+
+        /// <summary>
+        /// Update Media Info DLL.
+        /// </summary>
+        /// <returns>Status of update</returns>
+        private string UpdateDLL()
+        {
+            UpdateDLL updateDLL = new UpdateDLL();
+            updateDLL.ShowDialog();
+            UpdaterProgress.Content = updateDLL.status;
+            VerifyMediaInfoVersion();
+            return updateDLL.status;
         }
         #endregion
     }
