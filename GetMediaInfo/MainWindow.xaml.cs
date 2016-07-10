@@ -97,7 +97,7 @@ namespace GetMediaInfoGUI
             ComboBoxFont.SelectedValue = TextBoxComplete.FontFamily;
             ComboBoxSize.SelectedValue = TextBoxComplete.FontSize;
             RestoreConfig();
-            toolStripStatusLabel1.Content = "Ready.";
+            StatusLab.Content = "Ready.";
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace GetMediaInfoGUI
                 if (!String.IsNullOrEmpty(Report.FileName))
                 {
                     StreamWriter File = new StreamWriter(Report.FileName);
-                    if (tabControl.SelectedIndex == 2) File.WriteLine(TextBoxComplete.Text);
+                    if (Pages.SelectedIndex == 2) File.WriteLine(TextBoxComplete.Text);
                     else File.WriteLine(TextBoxStandard.Text);
                     File.Close();
                 }
@@ -205,7 +205,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimpleInfo_Checked(object sender, RoutedEventArgs e)
         {
-            TabItem tab = tabControl.Items[0] as TabItem;
+            TabItem tab = Pages.Items[0] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
             SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoText.Text = String.Empty;
@@ -218,7 +218,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimpleInfo_Unchecked(object sender, RoutedEventArgs e)
         {
-            TabItem tab = tabControl.Items[0] as TabItem;
+            TabItem tab = Pages.Items[0] as TabItem;
             tab.Visibility = Visibility.Visible;
             tab.Width = 52;
             CreateSimpleReport();
@@ -231,7 +231,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Checked(object sender, RoutedEventArgs e)
         {
-            TabItem tab = tabControl.Items[3] as TabItem;
+            TabItem tab = Pages.Items[3] as TabItem;
             tab.Visibility = Visibility.Hidden;
             tab.Width = 0;
         }
@@ -243,7 +243,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTreeInfo_Unchecked(object sender, RoutedEventArgs e)
         {
-            TabItem tab = tabControl.Items[3] as TabItem;
+            TabItem tab = Pages.Items[3] as TabItem;
             tab.Visibility = Visibility.Visible;
             tab.Width = 38;
             while (TreeReport.HasItems)
@@ -356,7 +356,10 @@ namespace GetMediaInfoGUI
         /// <param name="e">instance containing the event data.</param>
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\7z.dll") && File.Exists(System.Windows.Forms.Application.StartupPath + "\\SevenZipSharp.dll"))
+            UpdateDLL updateDLL = new UpdateDLL();
+            updateDLL.ShowDialog();
+            UpdaterProgress.Content = updateDLL.status;
+            /*if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\7z.dll") && File.Exists(System.Windows.Forms.Application.StartupPath + "\\SevenZipSharp.dll"))
             {
                 string currmediainfo = String.Empty;
 
@@ -458,7 +461,7 @@ namespace GetMediaInfoGUI
             {
                 UpdaterProgress.Content = "Can't update, libraries 7z.dll and/or  SevenZipSharp.dll absent.";
                 System.Windows.Forms.MessageBox.Show("libraries 7z.dll and/or  SevenZipSharp.dll absent.", "Can't update", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
+            }*/
 
         }
 
@@ -469,13 +472,13 @@ namespace GetMediaInfoGUI
         /// <param name="e">The event.</param>
         private void CopyAllText_Click(object sender, RoutedEventArgs e)
         {
-            if (tabControl.SelectedIndex == 2)
+            if (Pages.SelectedIndex == 2)
             {
                 TextBoxComplete.SelectAll();
                 TextBoxComplete.Copy();
 
             }
-            else if (tabControl.SelectedIndex == 1)
+            else if (Pages.SelectedIndex == 1)
             {
                 TextBoxStandard.SelectAll();
                 TextBoxStandard.Copy();
@@ -580,42 +583,42 @@ namespace GetMediaInfoGUI
             ClearAll();
             if (File.Exists(path))
             {
-                toolStripStatusLabel1.Content = "Analysing...";
-                toolStripStatusLabel1.InvalidateVisual();
+                StatusLab.Content = "Analysing...";
+                StatusLab.InvalidateVisual();
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 report = new MediaInfo(path);
                 sw.Stop();
-                toolStripStatusLabel1.Content = "Getting Cover...";
-                toolStripStatusLabel1.InvalidateVisual();
-                BitmapImage cover = Cover();
-                if (cover != null)
+                StatusLab.Content = "Getting Cover...";
+                StatusLab.InvalidateVisual();
+                BitmapImage bitmapImage = Cover();
+                if (bitmapImage != null)
                 {
-                    image.Source = cover;
-                    image.Height = 150;
-                    image.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                    cover.Source = bitmapImage;
+                    cover.Height = 150;
+                    cover.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
                 }
                 else
                 {
-                    image.Height = 0;
+                    cover.Height = 0;
                 }
-                toolStripStatusLabel1.Content = "Creating Simple Report...";
-                toolStripStatusLabel1.InvalidateVisual();
+                StatusLab.Content = "Creating Simple Report...";
+                StatusLab.InvalidateVisual();
                 CreateSimpleReport();
                 ShowReportsAndSaveToDisk();
                 this.Title += " (" + Path.GetFileName(path) + ")";
-                toolStripStatusLabel1.Content = "Analysis Completed. (" + sw.ElapsedMilliseconds + "ms)";
-                toolStripStatusLabel1.InvalidateVisual();
+                StatusLab.Content = "Analysis Completed. (" + sw.ElapsedMilliseconds + "ms)";
+                StatusLab.InvalidateVisual();
                 if (!AutoSaveReport.IsChecked.Value) SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReport.IsEnabled = true;
                 SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReportActive = true;
             }
             else if (String.IsNullOrWhiteSpace(path))
             {
-                toolStripStatusLabel1.Content = "Ready.";
+                StatusLab.Content = "Ready.";
             }
             else
             {
-                toolStripStatusLabel1.Content = "Not existing file.";
+                StatusLab.Content = "Not existing file.";
                 SaveMenu_1.IsEnabled = SaveMenu.IsEnabled = SaveReport.IsEnabled = SaveReportActive = false;
             }
         }

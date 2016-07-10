@@ -26,7 +26,7 @@
         <StatusBar Height="25" Margin="0,330,10,0" VerticalAlignment="Top" VerticalContentAlignment="Bottom" Grid.ColumnSpan="3" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" />
         <Button x:Name="OpenFile" Content="Open File" HorizontalAlignment="Right" Margin="0,10,93,0" VerticalAlignment="Top" Width="75" Height="23" Click="OpenFile_Click" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" />
         <Button x:Name="SaveReport" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" />
-        <TabControl x:Name="tabControl" Margin="10,38,10,35" VerticalContentAlignment="Stretch" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" >
+        <TabControl x:Name="Pages" Margin="10,38,10,35" VerticalContentAlignment="Stretch" Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" >
             <TabItem Header="Simple">
                 <Grid x:Name="Grid">
                     <Grid.ColumnDefinitions>
@@ -41,7 +41,7 @@
                     <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2">
                         <Grid x:Name="GeneralInfoColl">
                             <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
-                            <Image x:Name="image" RenderOptions.BitmapScalingMode="Fant">
+                            <Image x:Name="cover" RenderOptions.BitmapScalingMode="Fant">
                                 <Image.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem x:Name="SaveCover" Header="Save" Click="SaveCover_Click"/>
@@ -77,7 +77,6 @@
                     </TextBox>
                 </Grid>
             </TabItem>
-
             <TabItem Header="Complete">
                 <Grid Background="#FFE5E5E5">
                     <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontSize="{Binding Path=FontSize}" FontFamily="{Binding ElementName=ComboBoxFont, Path=SelectedItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
@@ -97,14 +96,14 @@
             </TabItem>
             <TabItem Header="Options">
                 <Grid Background="#FFE5E5E5">
-                    <GroupBox x:Name="groupBox" Header="ContextMenu Options" Margin="10,284,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="64">
+                    <GroupBox x:Name="ContextMenu" Header="ContextMenu Options" Margin="10,284,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="64">
                         <Grid>
                             <Button x:Name="AddContextMenu" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="AddContextMenu_Click" Height="27" Margin="10,8,0,0"/>
                             <Button x:Name="RemoveContextMenu" Content="Remove" HorizontalAlignment="Left" Margin="90,8,0,0" Width="75" VerticalAlignment="Top" VerticalContentAlignment="Center" Click="RemoveContextMenu_Click" Height="27"/>
                             <Label x:Name="AssociationStatus" Content="Ready." Margin="170,9,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,-0.546" Height="26"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="groupBox1" Header="Setting" Margin="10,54,10,0" VerticalAlignment="Top" Height="167" HorizontalContentAlignment="Stretch">
+                    <GroupBox x:Name="Setting" Header="Setting" Margin="10,54,10,0" VerticalAlignment="Top" Height="167" HorizontalContentAlignment="Stretch">
                         <Grid>
                             <CheckBox x:Name="AutoSaveReport" Content="Auto Save Report to Disk" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="AutoSaveReport_Checked"  Unchecked="AutoSaveReport_Unchecked"/>
                             <CheckBox x:Name="DisableSimpleInfo" Content="Disable Simple Info" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
@@ -160,9 +159,9 @@
                         </Grid>
                     </GroupBox>
                     <Button x:Name="Version" Content="Version" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" Width="86" Click="Version_Click"/>
-                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="GetMediainfos Version:" VerticalAlignment="Top" Height="17" Width="154" Margin="10,10,0,0"/>
+                    <TextBlock x:Name="textGetMediaInfos" HorizontalAlignment="Left" TextWrapping="Wrap" Text="GetMediainfos Version:" VerticalAlignment="Top" Height="17" Width="154" Margin="10,10,0,0"/>
                     <TextBlock x:Name="StatusGetMediaInfos" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" FontWeight="Bold" Margin="147,10,0,0"/>
-                    <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="10,32,0,0" TextWrapping="Wrap" Text="Mediainfo Version:" VerticalAlignment="Top" Height="17" Width="154"/>
+                    <TextBlock x:Name="textMediainfo" HorizontalAlignment="Left" Margin="10,32,0,0" TextWrapping="Wrap" Text="Mediainfo Version:" VerticalAlignment="Top" Height="17" Width="154"/>
                     <TextBlock x:Name="StatusMediainfo" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="17" Width="99" Margin="147,32,0,0" FontWeight="Bold"/>
                     <GroupBox x:Name="UpdaterBox" Header="Updates Options" Margin="10,218,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="61">
                         <Grid>
@@ -176,7 +175,7 @@
             
         </TabControl>
         <StatusBar Height="35" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch">
-            <Label x:Name="toolStripStatusLabel1" Content="" Height="35" />
+            <Label x:Name="StatusLab" Content="" Height="35" />
         </StatusBar>
 
     </Grid>
