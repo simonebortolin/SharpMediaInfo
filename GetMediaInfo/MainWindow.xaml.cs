@@ -482,7 +482,6 @@ namespace GetMediaInfoGUI
             string[] arguments = Environment.GetCommandLineArgs();
             if (arguments.Length > 1)
             {
-                //toolStripStatusLabel1.Text = "Analyzing...";
                 filepathBox.Text = arguments[1];
                 AnalyzeFile(arguments[1]);
             }
@@ -546,7 +545,7 @@ namespace GetMediaInfoGUI
                 Size space = GeneralInfoText.RenderSize;
                 if(sizeGeneralInfoText.Width + cover.Width > space.Width)
                 {
-                    int pippo = 0;
+                    //TODO
                 }
             }
             else
@@ -1412,6 +1411,13 @@ namespace GetMediaInfoGUI
         /// <summary>
         /// Get the required height and width of the specified text. Uses FortammedText
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontStyle">The font style.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <param name="fontStretch">The font stretch.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <returns></returns>
         public static Size MeasureTextSize(string text, FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize)
         {
             FormattedText ft = new FormattedText(text,
@@ -1422,6 +1428,14 @@ namespace GetMediaInfoGUI
                                                  Brushes.Black);
             return new Size(ft.Width, ft.Height);
         }
+        
+        /// <summary>
+        /// Measures the size of the text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="typeface">The typeface.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <returns></returns>
         public static Size MeasureTextSize(string text, Typeface typeface, double fontSize)
         {
             FormattedText ft = new FormattedText(text,
@@ -1432,7 +1446,6 @@ namespace GetMediaInfoGUI
                                                  Brushes.Black);
             return new Size(ft.Width, ft.Height);
         }
-
         #endregion
     }
 
