@@ -58,7 +58,6 @@ namespace GetMediaInfoGUI
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             worker.CancelAsync();
-            this.Close();
         }
 
         /// <summary>
@@ -423,7 +422,6 @@ namespace GetMediaInfoGUI
             System.Threading.Thread.Sleep(2000);
             this.Close();
         }
-
-#endregion
+        #endregion
     }
 }
