@@ -75,7 +75,8 @@ namespace GetMediaInfoGUI
                 StatusMediainfo.Text = "ERROR";
                 StatusMediainfo.Foreground = Brushes.Red;
                 System.Windows.Forms.MessageBox.Show("Library MediaInfo.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Windows.Forms.Application.Exit();
+                System.Windows.Application.Current.Shutdown();
+                Environment.Exit(0);
             }
             if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll"))
             {
@@ -89,6 +90,8 @@ namespace GetMediaInfoGUI
                 StatusGetMediaInfos.Foreground = Brushes.Red;
                 System.Windows.Forms.MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 System.Windows.Forms.Application.Exit();
+                System.Windows.Application.Current.Shutdown();
+                Environment.Exit(0);
             }
             ProcessArgs();
             ComboBoxFont.SelectedValue = TextBoxComplete.FontFamily;
@@ -372,8 +375,9 @@ namespace GetMediaInfoGUI
                 if (!currmediainfo.Contains(newvermediainfo))
                 {
                     UpdaterProgress.Content = "Found newer Mediainfo version! (" + newvermediainfo + ")";
-
-                    string url = "http://mediaarea.net/download/binary/libmediainfo0/" + newvermediainfo + "/MediaInfo_DLL_" + newvermediainfo + "_Windows_x64_WithoutInstaller.7z";
+                    
+                    string url = Environment.Is64BitProcess ? "http://mediaarea.net/download/binary/libmediainfo0/" + newvermediainfo + "/MediaInfo_DLL_" + newvermediainfo + "_Windows_x64_WithoutInstaller.7z" :
+                                                              "http://mediaarea.net/download/binary/libmediainfo0/" + newvermediainfo + "/MediaInfo_DLL_" + newvermediainfo + "_Windows_i386_WithoutInstaller.7z";
                     string filename = url.Substring(url.LastIndexOf("/") + 1, url.Length - url.LastIndexOf("/") - 1);
                     string filetoextract = "MediaInfo.dll";
                     string newfilepath = System.Windows.Forms.Application.StartupPath + "\\" + filetoextract;
@@ -391,9 +395,10 @@ namespace GetMediaInfoGUI
                     UpdaterProgress.Content = "Download Completed!";
 
                     //decompress
-                    SevenZip.SevenZipCompressor.SetLibraryPath(System.Windows.Forms.Application.StartupPath + "\\7z.dll");
+                    SevenZipExtractor.SetLibraryPath(System.Windows.Forms.Application.StartupPath + "\\7z.dll");
                     using (SevenZipExtractor archive = new SevenZipExtractor(downloadpath))
                     {
+                        
                         UpdaterProgress.Content = "Deleting old files...";
 
                         if (File.Exists(newfilepath))
@@ -531,12 +536,15 @@ namespace GetMediaInfoGUI
             if (report.General[0].Cover)
             {
                 SaveFileDialog dialog = new SaveFileDialog();
-                dialog.DefaultExt = "jpeg";
+                dialog.Filter = "JPEG Image|*.jpeg";
+                dialog.Title = "Select the file you want to use to save the cover";
+                dialog.DefaultExt = ".jpeg";
                 dialog.FileName = "cover";
                 dialog.InitialDirectory = report.General[0].FolderName;
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    var encoder = new JpegBitmapEncoder();
+
+                    JpegBitmapEncoder encoder = new JpegBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(Cover()));
                     using (var filestream = new FileStream(dialog.FileName, FileMode.Create))
                     {
@@ -589,7 +597,6 @@ namespace GetMediaInfoGUI
                 }
                 else
                 {
-                    image.Width = 0;
                     image.Height = 0;
                 }
                 toolStripStatusLabel1.Content = "Creating Simple Report...";

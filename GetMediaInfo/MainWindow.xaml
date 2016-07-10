@@ -40,14 +40,15 @@
                     </Grid.RowDefinitions>
                     <GroupBox x:Name="GeneralInfo" Header="General Infos" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2">
                         <Grid x:Name="GeneralInfoColl">
+                            <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
                             <Image x:Name="image" RenderOptions.BitmapScalingMode="Fant">
                                 <Image.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem x:Name="SaveCover" Header="Save" Click="SaveCover_Click" IsEnabled="False"/>
+                                        <MenuItem x:Name="SaveCover" Header="Save" Click="SaveCover_Click"/>
                                     </ContextMenu>
                                 </Image.ContextMenu>
                             </Image>
-                            <TextBlock x:Name="GeneralInfoText" TextWrapping="Wrap" Margin="0,0,-2,0"/>
+                            
                         </Grid>
                     </GroupBox>
                     <GroupBox x:Name="TVideo" Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
