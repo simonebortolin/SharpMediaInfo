@@ -91,19 +91,29 @@ namespace GetMediaInfoGUI
         private void AddContextMenu_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.RegistryKey key;
-            // for all files
-            key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true);
-            key = key.CreateSubKey("*");
-            key = key.CreateSubKey("shell");
-            key = key.CreateSubKey("open_with_getmediainfosgui_all");
-            key.SetValue("", "GetMediaInfos");
-            key.SetValue("Icon", "\"" + System.Windows.Forms.Application.StartupPath + "\\icon.ico\"");
-            key = key.CreateSubKey("command");
-            key.SetValue("", "\"" + System.Windows.Forms.Application.ExecutablePath + "\" \"%1\"");
-            key.Close();
 
-            // end 
-            AssociationStatus.Content = "Successufully Added.";
+            try
+            {
+                // for all files
+                key = Microsoft.Win32.Registry.CurrentUser
+                    .OpenSubKey("Software", true)
+                    .OpenSubKey("Classes", true);
+                key = key.CreateSubKey("*");
+                key = key.CreateSubKey("shell");
+                key = key.CreateSubKey("open_with_getmediainfosgui_all");
+                key.SetValue("", "GetMediaInfos");
+                key.SetValue("Icon", "\"" + System.Windows.Forms.Application.StartupPath + "\\icon.ico\"");
+                key = key.CreateSubKey("command");
+                key.SetValue("", "\"" + System.Windows.Forms.Application.ExecutablePath + "\" \"%1\"");
+                key.Close();
+                // end 
+                AssociationStatus.Content = "Association has been completed.";
+            }
+            catch (Exception ex)
+            {
+                AssociationStatus.Content = "Association failed: " + ex.Message + ".";
+            }
+
         }
 
         /// <summary>
@@ -120,11 +130,16 @@ namespace GetMediaInfoGUI
                     .OpenSubKey("Classes", true)
                     .OpenSubKey("*", true)
                     .CreateSubKey("shell");
-                key.DeleteSubKeyTree("open_with_getmediainfosgui");
+                key.DeleteSubKeyTree("open_with_getmediainfosgui_all");
                 key.Close();
+
+                AssociationStatus.Content = "Association has been successfully removed.";
             }
-            catch { }
-            AssociationStatus.Content = "Successufully Removed.";
+            catch (Exception ex)
+            {
+                AssociationStatus.Content = "Association not removed: " + ex.Message + ".";
+            }
+
         }
 
         /// <summary>
