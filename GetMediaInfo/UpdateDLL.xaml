@@ -5,11 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GetMediaInfoGUI"
         mc:Ignorable="d"
-        ResizeMode="NoResize"
-        Title="Update Component" Height="127.833" Width="290.667">
-    <Grid Margin="0,0,-48,-19">
-        <Label x:Name="Log" Content="" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Width="262" Height="50"/>
-        <ProgressBar x:Name="ProgressUpdate" HorizontalAlignment="Left" Height="19" Margin="10,65,0,0" VerticalAlignment="Top" Width="262" RenderTransformOrigin="0.063,-4.233"/>
-
+        Title="Update Component" 
+        Icon="icon.ico" 
+        Topmost="True" 
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" 
+        Width="322" Height="181">
+    <Grid Margin="0">
+        <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="125,125,125,6"/>
+        <ProgressBar x:Name="ProgressUpdate" RenderTransformOrigin="0.063,-4.233" Margin="10,101,10,31"/>
+        <TextBox x:Name="Log" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="10,10,10,55"/>
     </Grid>
 </Window>
+

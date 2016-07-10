@@ -9,9 +9,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Xml;
 using System.Xml.Linq;
-using System.Net;
 using GetMediaInfos;
-using SevenZip;
 using System.Windows.Media.Imaging;
 
 namespace GetMediaInfoGUI
@@ -64,24 +62,43 @@ namespace GetMediaInfoGUI
         private void Inizialize_Loaded(object sender, EventArgs e)
         {
             Version.Content = "Version " + System.Windows.Forms.Application.ProductVersion;
+
+            VerifyMediaInfoVersion();
+            VerifyGetMediaInfosVersion();
+
+            ProcessArgs();
+            ComboBoxFont.SelectedValue = TextBoxComplete.FontFamily;
+            ComboBoxSize.SelectedValue = TextBoxComplete.FontSize;
+            RestoreConfig();
+            StatusLab.Content = "Ready.";
+        }
+
+        /// <summary>
+        /// Verifies the mediainfo version.
+        /// </summary>
+        private void VerifyMediaInfoVersion()
+        {
             if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\mediainfo.dll"))
             {
                 FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\MediaInfo.dll");
-                StatusMediainfo.Text = "OK v" + tmp.FileVersion;
+                StatusMediainfo.Text = "v" + tmp.FileVersion;
                 StatusMediainfo.Foreground = Brushes.Green;
             }
             else
             {
-                StatusMediainfo.Text = "ERROR";
-                StatusMediainfo.Foreground = Brushes.Red;
-                System.Windows.Forms.MessageBox.Show("Library MediaInfo.dll not found.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Windows.Application.Current.Shutdown();
-                Environment.Exit(0);
+                UpdateButton_Click(null, null);
             }
+        }
+
+        /// <summary>
+        /// Verifies the getmediainfos version.
+        /// </summary>
+        private void VerifyGetMediaInfosVersion()
+        {
             if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll"))
             {
                 FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\GetMediaInfos.dll");
-                StatusGetMediaInfos.Text = "OK v" + tmp.FileVersion;
+                StatusGetMediaInfos.Text = "v" + tmp.FileVersion;
                 StatusGetMediaInfos.Foreground = Brushes.Green;
             }
             else
@@ -93,13 +110,8 @@ namespace GetMediaInfoGUI
                 System.Windows.Application.Current.Shutdown();
                 Environment.Exit(0);
             }
-            ProcessArgs();
-            ComboBoxFont.SelectedValue = TextBoxComplete.FontFamily;
-            ComboBoxSize.SelectedValue = TextBoxComplete.FontSize;
-            RestoreConfig();
-            StatusLab.Content = "Ready.";
         }
-
+       
         /// <summary>
         /// Handler for application closing event. Saves user configuration.
         /// </summary>
@@ -125,10 +137,8 @@ namespace GetMediaInfoGUI
             key = key.CreateSubKey("open_with_getmediainfosgui_all");
             key.SetValue("", "GetMediaInfos");
             key.SetValue("Icon", "\"" + System.Windows.Forms.Application.StartupPath + "\\icon.ico\"");
-
             key = key.CreateSubKey("command");
             key.SetValue("", "\"" + System.Windows.Forms.Application.ExecutablePath + "\" \"%1\"");
-
             key.Close();
 
             // end 
@@ -145,7 +155,10 @@ namespace GetMediaInfoGUI
             Microsoft.Win32.RegistryKey key;
             try
             {
-                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true).OpenSubKey("Classes", true).OpenSubKey("*", true).CreateSubKey("shell");
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software", true)
+                    .OpenSubKey("Classes", true)
+                    .OpenSubKey("*", true)
+                    .CreateSubKey("shell");
                 key.DeleteSubKeyTree("open_with_getmediainfosgui");
                 key.Close();
             }
@@ -168,9 +181,7 @@ namespace GetMediaInfoGUI
             if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 filepathBox.Text = file.FileName;
-                //Analisi(filepathBox.Text);
             }
-
         }
 
         /// <summary>
@@ -325,7 +336,6 @@ namespace GetMediaInfoGUI
             {
                 string[] FileList = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop, false);
                 filepathBox.Text = FileList[0];
-                //Analisi(filepathBox.Text);
             }
         }
 
@@ -359,110 +369,7 @@ namespace GetMediaInfoGUI
             UpdateDLL updateDLL = new UpdateDLL();
             updateDLL.ShowDialog();
             UpdaterProgress.Content = updateDLL.status;
-            /*if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\7z.dll") && File.Exists(System.Windows.Forms.Application.StartupPath + "\\SevenZipSharp.dll"))
-            {
-                string currmediainfo = String.Empty;
-
-                if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\Mediainfo.dll"))
-                {
-                    FileVersionInfo tmp = FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\Mediainfo.dll");
-
-                    if (!String.IsNullOrEmpty(tmp.FileVersion))
-                    {
-                        currmediainfo = tmp.FileVersion;
-                    }
-                }
-
-                string newvermediainfo = GetLatestMediainfoVersion();
-
-                if (!currmediainfo.Contains(newvermediainfo))
-                {
-                    UpdaterProgress.Content = "Found newer Mediainfo version! (" + newvermediainfo + ")";
-                    
-                    string url = Environment.Is64BitProcess ? "http://mediaarea.net/download/binary/libmediainfo0/" + newvermediainfo + "/MediaInfo_DLL_" + newvermediainfo + "_Windows_x64_WithoutInstaller.7z" :
-                                                              "http://mediaarea.net/download/binary/libmediainfo0/" + newvermediainfo + "/MediaInfo_DLL_" + newvermediainfo + "_Windows_i386_WithoutInstaller.7z";
-                    string filename = url.Substring(url.LastIndexOf("/") + 1, url.Length - url.LastIndexOf("/") - 1);
-                    string filetoextract = "MediaInfo.dll";
-                    string newfilepath = System.Windows.Forms.Application.StartupPath + "\\" + filetoextract;
-                    string downloadpath = System.Windows.Forms.Application.StartupPath + "\\tmp\\" + filename;
-
-                    if (!Directory.Exists(System.Windows.Forms.Application.StartupPath + "\\tmp\\"))
-                    {
-                        Directory.CreateDirectory(System.Windows.Forms.Application.StartupPath + "\\tmp\\");
-                    }
-
-                    // Starts the download
-                    WebClient client = new WebClient();
-                    UpdaterProgress.Content = "Downloading...";
-                    client.DownloadFile(new Uri(url), downloadpath);
-                    UpdaterProgress.Content = "Download Completed!";
-
-                    //decompress
-                    SevenZipExtractor.SetLibraryPath(System.Windows.Forms.Application.StartupPath + "\\7z.dll");
-                    using (SevenZipExtractor archive = new SevenZipExtractor(downloadpath))
-                    {
-                        
-                        UpdaterProgress.Content = "Deleting old files...";
-
-                        if (File.Exists(newfilepath))
-                        {
-                            try
-                            {
-                                File.Delete(newfilepath);
-                            }
-                            catch (Exception ex)
-                            {
-                                System.Windows.Forms.MessageBox.Show("File " + filename + " cannot be extracted. Error message: " + ex.Message);
-                                return;
-                            }
-                        }
-
-                        UpdaterProgress.Content = "Extracting...";
-
-                        FileStream fileStream = File.Create(newfilepath);
-
-                        foreach (string file in archive.ArchiveFileNames)
-                        {
-                            if (file.Contains(filetoextract))
-                            {
-                                filetoextract = file;
-                                break;
-                            }
-                        }
-
-                        archive.ExtractFile(filetoextract, fileStream);
-                        UpdaterProgress.Content = "Extraction Completed!";
-
-                        StatusMediainfo.Text = "OK v" + newvermediainfo;
-                        StatusMediainfo.Foreground = Brushes.Green;
-
-                        client.Dispose();
-                        archive.Dispose();
-
-                        try
-                        {
-                            File.Delete(downloadpath);
-                            Directory.Delete(System.Windows.Forms.Application.StartupPath + "\\tmp\\", true);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Windows.Forms.MessageBox.Show(ex.Message);
-                        }
-
-                        UpdaterProgress.Content = "Successfully Updated!";
-                    }
-                }
-                else
-                {
-                    UpdaterProgress.Content = "Mediainfo is already at the latest version.";
-                }
-            }
-            else
-            {
-                UpdaterProgress.Content = "Can't update, libraries 7z.dll and/or  SevenZipSharp.dll absent.";
-                System.Windows.Forms.MessageBox.Show("libraries 7z.dll and/or  SevenZipSharp.dll absent.", "Can't update", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }*/
-
+            VerifyMediaInfoVersion();
         }
 
         /// <summary>
@@ -1412,20 +1319,6 @@ namespace GetMediaInfoGUI
             {
                 SaveConfig();
             }
-        }
-
-        /// <summary>
-        /// Gets the latest mediainfo version.
-        /// </summary>
-        /// <returns>String as the latest available mediainfo version</returns>
-        private string GetLatestMediainfoVersion()
-        {
-            XmlReader reader = XmlTextReader.Create("https://mediaarea.net/rss/mediainfo_updates.xml");
-            reader.ReadToFollowing("title");
-            reader.ReadToFollowing("title");
-            string latest = reader.ReadElementContentAsString();
-            latest = latest.Replace("MediaInfo ", "");
-            return latest;
         }
         
         /// <summary>
