@@ -104,6 +104,7 @@ namespace GetMediaInfoGUI
             {
                 CancelButton.IsEnabled = true;
                 worker.RunWorkerAsync();
+                _status = null;
             }
             else
             {
@@ -403,19 +404,22 @@ namespace GetMediaInfoGUI
             {
                 Log.AppendText("All operations successfully completed!" + Environment.NewLine);
                 ProgressUpdate.Value = 100;
-                _status = Status.Success;
+                if(_status == null)
+                {
+                    _status = Status.Success;
+                }
             }
             if (e.Cancelled)
             {
                 Log.AppendText("Operation ed by the user!" + Environment.NewLine);
                 ProgressUpdate.Value = 100;
-                _status = Status.Success;
+                _status = Status.ed;
             }
             if (e.Error != null)
             {
                 Log.AppendText("Exception generated! Error message: " + e.Error.Message + Environment.NewLine);
                 ProgressUpdate.Value = 100;
-                _status = Status.Success;
+                _status = Status.Error;
             }
 
             CancelButton.IsEnabled = false;
