@@ -11,11 +11,15 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize" 
         Closing="Window_Closing"
-        Width="322" Height="181">
+        Width="394" Height="168" MinWidth="394" MinHeight="215" VerticalContentAlignment="Bottom">
     <Grid Margin="0">
-        <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="125,125,125,6"/>
-        <ProgressBar x:Name="ProgressUpdate" RenderTransformOrigin="0.063,-4.233" Margin="10,101,10,31"/>
-        <TextBox x:Name="Log" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="10,10,10,55"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="158,162,158,3" Height="21"/>
+        <ProgressBar x:Name="ProgressUpdate" RenderTransformOrigin="0.063,-4.233" Margin="10,0,10,29" VerticalAlignment="Bottom" Height="20"/>
+        <TextBox x:Name="Log" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="10,10,10,54"/>
+        <Label x:Name="ProgressLabel" HorizontalContentAlignment="Center" Margin="10,0,10,29" FontSize="10" VerticalAlignment="Bottom" Height="20" Content="Idle" Padding="0,3,0,0"/>
     </Grid>
 </Window>
 

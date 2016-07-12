@@ -291,8 +291,7 @@ namespace GetMediaInfoGUI
         private void Version_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.MessageBox.Show(
-                "- New update UI" + Environment.NewLine +
-                "- Fixed bad Simple report regeneration if duration was not defined" + Environment.NewLine +
+                "- Improved Updater response" +
                 "- Some Bug Fix", "New in " + System.Windows.Forms.Application.ProductVersion);
         }
 

@@ -4,6 +4,7 @@ using System.Windows;
 using System.IO;
 using System;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace GetMediaInfoGUI
 {
@@ -163,6 +164,7 @@ namespace GetMediaInfoGUI
 
             worker.ReportProgress(5, "Verifying local library version...");
             string currmediainfo = GetLocalMediainfoVersion();
+
             if (!string.IsNullOrEmpty(currmediainfo))
             {
                 worker.ReportProgress(45, "Found version: " + currmediainfo);
@@ -179,6 +181,7 @@ namespace GetMediaInfoGUI
 
             worker.ReportProgress(50, "Verifying latest remote library version...");
             string newvermediainfo = GetLatestMediainfoVersion();
+
             if (!string.IsNullOrEmpty(newvermediainfo))
             {
                 worker.ReportProgress(95, "Found version: " + newvermediainfo);
@@ -214,7 +217,7 @@ namespace GetMediaInfoGUI
                 }
 
                 //download
-                worker.ReportProgress(5, "Downloading latest version of the library...");
+                worker.ReportProgress(1, "Downloading latest version of the library...");
 
                 using (WebClient client = new WebClient())
                 {
@@ -222,7 +225,12 @@ namespace GetMediaInfoGUI
                     client.DownloadFileCompleted += Client_DownloadFileCompleted;
                     try
                     {
-                        client.DownloadFile(new Uri(url), downloadpath);
+                        client.DownloadFileAsync(new Uri(url), downloadpath);
+
+                        while (client.IsBusy)
+                        {
+                            System.Threading.Thread.Sleep(500);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -230,6 +238,7 @@ namespace GetMediaInfoGUI
                         _status = Status.Error;
                         return;
                     }
+                    System.Threading.Thread.Sleep(50);
                 }
 
                 if (worker.CancellationPending)
@@ -299,6 +308,8 @@ namespace GetMediaInfoGUI
                 worker.ReportProgress(100, "Mediainfo is already at the latest version. No need to update.");
                 _status = Status.NotNeeded;
             }
+
+            System.Threading.Thread.Sleep(2000);
         }
 
         /// <summary>
@@ -328,7 +339,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Archive_ExtractionFinished(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(new Action(delegate { Log.AppendText("Extraction completed!" + Environment.NewLine); }));
+            Dispatcher.Invoke(new Action(delegate { Log.AppendText("Extraction completed!" + Environment.NewLine); Log.ScrollToEnd(); }));
         }
 
         /// <summary>
@@ -348,12 +359,7 @@ namespace GetMediaInfoGUI
                     progress = 100;
                 }
 
-                ProgressUpdate.Value = progress;
-            }
-
-            if (!string.IsNullOrEmpty(bytesloaded))
-            {
-                Log.AppendText("Received: " + bytesloaded + "Mb" + Environment.NewLine);
+                Dispatcher.Invoke(new MethodInvoker(delegate { ProgressUpdate.Value = progress; ProgressLabel.Content = progress + "%"; }));
             }
         }
 
@@ -363,8 +369,8 @@ namespace GetMediaInfoGUI
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="AsyncCompletedEventArgs"/> instance containing the event data.</param>
         private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            Log.AppendText("Download completed!" + Environment.NewLine);
+        {   
+            Dispatcher.Invoke(new MethodInvoker(delegate { Log.AppendText("Download completed!" + Environment.NewLine); Log.ScrollToEnd(); }));
         }
 
         /// <summary>
@@ -385,12 +391,16 @@ namespace GetMediaInfoGUI
                 }
 
                 ProgressUpdate.Value = progress;
+                ProgressLabel.Content = progress + "%";
             }
 
             if (!string.IsNullOrEmpty(status))
             {
                 Log.AppendText(status + Environment.NewLine);
+                Log.ScrollToEnd();
             }
+
+            this.InvalidateVisual();
         }
 
         /// <summary>
@@ -400,6 +410,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RunWorkerCompletedEventArgs"/> instance containing the event data.</param>
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            CancelButton.IsEnabled = false;
             if (!e.Cancelled && e.Error == null)
             {
                 Log.AppendText("All operations successfully completed!" + Environment.NewLine);
@@ -421,10 +432,7 @@ namespace GetMediaInfoGUI
                 ProgressUpdate.Value = 100;
                 _status = Status.Error;
             }
-
-            CancelButton.IsEnabled = false;
-            System.Threading.Thread.Sleep(2000);
-            this.Close();
+            //this.Close();
         }
         #endregion
     }
