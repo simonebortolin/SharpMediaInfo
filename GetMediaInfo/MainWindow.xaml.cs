@@ -51,6 +51,7 @@ namespace GetMediaInfoGUI
         public MainWindow()
         {
             InitializeComponent();
+            System.Windows.Forms.Application.EnableVisualStyles();
             ClearAll();
         }
 
