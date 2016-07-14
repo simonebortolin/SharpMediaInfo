@@ -339,7 +339,12 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Archive_ExtractionFinished(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(new Action(delegate { Log.AppendText("Extraction completed!" + Environment.NewLine); Log.ScrollToEnd(); }));
+            Dispatcher.Invoke(new MethodInvoker(delegate {
+                Log.AppendText("Extraction completed!" + Environment.NewLine);
+                Log.ScrollToEnd();
+                ProgressUpdate.Value = 100;
+                ProgressLabel.Content = "100%";
+            }));
         }
 
         /// <summary>
@@ -359,7 +364,10 @@ namespace GetMediaInfoGUI
                     progress = 100;
                 }
 
-                Dispatcher.Invoke(new MethodInvoker(delegate { ProgressUpdate.Value = progress; ProgressLabel.Content = progress + "%"; }));
+                Dispatcher.Invoke(new MethodInvoker(delegate {
+                    ProgressUpdate.Value = progress;
+                    ProgressLabel.Content = progress + "%";
+                }));
             }
         }
 
@@ -370,7 +378,12 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="AsyncCompletedEventArgs"/> instance containing the event data.</param>
         private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {   
-            Dispatcher.Invoke(new MethodInvoker(delegate { Log.AppendText("Download completed!" + Environment.NewLine); Log.ScrollToEnd(); }));
+            Dispatcher.Invoke(new MethodInvoker(delegate {
+                Log.AppendText("Download completed!" + Environment.NewLine);
+                Log.ScrollToEnd();
+                ProgressUpdate.Value = 100;
+                ProgressLabel.Content = "100%";
+            }));
         }
 
         /// <summary>
@@ -432,7 +445,7 @@ namespace GetMediaInfoGUI
                 ProgressUpdate.Value = 100;
                 _status = Status.Error;
             }
-            //this.Close();
+            this.Close();
         }
         #endregion
     }
