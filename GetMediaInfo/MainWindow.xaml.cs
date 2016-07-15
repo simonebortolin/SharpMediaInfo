@@ -300,8 +300,7 @@ namespace GetMediaInfoGUI
         private void Version_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.MessageBox.Show(
-                "- Added Artist, Album and Genre in Simple and Tree Report (For music)" + Environment.NewLine +
-                "- New Download UI" + Environment.NewLine +
+                "- Clean all before simple report" + Environment.NewLine +
                 "- Some Bug Fix", "New in " + System.Windows.Forms.Application.ProductVersion);
         }
 
@@ -519,6 +518,7 @@ namespace GetMediaInfoGUI
             TextBoxComplete.Text = TextBoxStandard.Text = string.Empty;
             this.Title = "GetMediaInfo";
             cover.Source = null;
+            report = null;
             SaveReport.IsEnabled = SaveReportActive = false;
             SubInfoText.Text = AudioInfoText.Text = VideoInfoText.Text = GeneralInfoTextWithoutCover.Text = GeneralInfoTextWithCover.Text = string.Empty;
             while (TreeReport.HasItems)
@@ -1469,6 +1469,7 @@ namespace GetMediaInfoGUI
         /// <returns>Status of update</returns>
         private string UpdateDLL()
         {
+            ClearAll();
             UpdateDLL updateDLL = new UpdateDLL();
             updateDLL.ShowDialog();
             UpdaterProgress.Content = updateDLL.status;

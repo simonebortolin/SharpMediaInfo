@@ -22,7 +22,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="0,4,0,0" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="60" Padding="0" Grid.Row="1" VerticalAlignment="Top" Height="23"/>
+        <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="0,4,0,0" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="60" Padding="0" Grid.Row="1" VerticalAlignment="Top" Height="23" Panel.ZIndex="10"/>
         <ProgressBar x:Name="ProgressUpdate" RenderTransformOrigin="0.063,-4.233" Margin="10,46,10,16" VerticalAlignment="Center" Height="28"/>
         <Label x:Name="ProgressLabel" HorizontalContentAlignment="Center" Margin="10,42,10,18" VerticalAlignment="Center" Height="30" Content="Idle" Padding="0,3,0,0" VerticalContentAlignment="Center"/>
         <Expander x:Name="expander" Header="Further information" Margin="10,4,10,0" VerticalAlignment="Top" Grid.Row="1" Height="23" Collapsed="expander_Collapsed" Expanded="expander_Expanded">
