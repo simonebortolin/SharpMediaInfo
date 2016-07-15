@@ -53,6 +53,14 @@ namespace GetMediaInfoGUI
             InitializeComponent();
             System.Windows.Forms.Application.EnableVisualStyles();
             ClearAll();
+
+            if (!File.Exists(Path.Combine(System.Windows.Forms.Application.StartupPath, "icon.ico")))
+            {
+                var uri = new Uri("/GetMediaInfoGUI;component/icon.ico", UriKind.Relative);
+                System.Drawing.Image img = System.Drawing.Image.FromStream(System.Windows.Application.GetResourceStream(uri).Stream);
+                img.Save("icon.ico", System.Drawing.Imaging.ImageFormat.Icon);
+                img.Dispose();
+            }
         }
 
         /// <summary>
