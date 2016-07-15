@@ -10,8 +10,9 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize" 
         Closing="Window_Closing"
-        Width="394" Height="170
-        " VerticalContentAlignment="Bottom">
+        Width="394" Height="170"
+        Icon="icon.ico"
+        VerticalContentAlignment="Bottom">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="90"/>
