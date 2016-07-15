@@ -16,7 +16,8 @@
         Height="584" 
         Width="522" 
         MinWidth="522" 
-        MinHeight="584">
+        MinHeight="584" 
+        Icon="icon.ico">
     <Grid x:Name="GeneralGrid" Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
