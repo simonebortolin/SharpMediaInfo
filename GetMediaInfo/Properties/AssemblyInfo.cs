@@ -7,11 +7,11 @@ using System.Windows;
 // Le informazioni generali relative a un assembly sono controllate dal seguente 
 // set di attributi. Modificare i valori di questi attributi per modificare le informazioni
 // associate a un assembly.
-[assembly: AssemblyTitle("GetMediaInfo GUI")]
-[assembly: AssemblyDescription("GetMediaInfo GUI")]
+[assembly: AssemblyTitle("GetMediaInfo")]
+[assembly: AssemblyDescription("GetMediaInfo")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("GetMediaInfo GUI")]
-[assembly: AssemblyProduct("GetMediaInfoGUI")]
+[assembly: AssemblyCompany("GetMediaInfo")]
+[assembly: AssemblyProduct("GetMediaInfo")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -51,5 +51,5 @@ using System.Windows;
 // È possibile specificare tutti i valori oppure impostare valori predefiniti per i numeri relativi alla revisione e alla build 
 // usando l'asterisco '*' come illustrato di seguito:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.3.1")]
-[assembly: AssemblyFileVersion("1.2.3.1")]
+[assembly: AssemblyVersion("1.2.4.1")]
+[assembly: AssemblyFileVersion("1.2.4.1")]

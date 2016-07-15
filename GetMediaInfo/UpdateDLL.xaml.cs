@@ -62,13 +62,44 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// 
+        /// Handles the Closing Windows
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             worker.CancelAsync();
+        }
+
+        /// <summary>
+        /// Handles the Click of Collapsed the expander
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void expander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            this.ResizeMode = ResizeMode.CanResize;
+            expander.Height -= 150;
+            expander_grid.Height = new GridLength(expander_grid.Height.Value - 150.0);
+            this.Height -= 150;
+            this.ResizeMode = ResizeMode.NoResize;
+            expander.Header = "Further information";
+
+        }
+
+        /// <summary>
+        /// Handles the Click of Expanded the expander
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            this.ResizeMode = ResizeMode.CanResize;
+            expander.Height += 150;
+            expander_grid.Height = new GridLength(expander_grid.Height.Value + 150.0);
+            this.Height += 150;
+            this.ResizeMode = ResizeMode.NoResize;
+            expander.Header = "Less details";
         }
         #endregion
 
@@ -156,12 +187,12 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="DoWorkEventArgs"/> instance containing the event data.</param>
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
+            Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 1 of 4"; }));
             if (worker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
             }
-
             worker.ReportProgress(5, "Verifying local library version...");
             string currmediainfo = GetLocalMediainfoVersion();
 
@@ -178,7 +209,6 @@ namespace GetMediaInfoGUI
                 e.Cancel = true;
                 return;
             }
-
             worker.ReportProgress(50, "Verifying latest remote library version...");
             string newvermediainfo = GetLatestMediainfoVersion();
 
@@ -193,6 +223,7 @@ namespace GetMediaInfoGUI
 
             worker.ReportProgress(100);
 
+            Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 2 of 4"; }));
             if (!currmediainfo.Contains(newvermediainfo))
             {
                 SevenZipExtractor.SetLibraryPath(System.Windows.Forms.Application.StartupPath + "\\7z.dll");
@@ -215,7 +246,6 @@ namespace GetMediaInfoGUI
                     e.Cancel = true;
                     return;
                 }
-
                 //download
                 worker.ReportProgress(1, "Downloading latest version of the library...");
 
@@ -248,6 +278,7 @@ namespace GetMediaInfoGUI
                 }
 
                 //extract
+                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 3 of 4"; }));
                 using (SevenZipExtractor archive = new SevenZipExtractor(downloadpath))
                 {
                     archive.Extracting += Archive_Extracting;
@@ -294,8 +325,8 @@ namespace GetMediaInfoGUI
                         return;
                     }
                 }
-                
                 //delete temp files
+                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 4 of 4"; }));
                 try
                 {
                     File.Delete(downloadpath);
@@ -431,6 +462,7 @@ namespace GetMediaInfoGUI
                 if(_status == null)
                 {
                     _status = Status.Success;
+
                 }
             }
             if (e.Cancelled)

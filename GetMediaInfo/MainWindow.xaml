@@ -12,10 +12,9 @@
         DragEnter="DragEnter_EventHandler"
         Loaded="Inizialize_Loaded"
         Closing="SaveAndClose_Event"
-        Icon="icon.ico"
         Title="GetMediaInfo" 
-        Height="584.836" 
-        Width="522.918" 
+        Height="584" 
+        Width="522" 
         MinWidth="522" 
         MinHeight="584">
     <Grid x:Name="GeneralGrid" Margin="0,0,0,0">
