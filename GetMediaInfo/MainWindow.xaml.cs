@@ -113,7 +113,7 @@ namespace GetMediaInfoGUI
                 key = key.CreateSubKey("*");
                 key = key.CreateSubKey("shell");
                 key = key.CreateSubKey("open_with_getmediainfosgui_all");
-                key.SetValue("", "GetMediaInfos");
+                key.SetValue("", "GetMediaInfo");
                 key.SetValue("Icon", "\"" + System.Windows.Forms.Application.StartupPath + "\\icon.ico\"");
                 key = key.CreateSubKey("command");
                 key.SetValue("", "\"" + System.Windows.Forms.Application.ExecutablePath + "\" \"%1\"");
