@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using GetMediaInfos;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Linq;
-using GetMediaInfos;
-using System.Windows.Media.Imaging;
 
 namespace GetMediaInfoGUI
 {
@@ -21,7 +21,6 @@ namespace GetMediaInfoGUI
     /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class MainWindow : Window
     {
-
         #region GlobalVariables
         /// <summary>
         /// Boolean that define if standard / complete report are bold
@@ -44,7 +43,7 @@ namespace GetMediaInfoGUI
         MediaInfo report;
         #endregion
 
-        #region InterfaceHandlers
+        #region Constructor 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
         /// </summary>
@@ -56,13 +55,16 @@ namespace GetMediaInfoGUI
 
             if (!File.Exists(Path.Combine(System.Windows.Forms.Application.StartupPath, "icon.ico")))
             {
-                var uri = new Uri("/GetMediaInfoGUI;component/icon.ico", UriKind.Relative);
+                Uri uri = new Uri("/GetMediaInfoGUI;component/icon.ico", UriKind.Relative);
                 System.Drawing.Image img = System.Drawing.Image.FromStream(System.Windows.Application.GetResourceStream(uri).Stream);
                 img.Save("icon.ico", System.Drawing.Imaging.ImageFormat.Icon);
                 img.Dispose();
             }
         }
+        #endregion
 
+        #region InterfaceHandlers
+        
         /// <summary>
         /// Handler for application loading event.Contains functions to inizializate program, check for dependencies and restore user config.
         /// </summary>
@@ -80,6 +82,7 @@ namespace GetMediaInfoGUI
             ComboBoxSize.SelectedValue = TextBoxComplete.FontSize;
             RestoreConfig();
             StatusLab.Content = "Ready.";
+            StatusLab.InvalidateVisual();
         }
        
         /// <summary>
@@ -195,6 +198,42 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
+        /// Analyze declared path in filepathBox.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void AnalyzeDeclaredPath_Event(object sender, EventArgs e)
+        {
+            AnalyzeFile(filepathBox.Text);
+        }
+
+        /// <summary>
+        /// Analyze dropped file.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
+        public void OpenDroppedFile_Event(object sender, System.Windows.DragEventArgs e)
+        {
+            //ClearAll();
+            System.Windows.DataObject data = (System.Windows.DataObject)e.Data;
+            if (data.ContainsFileDropList())
+            {
+                string[] FileList = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop, false);
+                filepathBox.Text = FileList[0];
+            }
+        }
+
+        /// <summary>
+        /// Handle for Drag Enter event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
+        public void DragEnter_EventHandler(object sender, System.Windows.DragEventArgs e)
+        {
+            e.Effects = System.Windows.DragDropEffects.Copy;
+        }
+
+        /// <summary>
         /// Handles the Checked event of the DisableSimpleInfo control. Disable Simple Report generation.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -305,42 +344,6 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Analyze declared path in filepathBox.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void AnalyzeDeclaredPath_Event(object sender, EventArgs e)
-        {
-            AnalyzeFile(filepathBox.Text);
-        }
-
-        /// <summary>
-        /// Analyze dropped file.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        public void OpenDroppedFile_Event(object sender, System.Windows.DragEventArgs e)
-        {
-            //ClearAll();
-            System.Windows.DataObject data = (System.Windows.DataObject)e.Data;
-            if (data.ContainsFileDropList())
-            {
-                string[] FileList = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop, false);
-                filepathBox.Text = FileList[0];
-            }
-        }
-
-        /// <summary>
-        /// Handle for Drag Enter event.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        public void DragEnter_EventHandler(object sender, System.Windows.DragEventArgs e)
-        {
-            e.Effects = System.Windows.DragDropEffects.Copy;
-        }
-
-        /// <summary>
         /// Reload standard and complete report at checked/unchecked the checkbox
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -444,16 +447,18 @@ namespace GetMediaInfoGUI
 
                     JpegBitmapEncoder encoder = new JpegBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(GetCover));
-                    using (var filestream = new FileStream(dialog.FileName, FileMode.Create))
+                    using (FileStream filestream = new FileStream(dialog.FileName, FileMode.Create))
                     {
                         encoder.Save(filestream);
                     }
                 }
             }
         }
+
         #endregion
 
         #region HelperMethods
+
         /// <summary>
         /// Analyze arguments passed to the application. If the arguments count is greater than 1 analyze the first one.
         /// </summary>
@@ -1476,6 +1481,7 @@ namespace GetMediaInfoGUI
             VerifyMediaInfoVersion();
             return updateDLL.status;
         }
+
         #endregion
     }
 }

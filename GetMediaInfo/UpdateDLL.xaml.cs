@@ -1,10 +1,11 @@
 ﻿using SevenZip;
-using System.Net;
-using System.Windows;
-using System.IO;
 using System;
 using System.ComponentModel;
+using System.IO;
+using System.Net;
+using System.Windows;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace GetMediaInfoGUI
 {
@@ -15,6 +16,7 @@ namespace GetMediaInfoGUI
     {
         
         #region GlobalVariables
+
         /// <summary>
         /// The worker
         /// </summary>
@@ -29,9 +31,11 @@ namespace GetMediaInfoGUI
         /// The _status Enum Status variable
         /// </summary>
         private Status? _status;
+
         #endregion
 
         #region Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateDLL"/> class.
         /// </summary>
@@ -48,9 +52,11 @@ namespace GetMediaInfoGUI
 
             PerformUpdate();
         }
+
         #endregion
 
         #region InterfaceHandlers
+
         /// <summary>
         /// Handles the Click event of the CancelButton control.
         /// </summary>
@@ -101,9 +107,11 @@ namespace GetMediaInfoGUI
             this.ResizeMode = ResizeMode.NoResize;
             expander.Header = "Less details";
         }
+
         #endregion
 
         #region HelperMethods
+
         /// <summary>
         /// Gets the status.
         /// </summary>
@@ -151,7 +159,7 @@ namespace GetMediaInfoGUI
         /// <returns>String as the latest available mediainfo version</returns>
         private string GetLatestMediainfoVersion()
         {
-            var reader = System.Xml.XmlTextReader.Create("https://mediaarea.net/rss/mediainfo_updates.xml");
+            XmlReader reader = XmlReader.Create("https://mediaarea.net/rss/mediainfo_updates.xml");
             reader.ReadToFollowing("title");
             reader.ReadToFollowing("title");
             string latest = reader.ReadElementContentAsString();
@@ -167,19 +175,21 @@ namespace GetMediaInfoGUI
         {
             if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\Mediainfo.dll"))
             {
-                var tmp = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\Mediainfo.dll");
+                System.Diagnostics.FileVersionInfo tmp = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Windows.Forms.Application.StartupPath + "\\Mediainfo.dll");
 
-                if (!String.IsNullOrEmpty(tmp.FileVersion))
+                if (!string.IsNullOrEmpty(tmp.FileVersion))
                 {
                     return tmp.FileVersion;
                 }
             }
 
-            return String.Empty;
+            return string.Empty;
         }
+
         #endregion
 
         #region Threads
+
         /// <summary>
         /// Handles the DoWork event of the worker control.
         /// </summary>
@@ -479,6 +489,7 @@ namespace GetMediaInfoGUI
             }
             this.Close();
         }
+        
         #endregion
     }
 }
