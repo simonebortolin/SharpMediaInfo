@@ -74,7 +74,8 @@
             </TabItem>
             <TabItem Header="Standard">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="TextBoxStandard" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontSize="{Binding Path=FontSize}"  FontFamily="{Binding ElementName=ComboBoxFont, Path=SelectedItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                    <TextBox x:Name="TextBoxStandard" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontSize="{Binding Path=FontSize}"  FontFamily="{Binding ElementName=ComboBoxFont, Path=SelectedItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" AllowDrop="True"
+                             Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" PreviewDragOver="TextBoxReport_PreviewDragOver">
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Command="Copy" />
@@ -88,7 +89,8 @@
             </TabItem>
             <TabItem Header="Complete">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontSize="{Binding Path=FontSize}" FontFamily="{Binding ElementName=ComboBoxFont, Path=SelectedItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                    <TextBox x:Name="TextBoxComplete" Margin="5" TextWrapping="Wrap" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontSize="{Binding Path=FontSize}" FontFamily="{Binding ElementName=ComboBoxFont, Path=SelectedItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" AllowDrop="True"
+                             Drop="OpenDroppedFile_Event" DragEnter="DragEnter_EventHandler" PreviewDragOver="TextBoxReport_PreviewDragOver">
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Command="Copy" />
