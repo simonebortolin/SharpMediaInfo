@@ -66,8 +66,8 @@
                     <GroupBox x:Name="TAudio" Header="Audio Tracks" Grid.Row="2" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
                         <TextBlock x:Name="AudioInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
-                    <GroupBox x:Name="TSub" Header="Subtitles" Grid.Row="3" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
-                        <TextBlock x:Name="SubInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
+                    <GroupBox x:Name="TText" Header="Text Tracks" Grid.Row="3" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="TextInfoText" TextWrapping="Wrap" Text="" Margin="0,0,-2,0"/>
                     </GroupBox>
 
                 </Grid>
