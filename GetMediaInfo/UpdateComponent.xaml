@@ -29,7 +29,7 @@
             <TextBox x:Name="Log" x:FieldModifier="private" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0"/>
 
         </Expander>
-        <Label x:Name="simpleStatus" x:FieldModifier="private" Content="Step 0 of 4" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="simpleStatus" x:FieldModifier="private" Content="Step 0 of 3" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
 

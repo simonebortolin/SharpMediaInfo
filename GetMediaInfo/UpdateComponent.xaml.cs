@@ -197,7 +197,10 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="DoWorkEventArgs"/> instance containing the event data.</param>
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 1 of 4"; }));
+            Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 1 of 3"; }));
+
+            #region Step 1 of 3
+
             if (worker.CancellationPending)
             {
                 e.Cancel = true;
@@ -233,10 +236,12 @@ namespace GetMediaInfoGUI
             }
 
             worker.ReportProgress(100);
-
-            Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 2 of 4"; }));
+            #endregion
+            
             if (!currmediainfo.Contains(newvermediainfo))
             {
+                #region Setting Values
+
                 SevenZipExtractor.SetLibraryPath(System.Windows.Forms.Application.StartupPath + "\\7z.dll");
                 string url = Environment.Is64BitProcess ? "http://mediaarea.net/download/binary/libmediainfo0/" + newvermediainfo +
                                             "/MediaInfo_DLL_" + newvermediainfo + "_Windows_x64_WithoutInstaller.7z" :
@@ -257,6 +262,12 @@ namespace GetMediaInfoGUI
                     e.Cancel = true;
                     return;
                 }
+
+                #endregion
+
+                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 2 of 3"; }));
+
+                #region Step 2 of 3
                 //download
                 worker.ReportProgress(1, "Downloading latest version of the library...");
 
@@ -287,9 +298,13 @@ namespace GetMediaInfoGUI
                     e.Cancel = true;
                     return;
                 }
+                #endregion
+
+                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 3 of 3"; }));
+
+                #region Step 3 of 3
 
                 //extract
-                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 3 of 4"; }));
                 using (SevenZipExtractor archive = new SevenZipExtractor(downloadpath))
                 {
                     archive.Extracting += Archive_Extracting;
@@ -335,20 +350,28 @@ namespace GetMediaInfoGUI
                         _status = Status.Error;
                         return;
                     }
-                }
+                }                
+
                 //delete temp files
-                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 4 of 4"; }));
                 try
                 {
                     File.Delete(downloadpath);
                     Directory.Delete(System.Windows.Forms.Application.StartupPath + "\\tmp\\", true);
                 }
                 catch { }
+
+                #endregion
             }
             else
             {
+                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 3 of 3"; }));
+
+                #region No need
+
                 worker.ReportProgress(100, "Mediainfo is already at the latest version. No need to update.");
                 _status = Status.NotNeeded;
+
+                #endregion
             }
 
             System.Threading.Thread.Sleep(2000);
