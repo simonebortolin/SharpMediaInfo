@@ -10,9 +10,9 @@ using System.Xml;
 namespace GetMediaInfoGUI
 {
     /// <summary>
-    /// Interaction logic for UpdateDLL.xaml
+    /// Interaction logic for UpdateComponent.xaml
     /// </summary>
-    public partial class UpdateDLL : Window
+    public partial class UpdateComponent : Window
     {
 
         #region GlobalVariables
@@ -37,9 +37,9 @@ namespace GetMediaInfoGUI
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateDLL"/> class.
+        /// Initializes a new instance of the <see cref="UpdateComponent"/> class.
         /// </summary>
-        public UpdateDLL()
+        public UpdateComponent()
         {
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;

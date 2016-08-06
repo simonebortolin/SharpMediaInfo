@@ -18,10 +18,7 @@
         MinWidth="522" 
         MinHeight="584" 
         Icon="icon.ico">
-    <Grid x:Name="GeneralGrid" x:FieldModifier="private" Margin="0,0,0,0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+    <Grid x:Name="GeneralGrid" x:FieldModifier="private" Margin="0">
         <TextBox x:Name="FilePathBox" x:FieldModifier="private" Height="23" Margin="9,10,174,0" Text="" TextWrapping="NoWrap" VerticalAlignment="Top" Drop="Windows_Drop" DragEnter="Windows_DragEnter" Grid.ColumnSpan="3" TextChanged="FilePathBox_TextChanged" AllowDrop="True" VerticalContentAlignment="Center" />
         <Button x:Name="OpenFile" x:FieldModifier="private" Content="Open File" HorizontalAlignment="Right" Margin="0,10,93,0" VerticalAlignment="Top" Width="75" Height="23" Click="OpenFile_Click" Drop="Windows_Drop" DragEnter="Windows_DragEnter" />
         <Button x:Name="SaveReport" x:FieldModifier="private" Content="Save Report" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.184,-0.277" Height="23" Click="SaveReport_Click" Drop="Windows_Drop" DragEnter="Windows_DragEnter" />

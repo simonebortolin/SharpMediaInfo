@@ -21,17 +21,17 @@ namespace GetMediaInfoGUI
     {
         #region GlobalVariables
         /// <summary>
-        /// Boolean that define if standard and complete report are bold
+        /// Boolean that define if standard and complete report are bold.
         /// </summary>
         bool Bold;
 
         /// <summary>
-        /// Boolean that define if standard and complete report are italic
+        /// Boolean that define if standard and complete report are italic.
         /// </summary>
         bool Italic;
 
         /// <summary>
-        /// Generated mediainfo report
+        /// variable that contains the report mediainfo.
         /// </summary>
         MediaInfo report;
         #endregion
@@ -166,7 +166,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the SaveReport control: save the report of the file in the same directory.
+        /// Handles the Click event of the SaveReport controls: save the report of the file in the same directory.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
@@ -342,7 +342,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            UpdateDLL();
+            Update();
         }
 
         /// <summary>
@@ -571,7 +571,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Return Bitmap Image if present in the input files report.
+        /// Properties that return Bitmap Image if present in the input files report.
         /// </summary>
         /// <value>
         /// Image Cover for WPF.
@@ -601,7 +601,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Create the Simple report from a Mediainfo report.
+        /// Method for create the Simple report from a Mediainfo report.
         /// </summary>
         private void CreateSimpleReport()
         {
@@ -875,7 +875,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Create the Tree report from a Mediainfo report.
+        /// Method for create the Tree report from a Mediainfo report.
         /// </summary>
         private void CreateTreeReport()
         {
@@ -1053,7 +1053,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Generate infos of current Sub Track Audio from a string.
+        /// Method for generate infos of current Sub Track Audio from a string.
         /// </summary>
         /// <param name="str">String containing the output of a sound properties of mediainfo report.</param>
         /// <param name="index">Index of current Sub Track.</param>
@@ -1072,7 +1072,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Saves user configuration to a XML config files.
+        /// Method for saves user configuration to a XML config files.
         /// </summary>
         private void SaveConfig()
         {
@@ -1202,7 +1202,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Restores user configuration from a XML config files.
+        /// Method for restores user configuration from a XML config files.
         /// </summary>
         private void RestoreConfig()
         {
@@ -1308,7 +1308,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Bold/un-Bold apply in the standard and complete report.
+        /// Method for apply Bold/un-Bold in the standard and complete report.
         /// </summary>
         private void BoldChange()
         {
@@ -1325,7 +1325,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Italic/un-Italic apply in the standard and complete report.
+        /// Method for apply Italic/un-Italic in the standard and complete report.
         /// </summary>
         private void ItalicChange()
         {
@@ -1342,7 +1342,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Reload enable/disable Save Report buttons.
+        /// Method for reload enable/disable Save Report buttons.
         /// </summary>
         private void ReloadEnabledSaveButton()
         {
@@ -1357,7 +1357,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Reload enable/disable Copy All buttons.
+        /// Method for reload enable/disable Copy All buttons.
         /// </summary>
         private void ReloadEnabledCopyAllButton()
         {
@@ -1372,7 +1372,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Verifies the mediainfo version. If it does not find the dll launches the update, and if the update fails, the application closes.
+        /// Method for verifies the mediainfo version. If it does not find the dll launches the update, and if the update fails, the application closes.
         /// </summary>
         private void VerifyMediaInfoVersion()
         {
@@ -1385,7 +1385,7 @@ namespace GetMediaInfoGUI
             else
             {
                 GeneralGrid.IsEnabled = false;
-                if (UpdateDLL() == "Mediainfo.dll was successfully updated.")
+                if (Update() == "Mediainfo.dll was successfully updated.")
                 {
                     GeneralGrid.IsEnabled = true;
                 }
@@ -1403,7 +1403,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Verifies the getmediainfos version. If it does not find the DLL closes the application.
+        /// Method for verifies the getmediainfos version. If it does not find the dll closes the application.
         /// </summary>
         private void VerifyGetMediaInfosVersion()
         {
@@ -1415,6 +1415,7 @@ namespace GetMediaInfoGUI
             }
             else
             {
+                GeneralGrid.IsEnabled = false;
                 StatusGetMediaInfos.Text = "ERROR";
                 StatusGetMediaInfos.Foreground = Brushes.Red;
                 System.Windows.Forms.MessageBox.Show("Library GetMediaInfos.dll not found.", "ERROR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
@@ -1425,17 +1426,17 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Update Media Info DLL. Show the UpdateDLL windows.
+        /// Method for update MediaInfo.DLL: show the UpdateComponent window.
         /// </summary>
         /// <returns>Status of update</returns>
-        private string UpdateDLL()
+        private string Update()
         {
             ClearAll();
-            UpdateDLL updateDLL = new UpdateDLL();
-            updateDLL.ShowDialog();
-            UpdaterProgress.Content = updateDLL.status;
+            UpdateComponent UpdateComponent = new UpdateComponent();
+            UpdateComponent.ShowDialog();
+            UpdaterProgress.Content = UpdateComponent.status;
             VerifyMediaInfoVersion();
-            return updateDLL.status;
+            return UpdateComponent.status;
         }
 
         #endregion
