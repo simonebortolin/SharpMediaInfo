@@ -21,12 +21,12 @@ namespace GetMediaInfoGUI
     {
         #region GlobalVariables
         /// <summary>
-        /// Boolean that define if standard / complete report are bold
+        /// Boolean that define if standard and complete report are bold
         /// </summary>
         bool Bold;
 
         /// <summary>
-        /// Boolean that define if standard / complete report are italic
+        /// Boolean that define if standard and complete report are italic
         /// </summary>
         bool Italic;
 
@@ -1308,7 +1308,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Bold/un-Bold apply in the standard/complete report.
+        /// Bold/un-Bold apply in the standard and complete report.
         /// </summary>
         private void BoldChange()
         {
@@ -1325,7 +1325,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Italic/un-Italic apply in the standard/complete report.
+        /// Italic/un-Italic apply in the standard and complete report.
         /// </summary>
         private void ItalicChange()
         {
