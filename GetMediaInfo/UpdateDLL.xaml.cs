@@ -10,25 +10,25 @@ using System.Xml;
 namespace GetMediaInfoGUI
 {
     /// <summary>
-    /// Logica di interazione per UpdateDLL.xaml
+    /// Interaction logic for UpdateDLL.xaml
     /// </summary>
     public partial class UpdateDLL : Window
     {
-        
+
         #region GlobalVariables
 
         /// <summary>
-        /// The worker
+        /// The worker.
         /// </summary>
         private BackgroundWorker worker = new BackgroundWorker();
 
         /// <summary>
-        /// Enumeration of the Current status of the operation
+        /// Enumeration of the Current status of the operation.
         /// </summary>
         enum Status { NotNeeded, Success, ed, MissingFiles, Error };
-        
+
         /// <summary>
-        /// The _status Enum Status variable
+        /// The _status Enum Status variable.
         /// </summary>
         private Status? _status;
 
@@ -68,7 +68,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Closing Windows
+        /// Handles the Closing event of the Windows.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
@@ -78,7 +78,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click of Collapsed the expander
+        /// Handles the Collapsed event of the expander control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
@@ -94,7 +94,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click of Expanded the expander
+        /// Handles the Expanded event of the expander control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
@@ -209,7 +209,8 @@ namespace GetMediaInfoGUI
             if (!string.IsNullOrEmpty(currmediainfo))
             {
                 worker.ReportProgress(45, "Found version: " + currmediainfo);
-            } else
+            }
+            else
             {
                 worker.ReportProgress(45, "Failed");
             }
@@ -245,7 +246,7 @@ namespace GetMediaInfoGUI
                 string filetoextract = "MediaInfo.dll";
                 string newfilepath = System.Windows.Forms.Application.StartupPath + "\\" + filetoextract;
                 string downloadpath = System.Windows.Forms.Application.StartupPath + "\\tmp\\" + filename;
-                
+
                 if (!Directory.Exists(System.Windows.Forms.Application.StartupPath + "\\tmp\\"))
                 {
                     Directory.CreateDirectory(System.Windows.Forms.Application.StartupPath + "\\tmp\\");
@@ -369,7 +370,7 @@ namespace GetMediaInfoGUI
                     progress = 100;
                 }
 
-                Dispatcher.Invoke(new Action(delegate { ProgressUpdate.Value = progress; }));           
+                Dispatcher.Invoke(new Action(delegate { ProgressUpdate.Value = progress; }));
             }
         }
 
@@ -380,7 +381,8 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Archive_ExtractionFinished(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(new MethodInvoker(delegate {
+            Dispatcher.Invoke(new MethodInvoker(delegate
+            {
                 Log.AppendText("Extraction completed!" + Environment.NewLine);
                 Log.ScrollToEnd();
                 ProgressUpdate.Value = 100;
@@ -405,7 +407,8 @@ namespace GetMediaInfoGUI
                     progress = 100;
                 }
 
-                Dispatcher.Invoke(new MethodInvoker(delegate {
+                Dispatcher.Invoke(new MethodInvoker(delegate
+                {
                     ProgressUpdate.Value = progress;
                     ProgressLabel.Content = progress + "%";
                 }));
@@ -418,8 +421,9 @@ namespace GetMediaInfoGUI
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="AsyncCompletedEventArgs"/> instance containing the event data.</param>
         private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-        {   
-            Dispatcher.Invoke(new MethodInvoker(delegate {
+        {
+            Dispatcher.Invoke(new MethodInvoker(delegate
+            {
                 Log.AppendText("Download completed!" + Environment.NewLine);
                 Log.ScrollToEnd();
                 ProgressUpdate.Value = 100;
@@ -469,7 +473,7 @@ namespace GetMediaInfoGUI
             {
                 Log.AppendText("All operations successfully completed!" + Environment.NewLine);
                 ProgressUpdate.Value = 100;
-                if(_status == null)
+                if (_status == null)
                 {
                     _status = Status.Success;
 
@@ -489,7 +493,7 @@ namespace GetMediaInfoGUI
             }
             this.Close();
         }
-        
+
         #endregion
     }
 }
