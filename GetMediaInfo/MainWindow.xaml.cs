@@ -21,17 +21,17 @@ namespace GetMediaInfoGUI
     {
         #region GlobalVariables
         /// <summary>
-        /// Boolean that define if standard and complete report are bold.
+        /// Boolean variable that define if standard and complete report are bold.
         /// </summary>
         bool Bold;
 
         /// <summary>
-        /// Boolean that define if standard and complete report are italic.
+        /// Boolean variable that define if standard and complete report are italic.
         /// </summary>
         bool Italic;
 
         /// <summary>
-        /// variable that contains the report mediainfo.
+        /// MediaInfo variable that contains the report mediainfo.
         /// </summary>
         MediaInfo report;
         #endregion
@@ -59,7 +59,7 @@ namespace GetMediaInfoGUI
         #region InterfaceHandlers
 
         /// <summary>
-        /// Handler for Loaded event of the Window. Contains functions to inizializate program, check for dependencies and restore user config.
+        /// Handles for Loaded event of the Window. Contains functions to inizializate program, check for dependencies and restore user config.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -79,7 +79,7 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handler for Closing event of the Window: saves user configuration.
+        /// Handles for Closing event of the Window: saves user configuration.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
