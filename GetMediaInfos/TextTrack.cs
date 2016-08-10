@@ -2,7 +2,9 @@ using System;
 
 namespace GetMediaInfos
 {
-    ///<summary>Contains properties for a TextTrack </summary>
+    /// <summary>
+    /// Contains properties for a TextTrack
+    /// </summary>
     public class TextTrack
     {
         private int _Count;

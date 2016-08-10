@@ -91,7 +91,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioTrack.cs" />
-    <Compile Include="ChaptersTrack.cs" />
+    <Compile Include="ChapterTrack.cs" />
+    <Compile Include="MenuTrack.cs" />
     <Compile Include="GeneralTrack.cs" />
     <Compile Include="MediaInfoMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

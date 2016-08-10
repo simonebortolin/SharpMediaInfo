@@ -1,40 +1,49 @@
 using System;
+using System.Collections.Generic;
 
 namespace GetMediaInfos
 {
-    ///<summary>Contains properties for a ChaptersTrack </summary>
-    public class ChaptersTrack
+    /// <summary>
+    /// Contains properties for a MenuTrack
+    /// </summary>
+    public class MenuTrack
     {
-        private int _Count;
+        private int _ChaptersCount;
         private int _StreamCount;
         private string _StreamKind;
         private int _StreamKindID;
         private int _StreamOrder;
-        private string _Inform;
+        private string _RawData;
         private string _ID;
         private string _UniqueID;
         private string _Title;
         private string _Codec;
         private string _CodecString;
         private string _CodecUrl;
-        private int _Total;
         private string _Language;
         private string _LanguageString;
         private bool _Default;
-        private string _DefaultString;
         private bool _Forced;
-        private string _ForcedString;
+        private List<ChapterTrack> _Chapters;
 
-        ///<summary> Count of objects available in this stream </summary>
-        public int Count
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MenuTrack"/> class.
+        /// </summary>
+        public MenuTrack()
+        {
+            _Chapters = new List<ChapterTrack>();
+        }
+
+        ///<summary> ChaptersCount of objects available in this stream </summary>
+        public int ChaptersCount
         {
             get
             {
-                return _Count;
+                return _ChaptersCount;
             }
             set
             {
-                this._Count=value;
+                this._ChaptersCount=value;
             }
         }
 
@@ -92,18 +101,18 @@ namespace GetMediaInfos
             }
         }
 
-        ///<summary> Last   Inform   call </summary>
-        public string Inform
+        ///<summary> The unprocessed raw data from mediainfo </summary>
+        public string RawData
         {
             get
             {
-                if (String.IsNullOrEmpty(this._Inform))
-                    this._Inform="";
-                return _Inform;
+                if (String.IsNullOrEmpty(this._RawData))
+                    this._RawData = "";
+                return _RawData;
             }
             set
             {
-                this._Inform=value;
+                this._RawData = value;
             }
         }
 
@@ -197,19 +206,6 @@ namespace GetMediaInfos
             }
         }
 
-        ///<summary> Total number of chapters </summary>
-        public int Total
-        {
-            get
-            {
-                return _Total;
-            }
-            set
-            {
-                this._Total=value;
-            }
-        }
-
         ///<summary> Language (2 letters) </summary>
         public string Language
         {
@@ -253,21 +249,6 @@ namespace GetMediaInfos
             }
         }
 
-        ///<summary> Default Info (string format)</summary>
-        public string DefaultString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DefaultString))
-                    this._DefaultString = "";
-                return _DefaultString;
-            }
-            set
-            {
-                this._DefaultString = value;
-            }
-        }
-
         ///<summary> Forced Info </summary>
         public bool Forced
         {
@@ -281,18 +262,19 @@ namespace GetMediaInfos
             }
         }
 
-        ///<summary> Forced Info (string format)</summary>
-        public string ForcedString
+        /// <summary>
+        /// Chapters List.
+        /// </summary>
+        public List<ChapterTrack> Chapters
         {
             get
             {
-                if (String.IsNullOrEmpty(this._ForcedString))
-                    this._ForcedString = "";
-                return _ForcedString;
+                return _Chapters;
             }
+
             set
             {
-                this._ForcedString = value;
+                this._Chapters = value;
             }
         }
     }

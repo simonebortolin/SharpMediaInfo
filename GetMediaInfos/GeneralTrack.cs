@@ -2,7 +2,9 @@ using System;
 
 namespace GetMediaInfos
 {
-    ///<summary>Contains properties for a GeneralTrack </summary>
+    /// <summary>
+    /// Contains properties for a GeneralTrack
+    /// </summary>
     public class GeneralTrack
     {
         private int _Count;
@@ -17,7 +19,7 @@ namespace GetMediaInfos
         private int _VideoCount;
         private int _AudioCount;
         private int _TextCount;
-        private int _ChaptersCount;
+        private int _MenuCount;
         private int _ImageCount;
         private string _CompleteName;
         private string _FolderName;
@@ -357,16 +359,16 @@ namespace GetMediaInfos
             }
         }
 
-        ///<summary> Count of chapters streams </summary>
-        public int ChaptersCount
+        ///<summary> Count of menus streams </summary>
+        public int MenuCount
         {
             get
             {
-                return _ChaptersCount;
+                return _MenuCount;
             }
             set
             {
-                this._ChaptersCount = value;
+                this._MenuCount = value;
             }
         }
 
