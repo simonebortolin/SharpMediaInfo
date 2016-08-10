@@ -115,7 +115,7 @@
                             <CheckBox x:Name="DisableSimpleInfo" x:FieldModifier="private" Content="Disable Simple Report" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Checked="DisableSimpleInfo_Checked" Unchecked="DisableSimpleInfo_Unchecked"/>
                             <CheckBox x:Name="EnableMilliSecond" x:FieldModifier="private" Content="Add milliseconds in tracks duration" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Checked="EnableMilliSecond_CheckedUnchecked" Unchecked="EnableMilliSecond_CheckedUnchecked"/>
                             <CheckBox x:Name="DisableTree" x:FieldModifier="private" Content="Disable Tree View" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Checked="DisableTreeInfo_Checked" Unchecked="DisableTreeInfo_Unchecked"/>
-                            <CheckBox x:Name="RemoveSpace" x:FieldModifier="private" Content="Remove spaces in Standard and Complete Report" HorizontalAlignment="Left" Margin="10,90,0,-5" VerticalAlignment="Top" Checked="RemoveSpace_CheckedUnchecked" Unchecked="RemoveSpace_CheckedUnchecked"/>
+                            <CheckBox x:Name="RemoveSpace" x:FieldModifier="private" Content="Remove giustification spaces inside Report" HorizontalAlignment="Left" Margin="10,90,0,-5" VerticalAlignment="Top" Checked="RemoveSpace_CheckedUnchecked" Unchecked="RemoveSpace_CheckedUnchecked"/>
                         </Grid>
                     </GroupBox>
                     <Button x:Name="Version" x:FieldModifier="private" Content="Version" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" Width="86" Click="Version_Click"/>

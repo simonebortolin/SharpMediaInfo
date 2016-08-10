@@ -626,7 +626,7 @@ namespace GetMediaInfoGUI
                         if ((!string.IsNullOrWhiteSpace(General.Album)) && (General.Title != General.Album)) GeneralInfoText.Text += "Album: " + General.Album + Environment.NewLine;
                         if (!string.IsNullOrWhiteSpace(General.Artist)) GeneralInfoText.Text += "Artist: " + General.Artist + Environment.NewLine;
                         if (!string.IsNullOrWhiteSpace(General.Genre)) GeneralInfoText.Text += "Genre: " + General.Genre + Environment.NewLine;
-                        GeneralInfoText.Text += "Chapter: " + ((General.ChaptersCount > 0) ? "Yes (" + General.ChaptersCount + ")" : "No") + Environment.NewLine;
+                        GeneralInfoText.Text += "Menu: " + ((General.MenuCount > 0) ? "Yes" : "No") + (report.Menu[0].ChaptersCount > 0 ? " (" + report.Menu[0].ChaptersCount + " chapters)" : "") + Environment.NewLine;
                         if (!string.IsNullOrWhiteSpace(General.EncodedDate)) GeneralInfoText.Text += "Date Encoded: " + General.EncodedDate + Environment.NewLine;
                         if (!string.IsNullOrWhiteSpace(General.EncodedLibrary)) GeneralInfoText.Text += "Created with: " + General.EncodedLibrary + Environment.NewLine;
 
@@ -907,7 +907,7 @@ namespace GetMediaInfoGUI
                             if ((!string.IsNullOrWhiteSpace(General.Album)) && (General.Title != General.Album)) temp.Items.Add(new TreeViewItem() { Header = "Album: " + General.Album });
                             if (!string.IsNullOrWhiteSpace(General.Artist)) temp.Items.Add(new TreeViewItem() { Header = "Artist: " + General.Artist });
                             if (!string.IsNullOrWhiteSpace(General.Genre)) temp.Items.Add(new TreeViewItem() { Header = "Genre: " + General.Genre });
-                            temp.Items.Add(new TreeViewItem() { Header = "Chapter: " + ((General.ChaptersCount > 0) ? "Yes (" + General.ChaptersCount + ")" : "No") });
+                            temp.Items.Add(new TreeViewItem() { Header = "Menu: " + ((General.MenuCount > 0) ? "Yes (" + General.MenuCount + " chapters)" : "No") });
                             if (report.Video.Count > 0) if (!string.IsNullOrEmpty(report.Video[0].MultiViewLayout)) temp.Items.Add(new TreeViewItem() { Header = "3D Mode: " + report.Video[0].MultiViewLayout });
                             if (!string.IsNullOrWhiteSpace(General.EncodedDate)) temp.Items.Add(new TreeViewItem() { Header = "Date Encoded: " + General.EncodedDate });
                             if (!string.IsNullOrWhiteSpace(General.EncodedLibrary)) temp.Items.Add(new TreeViewItem() { Header = "Created with: " + General.EncodedLibrary });
