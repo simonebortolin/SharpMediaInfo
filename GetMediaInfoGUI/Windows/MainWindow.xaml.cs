@@ -883,6 +883,7 @@ namespace GetMediaInfoGUI
             try
             {
                 HistoryHelper.LoadHistory();
+                UpdateHistoryMenuItem();
             } catch (Exception) { }         
         }
 
