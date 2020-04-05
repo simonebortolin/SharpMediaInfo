@@ -964,29 +964,6 @@ namespace GetMediaInfoGUI
                     //display additional infos if file is hdr
                     if (IsHDR(Video))
                     {
-                        if (!string.IsNullOrWhiteSpace(Video.HDRFormat))
-                        {
-                            stringBuilder.AppendLine(" > HDR format info:");
-
-                            stringBuilder.Append("   Format: " + Video.HDRFormat);
-                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatCommercial))
-                            {
-                                stringBuilder.AppendLine(" (" + Video.HDRFormatCommercial + ")");
-                            } else
-                            {
-                                stringBuilder.AppendLine();
-                            }                               
-
-                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatLevel))
-                                stringBuilder.AppendLine("   Level: " + Video.HDRFormatLevel);
-
-                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatLevel))
-                                stringBuilder.AppendLine("   Settings: " + Video.HDRFormatLevel);
-
-                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatVersion))
-                                stringBuilder.AppendLine("   Version: " + Video.HDRFormatVersion);
-                        }
-
                         var colourRange = Video.ColourRange;
                         var primaries = Video.ColourPrimaries;
                         var transferChar = Video.TransferCharacteristics;
@@ -999,6 +976,19 @@ namespace GetMediaInfoGUI
                         if (StringUtils.AnyNonEmpty(colourRange, primaries, transferChar, matrixCoeff, masteringPrim, masteringLum, mcll, mfall))
                         {
                             stringBuilder.AppendLine(" > HDR metadata:");
+
+                            if (!string.IsNullOrWhiteSpace(Video.HDRFormat))
+                            {
+                                stringBuilder.Append("   Format: " + Video.HDRFormat);
+                                if (!string.IsNullOrWhiteSpace(Video.HDRFormatCommercial) && !Video.HDRFormat.Equals(Video.HDRFormatCommercial))
+                                {
+                                    stringBuilder.AppendLine(" (" + Video.HDRFormatCommercial + ")");
+                                }
+                                else
+                                {
+                                    stringBuilder.AppendLine();
+                                }
+                            }
 
                             if (!string.IsNullOrWhiteSpace(colourRange))
                                 stringBuilder.AppendLine("   Color range: " + Video.ColourRange);
