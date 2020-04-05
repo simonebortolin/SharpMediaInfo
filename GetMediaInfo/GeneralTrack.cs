@@ -1,6 +1,6 @@
 using System;
 
-namespace GetMediaInfo
+namespace GetMediaInfos
 {
     /// <summary>
     /// Contains properties for a GeneralTrack

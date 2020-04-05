@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GetMediaInfo
+namespace GetMediaInfos
 {
     /// <summary>
     /// Contains properties for a ChapterTrack

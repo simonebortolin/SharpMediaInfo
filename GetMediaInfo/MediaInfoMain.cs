@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Reflection;
 
-namespace GetMediaInfo
+namespace GetMediaInfos
 {
     /// <summary>
     /// Stream Kind Enumeration
