@@ -386,6 +386,8 @@ namespace GetMediaInfoGUI
                             Logger.Instance.Error(ex);
                         }
                     }
+                } else {
+                    ThemeHelper.SetTheme(selectedTheme);
                 }
             } else
             {
