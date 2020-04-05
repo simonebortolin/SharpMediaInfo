@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Interop;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Win32;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using GetMediaInfoGUI.Utils;
+using GetMediaInfoGUI.Interop;
 
 namespace GetMediaInfoGUI
 {
@@ -26,17 +25,19 @@ namespace GetMediaInfoGUI
     {
         #region Global Variables
         /// <summary>
-        /// The thread that analyze in background all new files
-        /// </summary>
-        private BackgroundWorker BackgroundWorker;
-
-        /// <summary>
         /// Flag to see if the current instance needs to be killed, 
         /// if it's set to true the app should skip all operation 
         /// normally executed at closing.
         /// </summary>
         private bool _killThisInstance = false;
-
+        /// <summary>
+        /// The starting drag position.
+        /// </summary>
+        private Point _startDragPosition = new Point(0,0);
+        /// <summary>
+        /// The flag that defines whether the user was dragging a tab or not.
+        /// </summary>
+        private bool _wasDragging = false;
         #endregion
 
         #region Constructor 
@@ -49,15 +50,18 @@ namespace GetMediaInfoGUI
             {
                 using (CrossProcessLockFactory.CreateCrossProcessLock())
                 {
-                    if (!CheckForOtherInstances(Environment.GetCommandLineArgs()))
-                    {
-                        InitializeComponent();
-                        System.Windows.Forms.Application.EnableVisualStyles();
-                        ClearAll();
+                    var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
+                    var outsideDropMode = args.Length > 3 && args.Contains(Constants.OutsideTabDropMode);
 
-                        BackgroundWorker = new BackgroundWorker();
-                        BackgroundWorker.DoWork += BackgroundWorker_DoWork;
+                    if (outsideDropMode)
+                    {
+                        CheckDropMode(args);
+                    } else if (CheckForOtherInstances(args)) {
+                        return;
                     }
+
+                    InitializeComponent();
+                    ClearAll();      
                 }
             } catch (Exception ex)
             {
@@ -67,6 +71,8 @@ namespace GetMediaInfoGUI
         #endregion
 
         #region Interface Handlers
+
+        #region Window
         /// <summary>
         /// Handles for Loaded event of the Window. Inizializate the window, check dependencies and restore user config.
         /// </summary>
@@ -79,7 +85,9 @@ namespace GetMediaInfoGUI
                 VerifyMediaInfo();
                 VerifyGetMediaInfo();
 
-                ProcessArgs(Environment.GetCommandLineArgs());
+                var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
+                CheckDropMode(args);
+                ProcessArgs(args);
 
                 RestoreConfig();
                 RestoreHistory();
@@ -107,36 +115,24 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the MenuItem_Open control: opens a new openfiledialog to choose new input file\s.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void MenuItemOpenFiles_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog file = new OpenFileDialog()
-            {
-                Filter = "Media Files|*.*",
-                Title = "Select a files to analyze",
-                Multiselect = true
-            };
-            if (file.ShowDialog().GetValueOrDefault())
-            {
-                AddTabItems(file.FileNames);
-            }
-        }
-
-        /// <summary>
         /// Handles the Drop event: analyze dropped file\s.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
         private void Windows_Drop(object sender, DragEventArgs e)
         {
+            Console.WriteLine("Windows_Drop");
+
             DataObject data = e.Data as DataObject;
+
             if (data.ContainsFileDropList())
             {
                 string[] listOfPaths = (string[])e.Data.GetData(DataFormats.FileDrop, false);
                 AddTabItems(listOfPaths);
+            } else if (data.ContainsText())
+            {
+                var input = e.Data.GetData(DataFormats.Text, false) as string;
+                AddTabItems(input);
             }
         }
 
@@ -151,21 +147,81 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the UpdateButton control: check for Updates.
+        /// Handles the KeyDown event of the Window control. Handles all Hotkeys.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+            // Open File/Files/Folder
+            if (e.Key == Key.O && ctrlPressed)
+            {
+                if (shiftPressed)
+                {
+                    //Ctrl+Shift+O : open a folder
+                    MenuItemOpenFolder_Click(null, null);
+                }
+                else
+                {
+                    //Ctrl+O : open a file
+                    MenuItemOpenFiles_Click(null, null);
+                }
+            }
+            // Save 
+            if (e.Key == Key.S && ctrlPressed && shiftPressed)
+            {
+                if (shiftPressed)
+                {
+                    //Ctrl+Shift+S : save a complete report
+                    MenuItemSaveCompleteReport_Click(null, null);
+                }
+                else
+                {
+                    //Ctrl+S : save a standard report
+                    MenuItemSaveStandardReport_Click(null, null);
+                }
+            }
+            // Ctrl+X : close all tabs
+            if (e.Key == Key.X && ctrlPressed)
+            {
+                MenuItemCloseFiles_Click(null, null);
+            }
+            // Ctrl+E : exit
+            if (e.Key == Key.E && ctrlPressed)
+            {
+                MenuItemExit_Click(null, null);
+            }
+            // Tab : move the next file tab
+            if (e.Key == Key.Tab && FileTabControl.Items.Count > 0)
+            {
+                FileTabControl.SelectedIndex = FileTabControl.SelectedIndex + 1 % FileTabControl.Items.Count;
+            }
+        }
+
+        #endregion
+
+        #region Menu
+        /// <summary>
+        /// Handles the Click event of the MenuItemExit control: save config and exit.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void MenuItemUpdater_Click(object sender, RoutedEventArgs e)
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
         {
-            StartUpdater();
-        }
+            SaveConfig();
+            Environment.Exit(0);
 
+        }
+        
         /// <summary>
         /// Handles the Click event of the CopyAll controls in Context Menu: select all and copy text in the standard or complete report.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void CopyAll_Click(object sender, RoutedEventArgs e)
+        private void MenuItemCopyAll_Click(object sender, RoutedEventArgs e)
         {
             FileTab FileTab = FileTabControl.SelectedItem as FileTab;
             if (FileTab.SelectedTab.Header.Equals("Standard"))
@@ -212,58 +268,32 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles for enable Drag/Drop on report TextBox
+        /// Handles the Click event of the UpdateButton control: check for Updates.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TextBoxReport_PreviewDragOver(object sender, DragEventArgs e)
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MenuItemUpdater_Click(object sender, RoutedEventArgs e)
         {
-            e.Handled = true;
+            StartUpdater();
         }
 
         /// <summary>
-        /// Handles the PreviewMouseMove event of the TabItem control: generate drag n' drop event of the selected tab if the left mouse button is pressed.
+        /// Handles the Click event of the MenuItem_Open control: opens a new openfiledialog to choose new input file\s.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void TabItem_PreviewMouseMove(object sender, MouseEventArgs e)
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MenuItemOpenFiles_Click(object sender, RoutedEventArgs e)
         {
-            TabItem Item = e.Source as TabItem;
-
-            if (Item == null)
+            var file = new OpenFileDialog()
             {
-                return;
-            }
-            if (Mouse.PrimaryDevice.LeftButton == MouseButtonState.Pressed)
+                Filter = "Media Files|*.*",
+                Title = "Select a files to analyze",
+                Multiselect = true
+            };
+            if (file.ShowDialog().GetValueOrDefault())
             {
-                DragDrop.DoDragDrop(Item, Item, DragDropEffects.All);
-            }
-        }
 
-        /// <summary>
-        /// Handles the Drop event of the TabItem control: moves a tab into a new position.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TabItem_Drop(object sender, DragEventArgs e)
-        {
-            TabItem Source = e.Data.GetData(typeof(TabItem)) as TabItem;
-
-            if (e.Source is TabItem Target && Source != null)
-            {
-                TabControl Parent = Target.Parent as TabControl;
-
-                if (!Target.Equals(Source) && Parent != null)
-                {
-                    int sourceIndex = Parent.Items.IndexOf(Source);
-                    int targetIndex = Parent.Items.IndexOf(Target);
-
-                    Parent.Items.Remove(Source);
-                    Parent.Items.Insert(targetIndex, Source);
-
-                    Parent.Items.Remove(Target);
-                    Parent.Items.Insert(sourceIndex, Target);
-                }
+                AddTabItems(file.FileNames);
             }
         }
 
@@ -325,7 +355,7 @@ namespace GetMediaInfoGUI
                             StreamWriter File = new StreamWriter(SaveFileDialog.FileName);
                             File.WriteLine(FileTab.MediaInfo.InfoComplete);
                         }
-                    }              
+                    }
                 }
             }
         }
@@ -343,117 +373,8 @@ namespace GetMediaInfoGUI
             };
             options.ShowDialog();
             UpdateHistoryMenuItem();
-            BackgroundWorker UIRefresher = new BackgroundWorker();
-            UIRefresher.DoWork += UIRefresher_DoWork;
-            UIRefresher.RunWorkerAsync();
-        }
 
-        /// <summary>
-        /// Handles the Click event of the CloseTabButton control: close the parent tab of the sender button.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void CloseTabButton_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (FileTab tab in FileTabControl.Items)
-            {
-                string text = ((TextBlock)((StackPanel)((Button)e.Source).Parent).Children[1]).Text;
-                if (tab.HeaderText.Equals(text))
-                {
-                    FileTabControl.Items.Remove(tab);
-                    return;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handles the SelectionChanged event of the TabControl control: changes the selected index based on the global settings if the current selected index is -1.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (((TabControl)sender).SelectedIndex == -1)
-            {
-                ((TabControl)sender).SelectedIndex = GlobalSettings.DisableSimpleReport ? 1 : 0;
-            }
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MenuItemExit control: save config and exit.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
-        {
-            SaveConfig();
-            Environment.Exit(0);
-        }
-
-        /// <summary>
-        /// Handles the MouseDown event of the FileTabControl control. Open a Openfiledialog if user click the emmpty FileTabControl.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void FileTabControl_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (FileTabControl.Items.Count == 0)
-            {
-                MenuItemOpenFiles_Click(null, null);
-            }
-        }
-
-        /// <summary>
-        /// Handles the KeyDown event of the Window control. Handles all Hotkeys.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-            bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-
-            // Open File/Files/Folder
-            if (e.Key == Key.O && ctrlPressed)
-            {
-                if (shiftPressed)
-                {
-                    //Ctrl+Shift+O : open a folder
-                    MenuItemOpenFolder_Click(null, null);
-                }
-                else
-                {
-                    //Ctrl+O : open a file
-                    MenuItemOpenFiles_Click(null, null);
-                }
-            }
-            // Save 
-            if (e.Key == Key.S && ctrlPressed && shiftPressed)
-            {
-                if (shiftPressed)
-                {            
-                    //Ctrl+Shift+S : save a complete report
-                    MenuItemSaveCompleteReport_Click(null, null);
-                } else {
-                    //Ctrl+S : save a standard report
-                    MenuItemSaveStandardReport_Click(null, null);
-                }
-            }  
-            // Ctrl+X : close all tabs
-            if (e.Key == Key.X && ctrlPressed)
-            {
-                MenuItemCloseFiles_Click(null, null);
-            }
-            // Ctrl+E : exit
-            if (e.Key == Key.E && ctrlPressed)
-            {
-                MenuItemExit_Click(null, null);
-            }
-            // Tab : move the next file tab
-            if (e.Key == Key.Tab && FileTabControl.Items.Count > 0)
-            {
-                FileTabControl.SelectedIndex = FileTabControl.SelectedIndex + 1 % FileTabControl.Items.Count;
-            }
+            Task.Run(() => RefreshTabs());
         }
 
         /// <summary>
@@ -486,7 +407,9 @@ namespace GetMediaInfoGUI
         {
             while (FileTabControl.HasItems)
             {
-                FileTabControl.Items.RemoveAt(0);
+                var fileTab = FileTabControl.Items.GetItemAt(0) as FileTab;
+                fileTab.Dispose();
+                FileTabControl.Items.Remove(fileTab);
             }
         }
 
@@ -501,6 +424,119 @@ namespace GetMediaInfoGUI
             string path = GlobalSettings.History.First(s => s.Contains((menuItem.Header as string).Substring(3)));
             AddTabItems(path);
         }
+        #endregion
+
+        #region TabControl
+        /// <summary>
+        /// Handles the SelectionChanged event of the TabControl control: changes the selected index based on the global settings if the current selected index is -1.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (((TabControl)sender).SelectedIndex == -1)
+            {
+                ((TabControl)sender).SelectedIndex = GlobalSettings.DisableSimpleReport ? 1 : 0;
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseDown event of the TabControl control. Open a Openfiledialog if user click the emmpty FileTabControl.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private void TabControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                if (FileTabControl.Items.Count == 0)
+                {
+                    MenuItemOpenFiles_Click(null, null);
+                }
+            } else if (e.MiddleButton == MouseButtonState.Pressed)
+            {
+                var mousePos = e.GetPosition(FileTabControl);
+
+
+                if (FileTabControl.SelectedItem is FileTab fileTab)
+                {
+                    fileTab.Dispose();
+                    FileTabControl.Items.Remove(fileTab);
+                }               
+            }
+        }
+
+        /// <summary>
+        /// Handles the PreviewMouseMove event of the TabItem control: generate drag n' drop event of the selected tab if the left mouse button is pressed.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void TabItem_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Source is TabItem item)
+            {
+                if (Mouse.PrimaryDevice.LeftButton == MouseButtonState.Pressed)
+                {
+                    DragDrop.DoDragDrop(item, item, DragDropEffects.All);
+                }
+            }           
+        }
+
+        /// <summary>
+        /// Handles the Drop event of the TabItem control: moves a tab into a new position.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TabItem_Drop(object sender, DragEventArgs e)
+        {
+            TabItem Source = e.Data.GetData(typeof(TabItem)) as TabItem;
+
+            if (e.Source is TabItem Target && Source != null)
+            {
+                TabControl Parent = Target.Parent as TabControl;
+
+                if (!Target.Equals(Source) && Parent != null)
+                {
+                    int sourceIndex = Parent.Items.IndexOf(Source);
+                    int targetIndex = Parent.Items.IndexOf(Target);
+
+                    Parent.Items.Remove(Source);
+                    Parent.Items.Insert(targetIndex, Source);
+
+                    Parent.Items.Remove(Target);
+                    Parent.Items.Insert(sourceIndex, Target);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the CloseTabButton control: close the parent tab of the sender button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void CloseTabButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (FileTab tab in FileTabControl.Items)
+            {
+                string text = ((TextBlock)((StackPanel)((Button)e.Source).Parent).Children[1]).Text;
+                if (tab.HeaderText.Equals(text))
+                {
+                    FileTabControl.Items.Remove(tab);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles for enable Drag/Drop on report TextBox
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TextBoxReport_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+        }
+        #endregion
 
         #endregion
 
@@ -520,23 +556,31 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
+        /// Checks for outside drop mode.
+        /// </summary>
+        /// <param name="args">The process arguments</param>
+        private void CheckDropMode(params string[] args)
+        {
+            var outsideDropMode = (args.Length > 3 && args.Contains(Constants.OutsideTabDropMode));
+            if (outsideDropMode)
+            {
+                Application.Current.MainWindow = this;
+                this.Left = int.Parse(args[1]);
+                this.Top = int.Parse(args[2]);
+
+                this.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
         /// Process arguments passed to the application.
         /// </summary>
         private void ProcessArgs(params string[] args)
         {
             string[] arguments = args;
-            if (arguments.Length > 1)
-            {
-                List<string> filePaths = new List<string>();
-                for (int i = 1; i < arguments.Length; i++)
-                {
-                    if (File.Exists(arguments[i]))
-                    {
-                        filePaths.Add(arguments[i]);
-                    }
-                }
-                AddTabItems(filePaths.ToArray());
-            }
+
+            var paths = arguments.Where(i => File.Exists(i));
+            AddTabItems(paths.ToArray());
         }
 
         /// <summary>
@@ -558,7 +602,7 @@ namespace GetMediaInfoGUI
                 }
             }
 
-            int currCount = FileTabControl.Items.Count;
+            int currCount = FileTabControl.SelectedIndex >= 0 ? FileTabControl.SelectedIndex : 0;
 
             foreach (string path in inputpaths)
             {
@@ -571,56 +615,184 @@ namespace GetMediaInfoGUI
                     }
                 }
             }
+
+            Task.Run(() => {
+                InitializeTabs();
+            }).ConfigureAwait(false);
       
             if (inputpaths.Length > 0)
             {
                 FileTabControl.SelectedIndex = currCount;
             }
-
-            if (!BackgroundWorker.IsBusy)
-                BackgroundWorker.RunWorkerAsync();
         }
-
         #endregion
 
         #region Backgrounds Activities
+
         /// <summary>
-        /// Handles the DoWork event of the Analyzer control: starts the initialization of all not ready Tab in the interface.
+        /// Initializes all tabs.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DoWorkEventArgs"/> instance containing the event data.</param>
-        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void InitializeTabs()
         {
-            while (FileTabControl.Items.Cast<FileTab>().AsQueryable().Where(i => !i.IsReady).Count() > 0)
-            {
-                for (int index = 0; index < FileTabControl.Items.Count; index++)
-                {
-                    FileTab tab = (FileTab)FileTabControl.Items[index];
-                    if (!tab.IsReady)
-                    {
-                        //blocking method (useless to parallelize I/O bound operations)
-                        tab.Initialize();
-                    }
-                }
-            }
+            var fileTabs = FileTabControl.Items.Cast<FileTab>();
+            //blocking method (useless to parallelize I/O bound operations)
+            fileTabs.Where(i => !i.IsReady).ToList().ForEach(i => i.Initialize());
         }
 
         /// <summary>
-        /// Handles the DoWork event of the UIRefresher control: starts the UI refresh, due to application setting changes, of all Tab in the interface.
+        /// Refreshes all tabs.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DoWorkEventArgs"/> instance containing the event data.</param>
-        private void UIRefresher_DoWork(object sender, DoWorkEventArgs e)
+        private void RefreshTabs()
         {
-            List<Task> tasks = new List<Task>();
-            foreach (FileTab tab in FileTabControl.Items)
-            {
-                //can be parallel (CPU bound operations)
-                Task task = Task.Factory.StartNew(() => tab.Refresh());
-                tasks.Add(task);
-            }            
-            Task.WaitAll(tasks.ToArray());
+            var fileTabs = FileTabControl.Items.Cast<FileTab>();
+            //blocking method (useless to parallelize I/O bound operations)
+            fileTabs.Where(i => !i.IsReady).ToList().ForEach(i => i.Refresh());
         }
+        #endregion
+
+        #region Drag & Drop Management
+        /// <summary>
+        /// Handles the preview mouse left button down event of the TabControl.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event arguments</param>
+        private void TabControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _startDragPosition = e.GetPosition(null);
+        }
+
+        /// <summary>
+        /// Handles the mouse move event in the TabControl.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event arguments</param>
+        private void TabControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            TabControl tabControl = sender as TabControl;
+            Point mpos = e.GetPosition(null);
+            Vector diff = this._startDragPosition - mpos;
+
+            if (tabControl.SelectedItem is FileTab fileTab)
+            {
+                //create drag event if the cursor goes outside the main window
+                if (e.LeftButton == MouseButtonState.Pressed &&
+                 Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
+                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+                {
+                   
+                    //mock drag event to let file explorer to change cursor
+                    string dataFormat = DataFormats.FileDrop;
+                    DataObject dataObject = new DataObject(dataFormat, new string[] { "" });
+
+                    DragDrop.AddQueryContinueDragHandler(this, QueryContinueDragHandler);
+                    DragDrop.DoDragDrop(tabControl, dataObject, DragDropEffects.Copy);
+                                  
+                    _wasDragging = true;
+                }
+
+                //handle ouside drop
+                if (_wasDragging && e.LeftButton == MouseButtonState.Released)
+                {
+                    DragDrop.RemoveQueryContinueDragHandler(this, QueryContinueDragHandler);
+
+                    if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
+                        Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+                    {
+                        //Compute drop screen point
+                        var mousePos = System.Windows.Forms.Cursor.Position;
+                        var dropPos = new System.Drawing.Point(mousePos.X, mousePos.Y);
+
+                        //Detect collision with other instances window
+                        var dropInsideAnotherInstance = false;                       
+                        var instances = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+                        foreach (var instance in instances)
+                        {
+                            IntPtr windowHandle = instance.MainWindowHandle;
+                            var rect = InterComm.GetWindowRectangle(windowHandle);
+                            if (rect.HasValue && rect.Value.Contains(dropPos.X, dropPos.Y))
+                            {
+                                //if the drop is in the same instance do nothing
+                                if (Process.GetCurrentProcess().MainWindowHandle.Equals(windowHandle))
+                                {
+                                    _wasDragging = false;
+                                    return;
+                                }
+
+                                dropInsideAnotherInstance = true;
+                                break;
+                            }
+                        }
+
+                        //if no collision is found, create a new instance
+                        if (!dropInsideAnotherInstance)
+                        {
+                            using (var p = new Process()
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = System.Reflection.Assembly.GetExecutingAssembly().Location,
+                                    Arguments = string.Format("{0} {1} {2} \"{3}\"", Constants.OutsideTabDropMode, dropPos.X, dropPos.Y, fileTab.FilePath)
+                                }
+                            })
+                            {
+                                p.Start();
+                            }
+                        } else
+                        {
+                            Console.WriteLine("TabControl_MouseMove: generating valid dragdrop");
+
+                            string dataFormat = DataFormats.FileDrop;
+                            DataObject dataObject = new DataObject(dataFormat, new string[] { fileTab.FilePath });
+                            DragDrop.DoDragDrop(tabControl, dataObject, DragDropEffects.Copy);
+                        }                 
+                    }
+
+                    //remove the dropped item
+                    fileTab.Dispose();
+                    tabControl.Items.Remove(fileTab);
+
+                    if (tabControl.Items.Count == 0)
+                    {
+                        Application.Current.Shutdown();
+                        _killThisInstance = true;
+                    }
+
+                    _wasDragging = false;
+                }
+            }   
+        }
+
+        /// <summary>
+        /// Handles the drag event's queries for continuation.
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="e">The event arguments</param>
+        private void QueryContinueDragHandler(object source, QueryContinueDragEventArgs e)
+        {
+            e.Handled = true;
+
+            if (e.EscapePressed)
+            {
+                e.Action = DragAction.Cancel;
+                return;
+            }
+
+            if (e.KeyStates.HasFlag(DragDropKeyStates.LeftMouseButton))
+            {
+                e.Action = DragAction.Continue;
+            }
+            else
+            {
+                e.Action = DragAction.Cancel;
+                return;
+            }
+
+            if (e.KeyStates.HasFlag(DragDropKeyStates.MiddleMouseButton))
+            {
+                e.Action = DragAction.Continue;
+            }
+        }
+
         #endregion
 
         #region Settings Management
@@ -628,98 +800,98 @@ namespace GetMediaInfoGUI
         /// Saves user settings into a configuration file.
         /// </summary>
         private void SaveConfig()
-        {
-            try
             {
-                string path = Path.Combine(GetAppDataFolder(), "userconfig.xml");
-
-                if (File.Exists(path))
+                try
                 {
-                    File.Delete(path);
+                    string path = Path.Combine(GetAppDataFolder(), "userconfig.xml");
+
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+
+                    XmlWriter XmlWriter = XmlWriter.Create(path, new XmlWriterSettings() { Indent = true });
+
+                    XmlWriter.WriteStartDocument();
+                    XmlWriter.WriteComment("GetMediaInfo GUI - User Configuration");
+                    XmlWriter.WriteStartElement("database");
+
+                    #region configs
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
+                    XmlWriter.WriteValue(GlobalSettings.AutoSaveReport);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "DisableSimple");
+                    XmlWriter.WriteValue(GlobalSettings.DisableSimpleReport);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "DisableComplete");
+                    XmlWriter.WriteValue(GlobalSettings.DisableCompleteReport);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "DisableTree");
+                    XmlWriter.WriteValue(GlobalSettings.DisableTreeReport);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "ShowMilliseconds");
+                    XmlWriter.WriteValue(GlobalSettings.ShowMilliseconds);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "RemoveSpace");
+                    XmlWriter.WriteValue(GlobalSettings.RemoveJustification);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "ShowCover");
+                    XmlWriter.WriteValue(GlobalSettings.ShowCover);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "Bold");
+                    XmlWriter.WriteValue(GlobalSettings.Bold);
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "Italic");
+                    XmlWriter.WriteValue(GlobalSettings.Italic);
+                    XmlWriter.WriteEndElement();
+                    #endregion
+
+                    #region fonts
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "FontSize");
+                    XmlWriter.WriteValue(GlobalSettings.ReportFontSize.GetValueOrDefault());
+                    XmlWriter.WriteEndElement();
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "FontFamily");
+                    XmlWriter.WriteValue(GlobalSettings.ReportFontFamily.ToString());
+                    XmlWriter.WriteEndElement();
+                    #endregion
+
+                    #region other
+
+                    XmlWriter.WriteStartElement("config");
+                    XmlWriter.WriteAttributeString("tag", "HistorySize");
+                    XmlWriter.WriteValue(GlobalSettings.HistorySize);
+                    XmlWriter.WriteEndElement();
+                    #endregion
+
+                    XmlWriter.WriteEndElement();
+                    XmlWriter.WriteEndDocument();
+                    XmlWriter.Close();
                 }
-
-                XmlWriter XmlWriter = XmlWriter.Create(path, new XmlWriterSettings() { Indent = true });
-
-                XmlWriter.WriteStartDocument();
-                XmlWriter.WriteComment("GetMediaInfo GUI - User Configuration");
-                XmlWriter.WriteStartElement("database");
-
-                #region configs
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
-                XmlWriter.WriteValue(GlobalSettings.AutoSaveReport);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "DisableSimple");
-                XmlWriter.WriteValue(GlobalSettings.DisableSimpleReport);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "DisableComplete");
-                XmlWriter.WriteValue(GlobalSettings.DisableCompleteReport);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "DisableTree");
-                XmlWriter.WriteValue(GlobalSettings.DisableTreeReport);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "ShowMilliseconds");
-                XmlWriter.WriteValue(GlobalSettings.ShowMilliseconds);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "RemoveSpace");
-                XmlWriter.WriteValue(GlobalSettings.RemoveJustification);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "ShowCover");
-                XmlWriter.WriteValue(GlobalSettings.ShowCover);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "Bold");
-                XmlWriter.WriteValue(GlobalSettings.Bold);
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "Italic");
-                XmlWriter.WriteValue(GlobalSettings.Italic);
-                XmlWriter.WriteEndElement();
-                #endregion
-
-                #region fonts
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "FontSize");
-                XmlWriter.WriteValue(GlobalSettings.ReportFontSize.GetValueOrDefault());
-                XmlWriter.WriteEndElement();
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "FontFamily");
-                XmlWriter.WriteValue(GlobalSettings.ReportFontFamily.ToString());
-                XmlWriter.WriteEndElement();
-                #endregion
-
-                #region other
-
-                XmlWriter.WriteStartElement("config");
-                XmlWriter.WriteAttributeString("tag", "HistorySize");
-                XmlWriter.WriteValue(GlobalSettings.HistorySize);
-                XmlWriter.WriteEndElement();
-                #endregion
-
-                XmlWriter.WriteEndElement();
-                XmlWriter.WriteEndDocument();
-                XmlWriter.Close();
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unable to save user configuration. (" + ex.Message + ").");
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Unable to save user configuration. (" + ex.Message + ").");
-            }
-        }
 
         /// <summary>
         /// Restores user settings from a configuration file.
@@ -773,7 +945,7 @@ namespace GetMediaInfoGUI
                                 GlobalSettings.ReportFontSize = double.Parse(value);
                                 break;
                             case "FontFamily":
-                                GlobalSettings.ReportFontFamily = new FontFamily(value);
+                                GlobalSettings.ReportFontFamily = new System.Windows.Media.FontFamily(value);
                                 break;
                             case "HistorySize":
                                 GlobalSettings.History.MaxSize = int.Parse(value);
@@ -988,7 +1160,6 @@ namespace GetMediaInfoGUI
         #endregion
 
         #region Inter Process Communication
-
         /// <summary>
         /// Checks for other instances of this application, if another instance 
         /// is found send input arguments then close this application.
@@ -996,27 +1167,20 @@ namespace GetMediaInfoGUI
         /// <param name="args">The command line arguments.</param>
         private bool CheckForOtherInstances(params string[] args)
         {
-            if (args.Length > 1)
+            if (args.Length > 0)
             {
-                IntPtr hTargetWnd = InterComm.FindWindow(null, "GetMediaInfo");
+                var hTargetWnd = InterComm.GetWindow(null, "GetMediaInfo");
 
-                if (!hTargetWnd.Equals(IntPtr.Zero))
+                if (hTargetWnd.HasValue)
                 {
                     XElement elem = new XElement("inputs");
-                    for (int i = 1; i < args.Length; i++)
+                    for (int i = 0; i < args.Length; i++)
                     {
                         elem.Add(new XElement("input", args[i]));
                     }
                     string data = elem.ToString(SaveOptions.DisableFormatting);
 
-                    COPYDATASTRUCT cds = new COPYDATASTRUCT
-                    {
-                        dwData = IntPtr.Zero,
-                        cbData = Encoding.Unicode.GetByteCount(data) + sizeof(char), //length in byte
-                        lpData = Marshal.StringToHGlobalUni(data) //pointer to string
-                    };
-
-                    InterComm.SendMessage(hTargetWnd, InterComm.WM_COPYDATA, IntPtr.Zero, ref cds);
+                    InterComm.SendMessageToWindow(hTargetWnd.Value, InterComm.WM_COPYDATA, data);
 
                     Application.Current.Shutdown();
                     _killThisInstance = true;
@@ -1029,54 +1193,6 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// WndProc Win32 function.
-        /// </summary>
-        /// <param name="hwnd">The handle of the window.</param>
-        /// <param name="msg">The message.</param>
-        /// <param name="wParam">The wParam.</param>
-        /// <param name="lParam">The lParam.</param>
-        /// <param name="handled">if set to <c>true</c> [handled].</param>
-        /// <returns></returns>
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == InterComm.WM_COPYDATA)
-            {
-                COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(COPYDATASTRUCT));
-                string data = Marshal.PtrToStringUni(cds.lpData);
-
-                if (!string.IsNullOrEmpty(data))
-                {
-                    try
-                    {
-                        XDocument doc = XDocument.Parse(data);
-                        List<string> args = new List<string>() { "dummy" };
-                        foreach (var input in doc.Descendants("input"))
-                        {
-                            args.Add(input.Value);
-                        }
-
-                        // Bring window to foreground
-                        if (this.WindowState == WindowState.Minimized)
-                        {
-                            this.WindowState = WindowState.Normal;
-                        }
-                        this.Activate();
-
-                        ProcessArgs(args.ToArray());
-
-                        handled = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.StackTrace);
-                    }
-                }              
-            }
-
-            return IntPtr.Zero;
-        }
-
-        /// <summary>
         /// Generates the event <see cref="E:System.Windows.Window.SourceInitialized" />.
         /// </summary>
         /// <param name="e">The <see cref="T:System.EventArgs" /> object that contains the evene data.</param>
@@ -1084,7 +1200,31 @@ namespace GetMediaInfoGUI
         {
             base.OnSourceInitialized(e);
             HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
-            source.AddHook(WndProc);
+            InterComm.Instance.SubscribeWindowMessageHook(source);
+            InterComm.Instance.OnWindowMessage += (eventArgs) => {
+                try
+                {
+                    XDocument doc = XDocument.Parse(eventArgs.Message);
+                    List<string> args = new List<string>();
+                    foreach (var input in doc.Descendants("input"))
+                    {
+                        args.Add(input.Value);
+                    }
+
+                    // Bring window to foreground
+                    if (this.WindowState == WindowState.Minimized)
+                    {
+                        this.WindowState = WindowState.Normal;
+                    }
+                    this.Activate();
+
+                    ProcessArgs(args.ToArray());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.StackTrace);
+                }
+            };
         }
         #endregion
     }

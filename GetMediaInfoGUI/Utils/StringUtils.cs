@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace GetMediaInfoGUI.Utils
 {
+    /// <summary>
+    /// String utilities
+    /// </summary>
     class StringUtils
     {
-
         /// <summary>
         /// Returns whether at least one input string is not null or empty or whitespace.
         /// </summary>

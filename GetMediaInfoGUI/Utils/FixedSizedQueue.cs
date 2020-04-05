@@ -5,12 +5,15 @@ namespace GetMediaInfoGUI
     /// <summary>
     /// Fixed Sized Queue
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The typeparam</typeparam>
     /// <seealso cref="System.Collections.Generic.Queue{T}" />
     public class FixedSizedQueue<T> : Queue<T>
     {
         private int maxSize;
 
+        /// <summary>
+        /// The maximum size of the queue
+        /// </summary>
         public int MaxSize
         {
             get
@@ -23,11 +26,20 @@ namespace GetMediaInfoGUI
             }
         }
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="MaxSize">The maximum size</param>
         public FixedSizedQueue(int MaxSize) : base()
         {
             this.MaxSize = MaxSize;
         }
 
+        /// <summary>
+        /// Secondary constructor.
+        /// </summary>
+        /// <param name="MaxSize">The maximum size</param>
+        /// <param name="collection">The collection used to inizialize the queue</param>
         public FixedSizedQueue(int MaxSize, IEnumerable<T> collection) : base(collection)
         {
             this.MaxSize = MaxSize;
@@ -37,6 +49,10 @@ namespace GetMediaInfoGUI
             }
         }
 
+        /// <summary>
+        /// Enqueues an item.
+        /// </summary>
+        /// <param name="item">The item</param>
         public new void Enqueue(T item)
         {
             base.Enqueue(item);

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GetMediaInfoGUI</RootNamespace>
     <AssemblyName>GetMediaInfoGUI</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -93,18 +93,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Utils\CrossProcessLockFactory.cs" />
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Interop\CrossProcessLockFactory.cs" />
     <Compile Include="Models\FileTab.cs" />
     <Compile Include="Utils\FixedSizedQueue.cs" />
-    <Compile Include="Utils\GifImage.cs" />
-    <Compile Include="Utils\InterfaceUtils.cs" />
-    <Compile Include="Utils\InterProcComm.cs" />
+    <Compile Include="Controls\GifImage.cs" />
+    <Compile Include="Extensions\ButtonExtensions.cs" />
+    <Compile Include="Interop\InterProcComm.cs" />
     <Compile Include="Utils\GlobalSetting.cs" />
+    <Compile Include="Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Windows\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\ProcessLock.cs" />
+    <Compile Include="Interop\ProcessLock.cs" />
     <Compile Include="Models\TreeViewItem.cs" />
     <Compile Include="Windows\Updater.xaml.cs">
       <DependentUpon>Updater.xaml</DependentUpon>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GetMediaInfoGUI.Extensions;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -42,8 +43,8 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Window_Loaded(object sender, EventArgs e)
         {
-            StatusGUI.Text = System.Windows.Forms.Application.ProductVersion;
-            StatusGUI.Foreground = Brushes.Green;
+            StatusFrontend.Text = System.Windows.Forms.Application.ProductVersion;
+            StatusFrontend.Foreground = Brushes.Green;
             
             //Check versions
             VerifyMediaInfoVersion();
@@ -94,11 +95,11 @@ namespace GetMediaInfoGUI
                 RegistryKey.SetValue("", "\"" + Process.GetCurrentProcess().MainModule.FileName + "\" \"%1\"");
                 RegistryKey.Close();
                 // end 
-                AssociationStatus.Content = "Context menu entry creation succeeded.";
+                AssociationStatus.Text = "Context menu entry creation succeeded.";
             }
             catch (Exception ex)
             {
-                AssociationStatus.Content = "Context menu entry creation failed: " + ex.Message;
+                AssociationStatus.Text = "Context menu entry creation failed: " + ex.Message;
             }
         }
 
@@ -119,15 +120,15 @@ namespace GetMediaInfoGUI
                 RegistryKey.DeleteSubKeyTree("open_with_getmediainfogui");
                 RegistryKey.Close();
 
-                AssociationStatus.Content = "Context menu entry successfully removed.";
+                AssociationStatus.Text = "Context menu entry successfully removed.";
             }
             catch (ArgumentException)
             {
-                AssociationStatus.Content = "Context menu not present.";
+                AssociationStatus.Text = "Context menu not present.";
             }
             catch (Exception ex)
             {
-                AssociationStatus.Content = "Context menu not removed: " + ex.Message;
+                AssociationStatus.Text = "Context menu not removed: " + ex.Message;
             }
         }
 
@@ -362,7 +363,7 @@ namespace GetMediaInfoGUI
         {
             Updater updater = new Updater();
             updater.ShowDialog();
-            UpdaterProgress.Content = updater.GetMessageStatus();
+            UpdaterProgress.Text = updater.GetMessageStatus();
             VerifyMediaInfoVersion();
         }
 

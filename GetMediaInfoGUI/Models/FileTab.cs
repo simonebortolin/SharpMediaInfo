@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using GetMediaInfoGUI.Extensions;
 using GetMediaInfoGUI.Utils;
 
 namespace GetMediaInfoGUI
@@ -1967,7 +1968,7 @@ namespace GetMediaInfoGUI
         public void Dispose()
         {
             IsReady = false;
-            MediaInfo.Dispose();
+            MediaInfo?.Dispose();
             MediaInfo = null;
         }
 
