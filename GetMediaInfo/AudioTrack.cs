@@ -1,1502 +1,564 @@
 using System;
 
-namespace GetMediaInfos
+namespace GetMediaInfoDDLV2
 {
     /// <summary>
     /// Contains properties for a AudioTrack
     /// </summary>
     public class AudioTrack
     {
-        private int _Count;
-        private int _StreamCount;
-        private string _StreamKind;
-        private string _StreamKindString;
-        private int _StreamKindID;
-        private int _StreamKindPos;
-        private int _StreamOrder;
-        private string _Inform;
-        private string _ID;
-        private string _IDString;
-        private string _UniqueID;
-        private string _MenuID;
-        private string _MenuIDString;
-        private string _Format;
-        private string _FormatInfo;
-        private string _FormatUrl;
-        private string _FormatVersion;
-        private string _FormatProfile;
-        private string _FormatSettings;
-        private string _FormatSettingsSBR;
-        private string _FormatSettingsSBRString;
-        private string _FormatSettingsPS;
-        private string _FormatSettingsPSString;
-        private string _FormatSettingsFloor;
-        private string _FormatSettingsFirm;
-        private string _FormatSettingsEndianness;
-        private string _FormatSettingsSign;
-        private string _FormatSettingsLaw;
-        private string _FormatSettingsITU;
-        private string _MuxingMode;
-        private int _CodecID;
-        private string _CodecIDInfo;
-        private string _CodecIDHint;
-        private string _CodecIDUrl;
-        private string _CodecIDDescription;
-        private ulong _DurationMillisec;
-        private string _DurationStringFormatted;
-        private ulong _BitRate;
-        private string _BitRateString;
-        private string _BitRateMode;
-        private string _BitRateModeString;
-        private ulong _BitRateMinimum;
-        private string _BitRateMinimumString;
-        private ulong _BitRateNominal;
-        private string _BitRateNominalString;
-        private ulong _BitRateMaximum;
-        private string _BitRateMaximumString;
-        private int _Channels;
-        private string _ChannelsString;
-        private string _ChannelPositions;
-        private string _ChannelPositionsString2;
-        private string _ChannelMode;
-        private int _SamplingRate;
-        private string _SamplingRateString;
-        private int _SamplingCount;
-        private int _BitDepth;
-        private string _BitDepthString;
-        private double _CompressionRatio;
-        private int _Delay;
-        private string _DelayString;
-        private string _DelayStringFormatted;
-        private int _VideoDelay;
-        private string _VideoDelayString;
-        private string _VideoDelayStringFormatted;
-        private int _ReplayGainGain;
-        private string _ReplayGainGainString;
-        private string _ReplayGainPeak;
-        private ulong _StreamSize;
-        private string _StreamSizeString; //string
-        private string _StreamSizeStringRounded; //string1
-        private string _StreamSizeStringPrecise; //string4
-        private double _StreamSizeProportion;
-        private string _Alignment;
-        private string _AlignmentString;
-        private string _InterleaveVideoFrames;
-        private string _InterleaveDuration;
-        private string _InterleaveDurationString;
-        private string _InterleavePreload;
-        private string _InterleavePreloadString;
-        private string _Title;
-        private string _EncodedLibrary;
-        private string _EncodedLibraryString;
-        private string _EncodedLibraryName;
-        private string _EncodedLibraryVersion;
-        private string _EncodedLibraryDate;
-        private string _EncodedLibrarySettings;
-        private string _Language;
-        private string _LanguageString;
-        private string _LanguageMore;
-        private string _EncodedDate;
-        private string _TaggedDate;
-        private string _Encryption;
-        private bool _Default;
-        private string _DefaultString;
-        private bool _Forced;
-        private string _ForcedString;
+        ///<summary>  Count of objects available in this stream </summary>
+        public int? Count { get; set; }
+        ///<summary>  bit field (0=IsAccepted, 1=IsFilled, 2=IsUpdated, 3=IsFinished) </summary>
+        public string Status { get; set; }
+        ///<summary>  Count of streams of that kind available </summary>
+        public int? StreamCount { get; set; }
+        ///<summary>  Stream type name </summary>
+        public string StreamKind { get; set; }
+        ///<summary>  Stream type name </summary>
+        public string StreamKindString { get; set; }
+        ///<summary>  Number of the stream (base=0) </summary>
+        public int? StreamKindID { get; set; }
+        ///<summary>  When multiple streams, number of the stream (base=1) </summary>
+        public int? StreamKindPos { get; set; }
+        ///<summary>  Stream order in the file, whatever is the kind of stream (base=0) </summary>
+        public int? StreamOrder { get; set; }
+        ///<summary>  Order of the first fully decodable packet met in the file, whatever is the kind of stream (base=0) </summary>
+        public int? FirstPacketOrder { get; set; }
+        ///<summary>  Last **Inform** call </summary>
+        public string Inform { get; set; }
+        ///<summary>  The ID for this stream in this file </summary>
+        public string ID { get; set; }
+        ///<summary>  The ID for this stream in this file </summary>
+        public string IDString { get; set; }
+        ///<summary>  The ID for this stream in the original medium of the material </summary>
+        public string OriginalSourceMediumID { get; set; }
+        ///<summary>  The ID for this stream in the original medium of the material </summary>
+        public string OriginalSourceMediumIDString { get; set; }
+        ///<summary>  The unique ID for this stream, should be copied with stream copy </summary>
+        public string UniqueID { get; set; }
+        ///<summary>  The unique ID for this stream, should be copied with stream copy </summary>
+        public string UniqueIDString { get; set; }
+        ///<summary>  The menu ID for this stream in this file </summary>
+        public string MenuID { get; set; }
+        ///<summary>  The menu ID for this stream in this file </summary>
+        public string MenuIDString { get; set; }
+        ///<summary>  Format used </summary>
+        public string Format { get; set; }
+        ///<summary>  Info about the format </summary>
+        public string FormatInfo { get; set; }
+        ///<summary>  Homepage of this format </summary>
+        public string FormatUrl { get; set; }
+        ///<summary>  Commercial name used by vendor for theses setings or Format field if there is no difference </summary>
+        public string FormatCommercial { get; set; }
+        ///<summary>  Commercial name used by vendor for theses setings if there is one </summary>
+        public string FormatCommercialIfAny { get; set; }
+        ///<summary>  Version of this format </summary>
+        public string FormatVersion { get; set; }
+        ///<summary>  Profile of the Format (old XML: 'Profile@Level' format </summary>
+        public string FormatProfile { get; set; }
+        ///<summary>  Level of the Format (only MIXML) </summary>
+        public string FormatLevel { get; set; }
+        ///<summary>  Compression method used </summary>
+        public string FormatCompression { get; set; }
+        ///<summary>  Settings needed for decoder used, summary </summary>
+        public string FormatSettings { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsSBR { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsSBRString { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsPS { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsPSString { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsMode { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsModeExtension { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsEmphasis { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsFloor { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsFirm { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsEndianness { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsSign { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsLaw { get; set; }
+        ///<summary>   </summary>
+        public string FormatSettingsITU { get; set; }
+        ///<summary>  Wrapping mode (Frame wrapped or Clip wrapped) </summary>
+        public string FormatSettingsWrapping { get; set; }
+        ///<summary>  Matrix format (e.g. DTS Neural) </summary>
+        public string MatrixFormat { get; set; }
+        ///<summary>  Internet Media Type (aka MIME Type, Content-Type) </summary>
+        public string InternetMediaType { get; set; }
+        ///<summary>  How this stream is muxed in the container </summary>
+        public string MuxingMode { get; set; }
+        ///<summary>  More info (text) about the muxing mode </summary>
+        public string MuxingModeMoreInfo { get; set; }
+        ///<summary>  Codec ID (found in some containers) </summary>
+        public string CodecID { get; set; }
+        ///<summary>  Codec ID (found in some containers) </summary>
+        public string CodecIDString { get; set; }
+        ///<summary>  Info about codec ID </summary>
+        public string CodecIDInfo { get; set; }
+        ///<summary>  Hint/popular name for this codec ID </summary>
+        public string CodecIDHint { get; set; }
+        ///<summary>  Homepage for more details about this codec ID </summary>
+        public string CodecIDUrl { get; set; }
+        ///<summary>  Manual description given by the container </summary>
+        public string CodecIDDescription { get; set; }
+        ///<summary>  Play time of the stream </summary>
+        public double? Duration { get; set; }
+        ///<summary>  Play time of the stream in MilliSecond </summary>
+        public ulong? DurationMilliSecond => Duration.HasValue ? (ulong?)Duration.Value  : null;
+        ///<summary>  Play time in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationString { get; set; }
+        ///<summary>  Play time in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string DurationString1 { get; set; }
+        ///<summary>  Play time in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationString2 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.MMM </summary>
+        public string DurationFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DurationString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DurationString5 { get; set; }
+        ///<summary>  Duration of the first frame if it is longer than others </summary>
+        public double? DurationFirstFrame { get; set; }
+        ///<summary>  Duration of the first frame if it is longer than others, in MilliSecond </summary>
+        public ulong? DurationFirstFrameMilliSecond => DurationFirstFrame.HasValue ? (ulong?)DurationFirstFrame.Value  : null;
+        ///<summary>  Duration of the first frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationFirstFrameString { get; set; }
+        ///<summary>  Duration of the first frame if it is longer than others, in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string DurationFirstFrameString1 { get; set; }
+        ///<summary>  Duration of the first frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationFirstFrameString2 { get; set; }
+        ///<summary>  Duration of the first frame if it is longer than others, in format HH:MM:SS.MMM </summary>
+        public string DurationFirstFrameFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DurationFirstFrameString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DurationFirstFrameString5 { get; set; }
+        ///<summary>  Duration of the last frame if it is longer than others </summary>
+        public double? DurationLastFrame { get; set; }
+        ///<summary>  Duration of the last frame if it is longer than others, in MilliSecond </summary>
+        public ulong? DurationLastFrameMilliSecond => DurationLastFrame.HasValue ? (ulong?)DurationLastFrame.Value  : null;
+        ///<summary>  Duration of the last frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationLastFrameString { get; set; }
+        ///<summary>  Duration of the last frame if it is longer than others, in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string DurationLastFrameString1 { get; set; }
+        ///<summary>  Duration of the last frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationLastFrameString2 { get; set; }
+        ///<summary>  Duration of the last frame if it is longer than others, in format HH:MM:SS.MMM </summary>
+        public string DurationLastFrameFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DurationLastFrameString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DurationLastFrameString5 { get; set; }
+        ///<summary>  Source Play time of the stream </summary>
+        public double? SourceDuration { get; set; }
+        ///<summary>  Source Play time of the stream, in MilliSecond </summary>
+        public ulong? SourceDurationMilliSecond => SourceDuration.HasValue ? (ulong?)SourceDuration.Value  : null;
+        ///<summary>  Source Play time in format XXx YYy only, YYy omited if zero </summary>
+        internal string SourceDurationString { get; set; }
+        ///<summary>  Source Play time in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string SourceDurationString1 { get; set; }
+        ///<summary>  Source Play time in format XXx YYy only, YYy omited if zero </summary>
+        internal string SourceDurationString2 { get; set; }
+        ///<summary>  Source Play time in format HH:MM:SS.MMM </summary>
+        public string SourceDurationFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string SourceDurationString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string SourceDurationString5 { get; set; }
+        ///<summary>  Source Duration of the first frame if it is longer than others </summary>
+        public double? SourceDurationFirstFrame { get; set; }
+        ///<summary>  Source Duration of the first frame if it is longer than others, in MilliSecond </summary>
+        public ulong? SourceDurationFirstFrameMilliSecond => SourceDurationFirstFrame.HasValue ? (ulong?)SourceDurationFirstFrame.Value  : null;
+        ///<summary>  Source Duration of the first frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string SourceDurationFirstFrameString { get; set; }
+        ///<summary>  Source Duration of the first frame if it is longer than others, in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string SourceDurationFirstFrameString1 { get; set; }
+        ///<summary>  Source Duration of the first frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string SourceDurationFirstFrameString2 { get; set; }
+        ///<summary>  Source Duration of the first frame if it is longer than others, in format HH:MM:SS.MMM </summary>
+        public string SourceDurationFirstFrameFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string SourceDurationFirstFrameString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string SourceDurationFirstFrameString5 { get; set; }
+        ///<summary>  Source Duration of the last frame if it is longer than others </summary>
+        public double? SourceDurationLastFrame { get; set; }
+        ///<summary>  Source Duration of the last frame if it is longer than others, in MilliSecond </summary>
+        public ulong? SourceDurationLastFrameMilliSecond => SourceDurationLastFrame.HasValue ? (ulong?)SourceDurationLastFrame.Value  : null;
+        ///<summary>  Source Duration of the last frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string SourceDurationLastFrameString { get; set; }
+        ///<summary>  Source Duration of the last frame if it is longer than others, in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string SourceDurationLastFrameString1 { get; set; }
+        ///<summary>  Source Duration of the last frame if it is longer than others, in format XXx YYy only, YYy omited if zero </summary>
+        internal string SourceDurationLastFrameString2 { get; set; }
+        ///<summary>  Source Duration of the last frame if it is longer than others, in format HH:MM:SS.MMM </summary>
+        public string SourceDurationLastFrameFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string SourceDurationLastFrameString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string SourceDurationLastFrameString5 { get; set; }
+        ///<summary>  Bit rate mode (VBR, CBR) </summary>
+        public string BitRateMode { get; set; }
+        ///<summary>  Bit rate mode (Constant, Variable) </summary>
+        public string BitRateModeString { get; set; }
+        ///<summary>  Bit rate in bps </summary>
+        public double? BitRate { get; set; }
+        ///<summary>  Bit rate (with measurement) </summary>
+        public string BitRateString { get; set; }
+        ///<summary>  Minimum Bit rate in bps </summary>
+        public double? BitRateMinimum { get; set; }
+        ///<summary>  Minimum Bit rate (with measurement) </summary>
+        public string BitRateMinimumString { get; set; }
+        ///<summary>  Nominal Bit rate in bps </summary>
+        public double? BitRateNominal { get; set; }
+        ///<summary>  Nominal Bit rate (with measurement) </summary>
+        public string BitRateNominalString { get; set; }
+        ///<summary>  Maximum Bit rate in bps </summary>
+        public double? BitRateMaximum { get; set; }
+        ///<summary>  Maximum Bit rate (with measurement) </summary>
+        public string BitRateMaximumString { get; set; }
+        ///<summary>  Encoded (with forced padding) bit rate in bps, if some container padding is present </summary>
+        public double? BitRateEncoded { get; set; }
+        ///<summary>  Encoded (with forced padding) bit rate (with measurement), if some container padding is present </summary>
+        public string BitRateEncodedString { get; set; }
+        ///<summary>  Number of channels </summary>
+        public int? Channels { get; set; }
+        ///<summary>  Number of channels (with measurement) </summary>
+        public string ChannelsString { get; set; }
+        ///<summary>  Number of channels </summary>
+        public int? ChannelsOriginal { get; set; }
+        ///<summary>  Number of channels (with measurement) </summary>
+        public string ChannelsOriginalString { get; set; }
+        ///<summary>  Number of channels after matrix decoding </summary>
+        public int? MatrixChannels { get; set; }
+        ///<summary>  Number of channels after matrix decoding (with measurement) </summary>
+        public string MatrixChannelsString { get; set; }
+        ///<summary>  Position of channels </summary>
+        public string ChannelPositions { get; set; }
+        ///<summary>  Position of channels (x/y.z format) </summary>
+        public string ChannelPositionsString { get; set; }
+        ///<summary>  Position of channels after matrix decoding </summary>
+        public string MatrixChannelPositions { get; set; }
+        ///<summary>  Position of channels after matrix decoding (x/y.z format) </summary>
+        public string MatrixChannelPositionsString { get; set; }
+        ///<summary>  Layout of channels (in the stream) </summary>
+        public string ChannelLayout { get; set; }
+        ///<summary>  ID of layout of channels (e.g. MXF descriptor channel assignment). Warning, sometimes this is not enough for uniquely identifying a layout (e.g. MXF descriptor channel assignment is SMPTE 377-4). For AC-3, the form is x,y with x=acmod and y=lfeon. </summary>
+        public string ChannelLayoutID { get; set; }
+        ///<summary>  Sampling rate </summary>
+        public string SamplesPerFrame { get; set; }
+        ///<summary>  Sampling rate </summary>
+        public string SamplingRate { get; set; }
+        ///<summary>  in KHz </summary>
+        public string SamplingRateString { get; set; }
+        ///<summary>  Sample count (based on sampling rate) </summary>
+        public int? SamplingCount { get; set; }
+        ///<summary>  Source Sample count (based on sampling rate) </summary>
+        public int? SourceSamplingCount { get; set; }
+        ///<summary>  Frames per second </summary>
+        public double? FrameRate { get; set; }
+        ///<summary>  Frames per second (with measurement) </summary>
+        public string FrameRateString { get; set; }
+        ///<summary>  Frames per second, numerator </summary>
+        public double? FrameRateNum { get; set; }
+        ///<summary>  Frames per second, denominator </summary>
+        public double? FrameRateDen { get; set; }
+        ///<summary>  Frame count (a frame contains a count of samples depends of the format) </summary>
+        public int? FrameCount { get; set; }
+        ///<summary>  Source Frame count (a frame contains a count of samples depends of the format) </summary>
+        public int? SourceFrameCount { get; set; }
+        ///<summary>  Resolution in bits (8, 16, 20, 24). Note: significant bits in case the stored bit depth is different </summary>
+        public string BitDepth { get; set; }
+        ///<summary>  Resolution in bits (8, 16, 20, 24). Note: significant bits in case the stored bit depth is different </summary>
+        public string BitDepthString { get; set; }
+        ///<summary>  Detected (during scan of the input by the muxer) resolution in bits </summary>
+        public string BitDepthDetected { get; set; }
+        ///<summary>  Detected (during scan of the input by the muxer) resolution in bits </summary>
+        public string BitDepthDetectedString { get; set; }
+        ///<summary>  Stored Resolution in bits (8, 16, 20, 24) </summary>
+        public string BitDepthStored { get; set; }
+        ///<summary>  Stored Resolution in bits (8, 16, 20, 24) </summary>
+        public string BitDepthStoredString { get; set; }
+        ///<summary>  Compression mode (Lossy or Lossless) </summary>
+        public string CompressionMode { get; set; }
+        ///<summary>  Compression mode (Lossy or Lossless) </summary>
+        public string CompressionModeString { get; set; }
+        ///<summary>  Current stream size divided by uncompressed stream size </summary>
+        public string CompressionRatio { get; set; }
+        ///<summary>  Delay fixed in the stream (relative) </summary>
+        public double? Delay { get; set; }
+        ///<summary>  Delay fixed in the stream (relative) IN MilliSecond </summary>
+        public ulong? DelayMilliSecond => Delay.HasValue ? (ulong?)Delay.Value  : null;
+        ///<summary>  Delay with measurement </summary>
+        public string DelayString { get; set; }
+        ///<summary>  Delay with measurement </summary>
+        internal string DelayString1 { get; set; }
+        ///<summary>  Delay with measurement </summary>
+        internal string DelayString2 { get; set; }
+        ///<summary>  Delay in format HH:MM:SS.MMM </summary>
+        public string DelayFormatted { get; set; }
+        ///<summary>  Delay in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DelayString4 { get; set; }
+        ///<summary>  Delay in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DelayString5 { get; set; }
+        ///<summary>  Delay settings (in case of timecode for example) </summary>
+        public string DelaySettings { get; set; }
+        ///<summary>  Delay drop frame </summary>
+        public string DelayDropFrame { get; set; }
+        ///<summary>  Delay source (Container or Stream or empty) </summary>
+        public string DelaySource { get; set; }
+        ///<summary>  Delay source (Container or Stream or empty) </summary>
+        public string DelaySourceString { get; set; }
+        ///<summary>  Delay fixed in the raw stream (relative) </summary>
+        public double? DelayOriginal { get; set; }
+        ///<summary>  Delay fixed in the raw stream (relative) IN MilliSecond </summary>
+        public ulong? DelayOriginalMilliSecond => DelayOriginal.HasValue ? (ulong?)DelayOriginal.Value  : null;
+        ///<summary>  Delay with measurement </summary>
+        public string DelayOriginalString { get; set; }
+        ///<summary>  Delay with measurement </summary>
+        internal string DelayOriginalString1 { get; set; }
+        ///<summary>  Delay with measurement </summary>
+        internal string DelayOriginalString2 { get; set; }
+        ///<summary>  Delay in format: HH:MM:SS.MMM </summary>
+        public string DelayOriginalFormatted { get; set; }
+        ///<summary>  Delay in format: HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DelayOriginalString4 { get; set; }
+        ///<summary>  Delay in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DelayOriginalString5 { get; set; }
+        ///<summary>  Delay settings (in case of timecode for example) </summary>
+        public string DelayOriginalSettings { get; set; }
+        ///<summary>  Delay drop frame info </summary>
+        public string DelayOriginalDropFrame { get; set; }
+        ///<summary>  Delay source (Stream or empty) </summary>
+        public string DelayOriginalSource { get; set; }
+        ///<summary>  Delay fixed in the stream (absolute / video) </summary>
+        public string VideoDelay { get; set; }
+        ///<summary>   </summary>
+        public string VideoDelayString { get; set; }
+        ///<summary>   </summary>
+        internal string VideoDelayString1 { get; set; }
+        ///<summary>   </summary>
+        internal string VideoDelayString2 { get; set; }
+        ///<summary>   </summary>
+        public string VideoDelayFormatted { get; set; }
+        ///<summary>   </summary>
+        internal string VideoDelayString4 { get; set; }
+        ///<summary>   </summary>
+        internal string VideoDelayString5 { get; set; }
+        ///<summary>  The gain to apply to reach 89dB SPL on playback </summary>
+        public string ReplayGainGain { get; set; }
+        ///<summary>   </summary>
+        public string ReplayGainGainString { get; set; }
+        ///<summary>  The maximum absolute peak value of the item </summary>
+        public string ReplayGainPeak { get; set; }
+        ///<summary>  Streamsize in bytes </summary>
+        public ulong? StreamSize { get; set; }
+        ///<summary>  Streamsize in with percentage value </summary>
+        public string StreamSizeString { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString1 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString2 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString3 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString4 { get; set; }
+        ///<summary>  Stream size divided by file size </summary>
+        public double? StreamSizeProportion { get; set; }
+        ///<summary>  StreamSize in bytes of hte stream after demux </summary>
+        public ulong? StreamSizeDemuxed { get; set; }
+        ///<summary>  StreamSize_Demuxed in with percentage value </summary>
+        public string StreamSizeDemuxedString { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString1 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString2 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString3 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString4 { get; set; }
+        ///<summary>  Source Streamsize in bytes </summary>
+        public ulong? SourceStreamSize { get; set; }
+        ///<summary>  Source Streamsize in with percentage value </summary>
+        public string SourceStreamSizeString { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeString1 { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeString2 { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeString3 { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeString4 { get; set; }
+        ///<summary>  Source Stream size divided by file size </summary>
+        public ulong? SourceStreamSizeProport { get; set; }
+        ///<summary>  Encoded Streamsize in bytes </summary>
+        public ulong? StreamSizeEncoded { get; set; }
+        ///<summary>   </summary>
+        public string StreamSizeEncodedString { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeEncodedString1 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeEncodedString2 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeEncodedString3 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeEncodedString4 { get; set; }
+        ///<summary>  Encoded Streamsize in with percentage value </summary>
+        internal string StreamSizeEncodedString5 { get; set; }
+        ///<summary>  Source Encoded Streamsize in bytes </summary>
+        public ulong? SourceStreamSizeEncoded { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeEncodedString1 { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeEncodedString2 { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeEncodedString3 { get; set; }
+        ///<summary>   </summary>
+        internal string SourceStreamSizeEncodedString4 { get; set; }
+        ///<summary>  How this stream file is aligned in the container </summary>
+        public string Alignment { get; set; }
+        ///<summary>  Where this stream file is aligned in the container </summary>
+        public string AlignmentString { get; set; }
+        ///<summary>  Between how many video frames the stream is inserted </summary>
+        public string InterleaveVideoFrames { get; set; }
+        ///<summary>  Between how much time (ms) the stream is inserted </summary>
+        public double? InterleaveDuration { get; set; }
+        ///<summary>  Between how much time and video frames the stream is inserted (with measurement) </summary>
+        public string InterleaveDurationString { get; set; }
+        ///<summary>  How much time is buffered before the first video frame </summary>
+        public string InterleavePreload { get; set; }
+        ///<summary>  How much time is buffered before the first video frame (with measurement) </summary>
+        public string InterleavePreloadString { get; set; }
+        ///<summary>  Name of the track </summary>
+        public string Title { get; set; }
+        ///<summary>  Name of the software package used to create the file, such as Microsoft WaveEdit </summary>
+        public string EncodedApplication { get; set; }
+        ///<summary>  Name of the software package used to create the file, such as Microsoft WaveEdit, trying to have the format 'CompanyName ProductName (OperatingSystem) Version (Date)' </summary>
+        public string EncodedApplicationString { get; set; }
+        ///<summary>  Name of the company </summary>
+        public string EncodedApplicationCompany { get; set; }
+        ///<summary>  Name of the product </summary>
+        public string EncodedApplicationName { get; set; }
+        ///<summary>  Version of the product </summary>
+        public string EncodedApplicationVersion { get; set; }
+        ///<summary>  Name of the software package used to create the file, such as Microsoft WaveEdit. </summary>
+        public string EncodedApplicationUrl { get; set; }
+        ///<summary>  Software used to create the file </summary>
+        public string EncodedLibrary { get; set; }
+        ///<summary>  Software used to create the file, trying to have the format 'CompanyName ProductName (OperatingSystem) Version (Date)' </summary>
+        public string EncodedLibraryString { get; set; }
+        ///<summary>  Name of the company </summary>
+        public string EncodedLibraryCompanyName { get; set; }
+        ///<summary>  Name of the the encoding-software </summary>
+        public string EncodedLibraryName { get; set; }
+        ///<summary>  Version of encoding-software </summary>
+        public string EncodedLibraryVersion { get; set; }
+        ///<summary>  Release date of software </summary>
+        public string EncodedLibraryDate { get; set; }
+        ///<summary>  Parameters used by the software </summary>
+        public string EncodedLibrarySettings { get; set; }
+        ///<summary>  Operating System of encoding-software </summary>
+        public string EncodedOperatingSystem { get; set; }
+        ///<summary>  Language (2-letter ISO 639-1 if exists, else 3-letter ISO 639-2, and with optional ISO 3166-1 country separated by a dash if available, e.g. en, en-us, zh-cn) </summary>
+        public int? Language { get; set; }
+        ///<summary>  Language (full) </summary>
+        public string LanguageString { get; set; }
+        ///<summary>  Language (full) </summary>
+        internal string LanguageString1 { get; set; }
+        ///<summary>  Language (2-letter ISO 639-1 if exists, else empty) </summary>
+        internal string LanguageString2 { get; set; }
+        ///<summary>  Language (3-letter ISO 639-2 if exists, else empty) </summary>
+        public string LanguageString3 { get; set; }
+        ///<summary>  Language (2-letter ISO 639-1 if exists with optional ISO 3166-1 country separated by a dash if available, e.g. en, en-us, zh-cn, else empty) </summary>
+        public string LanguageString4 { get; set; }
+        ///<summary>  More info about Language (e.g. Director's Comment) </summary>
+        public string LanguageMore { get; set; }
+        ///<summary>  Service kind, e.g. visually impaired, commentary, voice over </summary>
+        public string ServiceKind { get; set; }
+        ///<summary>  Service kind (full) </summary>
+        public string ServiceKindString { get; set; }
+        ///<summary>  Set if that track should not be used </summary>
+        public string Disabled { get; set; }
+        ///<summary>  Set if that track should not be used </summary>
+        public string DisabledString { get; set; }
+        ///<summary>  Set if that track should be used if no language found matches the user preference. </summary>
+        public bool? Default { get; set; }
+        ///<summary>  Set if that track should be used if no language found matches the user preference. </summary>
+        public string DefaultString { get; set; }
+        ///<summary>  Set if that track should be used if no language found matches the user preference. </summary>
+        public bool? Forced { get; set; }
+        ///<summary>  Set if that track should be used if no language found matches the user preference. </summary>
+        public string ForcedString { get; set; }
+        ///<summary>  Number of a group in order to provide versions of the same track </summary>
+        public int? AlternateGroup { get; set; }
+        ///<summary>  Number of a group in order to provide versions of the same track </summary>
+        public string AlternateGroupString { get; set; }
+        ///<summary>  UTC time that the encoding of this item was completed began. </summary>
+        public string EncodedDate { get; set; }
+        ///<summary>  UTC time that the tags were done for this item. </summary>
+        public string TaggedDate { get; set; }
+        ///<summary>   </summary>
+        public string Encryption { get; set; }
 
-        ///<summary> Count of objects available in this stream </summary>
-        public int Count
-        {
-            get
-            {
-                return _Count;
-            }
-            set
-            {
-                this._Count=value;
-            }
-        }
-
-        ///<summary> Count of streams of that kind available </summary>
-        public int StreamCount
-        {
-            get
-            {
-                return _StreamCount;
-            }
-            set
-            {
-                this._StreamCount=value;
-            }
-        }
-
-        ///<summary> Stream name </summary>
-        public string StreamKind
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._StreamKind))
-                    this._StreamKind="";
-                return _StreamKind;
-            }
-            set
-            {
-                this._StreamKind=value;
-            }
-        }
-
-        ///<summary> Stream name string formated</summary>
-        public string StreamKindString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._StreamKindString))
-                    this._StreamKindString = "";
-                return _StreamKindString;
-            }
-            set
-            {
-                this._StreamKindString = value;
-            }
-        }
-
-        ///<summary> id of the stream </summary>
-        public int StreamKindID
-        {
-            get
-            {
-                return _StreamKindID;
-            }
-            set
-            {
-                this._StreamKindID=value;
-            }
-        }
-
-        ///<summary> When multiple streams, number of the stream </summary>
-        public int StreamKindPos
-        {
-            get
-            {
-                return _StreamKindPos;
-            }
-            set
-            {
-                this._StreamKindPos = value;
-            }
-        }
-
-        ///<summary>Stream order in the file, whatever is the kind of stream (base=0)</summary>
-        public int StreamOrder
-        {
-            get
-            {
-                return _StreamOrder;
-            }
-            set
-            {
-                this._StreamOrder = value;
-            }
-        }
-
-        ///<summary> Last   Inform   call </summary>
-        public string Inform
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Inform))
-                    this._Inform="";
-                return _Inform;
-            }
-            set
-            {
-                this._Inform=value;
-            }
-        }
-
-        ///<summary> A ID for the stream </summary>
-        public string ID
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ID))
-                    this._ID="";
-                return _ID;
-            }
-            set
-            {
-                this._ID=value;
-            }
-        }
-
-        ///<summary> A ID for the stream  string formated</summary>
-        public string IDString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._IDString))
-                    this._IDString = "";
-                return _IDString;
-            }
-            set
-            {
-                this._IDString = value;
-            }
-        }
-
-        ///<summary> A unique ID for this stream, should be copied with stream copy </summary>
-        public string UniqueID
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._UniqueID))
-                    this._UniqueID="";
-                return _UniqueID;
-            }
-            set
-            {
-                this._UniqueID=value;
-            }
-        }
-
-        ///<summary> the Menu ID for this stream</summary>
-        public string MenuID
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MenuID))
-                    this._MenuID = "";
-                return _MenuID;
-            }
-            set
-            {
-                this._MenuID = value;
-            }
-        }
-
-        ///<summary> the Menu ID for this stream string formated</summary>
-        public string MenuIDString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MenuIDString))
-                    this._MenuIDString = "";
-                return _MenuIDString;
-            }
-            set
-            {
-                this._MenuIDString = value;
-            }
-        }
-
-        ///<summary> the Format used</summary>
-        public string Format
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Format))
-                    this._Format = "";
-                return _Format;
-            }
-            set
-            {
-                this._Format = value;
-            }
-        }
-
-        ///<summary> Info about the Format used</summary>
-        public string FormatInfo
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatInfo))
-                    this._FormatInfo = "";
-                return _FormatInfo;
-            }
-            set
-            {
-                this._FormatInfo = value;
-            }
-        }
-
-        ///<summary> Webpage of the Format</summary>
-        public string FormatUrl
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatUrl))
-                    this._FormatUrl = "";
-                return _FormatUrl;
-            }
-            set
-            {
-                this._FormatUrl = value;
-            }
-        }
-
-        ///<summary> the Version of the Format used</summary>
-        public string FormatVersion
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatVersion))
-                    this._FormatVersion = "";
-                return _FormatVersion;
-            }
-            set
-            {
-                this._FormatVersion = value;
-            }
-        }
-
-        ///<summary> the Profile of the Format used</summary>
-        public string FormatProfile
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatProfile))
-                    this._FormatProfile = "";
-                return _FormatProfile;
-            }
-            set
-            {
-                this._FormatProfile = value;
-            }
-        }
-
-        ///<summary> the Settings of the Format used</summary>
-        public string FormatSettings
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettings))
-                    this._FormatSettings = "";
-                return _FormatSettings;
-            }
-            set
-            {
-                this._FormatSettings = value;
-            }
-        }
-
-        ///<summary> the SBR flag</summary>
-        public string FormatSettingsSBR
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsSBR))
-                    this._FormatSettingsSBR = "";
-                return _FormatSettingsSBR;
-            }
-            set
-            {
-                this._FormatSettingsSBR = value;
-            }
-        }
-
-        ///<summary> the SBR flag set as string</summary>
-        public string FormatSettingsSBRString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsSBRString))
-                    this._FormatSettingsSBRString = "";
-                return _FormatSettingsSBRString;
-            }
-            set
-            {
-                this._FormatSettingsSBRString = value;
-            }
-        }
-
-        ///<summary> the PS flag</summary>
-        public string FormatSettingsPS
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsPS))
-                    this._FormatSettingsPS = "";
-                return _FormatSettingsPS;
-            }
-            set
-            {
-                this._FormatSettingsPS = value;
-            }
-        }
-
-        ///<summary> the PS flag set as string</summary>
-        public string FormatSettingsPSString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsPSString))
-                    this._FormatSettingsPSString = "";
-                return _FormatSettingsPSString;
-            }
-            set
-            {
-                this._FormatSettingsPSString = value;
-            }
-        }
-
-        ///<summary> the Floor used in the stream</summary>
-        public string FormatSettingsFloor
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsFloor))
-                    this._FormatSettingsFloor = "";
-                return _FormatSettingsFloor;
-            }
-            set
-            {
-                this._FormatSettingsFloor = value;
-            }
-        }
-
-        ///<summary> the Firm used in the settings</summary>
-        public string FormatSettingsFirm
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsFirm))
-                    this._FormatSettingsFirm = "";
-                return _FormatSettingsFirm;
-            }
-            set
-            {
-                this._FormatSettingsFirm = value;
-            }
-        }
-
-        ///<summary> the Endianness used in the stream</summary>
-        public string FormatSettingsEndianness
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsEndianness))
-                    this._FormatSettingsEndianness = "";
-                return _FormatSettingsEndianness;
-            }
-            set
-            {
-                this._FormatSettingsEndianness = value;
-            }
-        }
-
-        ///<summary> the Sign used in the stream</summary>
-        public string FormatSettingsSign
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsSign))
-                    this._FormatSettingsSign = "";
-                return _FormatSettingsSign;
-            }
-            set
-            {
-                this._FormatSettingsSign = value;
-            }
-        }
-
-        ///<summary> the Law used in the stream</summary>
-        public string FormatSettingsLaw
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsLaw))
-                    this._FormatSettingsLaw = "";
-                return _FormatSettingsLaw;
-            }
-            set
-            {
-                this._FormatSettingsLaw = value;
-            }
-        }
-
-        ///<summary> the ITU Format used in the stream</summary>
-        public string FormatSettingsITU
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatSettingsITU))
-                    this._FormatSettingsITU = "";
-                return _FormatSettingsITU;
-            }
-            set
-            {
-                this._FormatSettingsITU = value;
-            }
-        }
-
-        ///<summary> how the stream has been muxed </summary>
-        public string MuxingMode
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MuxingMode))
-                    this._MuxingMode = "";
-                return _MuxingMode;
-            }
-            set
-            {
-                this._MuxingMode = value;
-            }
-        }
-
-        ///<summary> the ID of the Codec, found in the container </summary>
-        public int CodecID
-        {
-            get
-            {
-                return _CodecID;
-            }
-            set
-            {
-                this._CodecID = value;
-            }
-        }
-
-        ///<summary> Info about the CodecID </summary>
-        public string CodecIDInfo
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CodecIDInfo))
-                    this._CodecIDInfo = "";
-                return _CodecIDInfo;
-            }
-            set
-            {
-                this._CodecIDInfo = value;
-            }
-        }
-
-        ///<summary> the Hint/popular name for the CodecID  </summary>
-        public string CodecIDHint
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CodecIDHint))
-                    this._CodecIDHint = "";
-                return _CodecIDHint;
-            }
-            set
-            {
-                this._CodecIDHint = value;
-            }
-        }
-
-        ///<summary> homepage for more details about the CodecID </summary>
-        public string CodecIDUrl
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CodecIDUrl))
-                    this._CodecIDUrl = "";
-                return _CodecIDUrl;
-            }
-            set
-            {
-                this._CodecIDUrl = value;
-            }
-        }
-
-        ///<summary> the description of the Codec ID </summary>
-        public string CodecIDDescription
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CodecIDDescription))
-                    this._CodecIDDescription = "";
-                return _CodecIDDescription;
-            }
-            set
-            {
-                this._CodecIDDescription = value;
-            }
-        }
-
-        ///<summary> Name of the track </summary>
-        public string Title
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Title))
-                    this._Title="";
-                return _Title;
-            }
-            set
-            {
-                this._Title=value;
-            }
-        }
-
-        ///<summary> Bit rate in bps </summary>
-        public ulong BitRate
-        {
-            get
-            {
-                return _BitRate;
-            }
-            set
-            {
-                this._BitRate=value;
-            }
-        }
-
-        ///<summary> Bit rate (with measurement) </summary>
-        public string BitRateString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitRateString))
-                    this._BitRateString="";
-                return _BitRateString;
-            }
-            set
-            {
-                this._BitRateString=value;
-            }
-        }
-
-        ///<summary> Bit rate mode (VBR, CBR) </summary>
-        public string BitRateMode
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitRateMode))
-                    this._BitRateMode="";
-                return _BitRateMode;
-            }
-            set
-            {
-                this._BitRateMode=value;
-            }
-        }
-
-        ///<summary> Bit rate mode (VBR, CBR) formated as string </summary>
-        public string BitRateModeString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitRateModeString))
-                    this._BitRateModeString = "";
-                return _BitRateModeString;
-            }
-            set
-            {
-                this._BitRateModeString = value;
-            }
-        }
-
-        ///<summary> Minimum Bit rate mode </summary>
-        public ulong BitRateMinimum
-        {
-            get
-            {
-                return _BitRateMinimum;
-            }
-            set
-            {
-                this._BitRateMinimum = value;
-            }
-        }
-
-        ///<summary> Minimum Bit rate mode formated as string </summary>
-        public string BitRateMinimumString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitRateMinimumString))
-                    this._BitRateMinimumString = "";
-                return _BitRateMinimumString;
-            }
-            set
-            {
-                this._BitRateMinimumString = value;
-            }
-        }
-
-        ///<summary> Nominal Bit rate </summary>
-        public ulong BitRateNominal
-        {
-            get
-            {
-                return _BitRateNominal;
-            }
-            set
-            {
-                this._BitRateNominal = value;
-            }
-        }
-
-        ///<summary> Nominal Bit rate formated as string </summary>
-        public string BitRateNominalString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitRateNominalString))
-                    this._BitRateNominalString = "";
-                return _BitRateNominalString;
-            }
-            set
-            {
-                this._BitRateNominalString = value;
-            }
-        }
-
-        ///<summary> Max Bit rate </summary>
-        public ulong BitRateMaximum
-        {
-            get
-            {
-                return _BitRateMaximum;
-            }
-            set
-            {
-                this._BitRateMaximum = value;
-            }
-        }
-
-        ///<summary> Max Bit rate formated as string </summary>
-        public string BitRateMaximumString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitRateMaximumString))
-                    this._BitRateMaximumString = "";
-                return _BitRateMaximumString;
-            }
-            set
-            {
-                this._BitRateMaximumString = value;
-            }
-        }
-
-        ///<summary> Number of channels </summary>
-        public int Channels
-        {
-            get
-            {
-                return _Channels;
-            }
-            set
-            {
-                this._Channels=value;
-            }
-        }
-
-        ///<summary> Number of channels </summary>
-        public string ChannelsString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ChannelsString))
-                    this._ChannelsString="";
-                return _ChannelsString;
-            }
-            set
-            {
-                this._ChannelsString=value;
-            }
-        }
-
-        ///<summary> Positions of channels </summary>
-        public string ChannelPositions
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ChannelPositions))
-                    this._ChannelPositions = "";
-                return _ChannelPositions;
-            }
-            set
-            {
-                this._ChannelPositions = value;
-            }
-        }
-
-        ///<summary> Positions of channels (x/y.z format) </summary>
-        public string ChannelPositionsString2
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ChannelPositionsString2))
-                    this._ChannelPositionsString2 = "";
-                return _ChannelPositionsString2;
-            }
-            set
-            {
-                this._ChannelPositionsString2 = value;
-            }
-        }
-
-        ///<summary> Channel mode </summary>
-        public string ChannelMode
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ChannelMode))
-                    this._ChannelMode="";
-                return _ChannelMode;
-            }
-            set
-            {
-                this._ChannelMode=value;
-            }
-        }
-
-        ///<summary> Sampling rate </summary>
-        public int SamplingRate
-        {
-            get
-            {
-                return _SamplingRate;
-            }
-            set
-            {
-                this._SamplingRate=value;
-            }
-        }
-
-        ///<summary> in KHz </summary>
-        public string SamplingRateString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._SamplingRateString))
-                    this._SamplingRateString="";
-                return _SamplingRateString;
-            }
-            set
-            {
-                this._SamplingRateString=value;
-            }
-        }
-
-        ///<summary> Frame count </summary>
-        public int SamplingCount
-        {
-            get
-            {
-                return _SamplingCount;
-            }
-            set
-            {
-                this._SamplingCount=value;
-            }
-        }
-
-        ///<summary> BitDepth in bits (8, 16, 20, 24) </summary>
-        public int BitDepth
-        {
-            get
-            {
-                return _BitDepth;
-            }
-            set
-            {
-                this._BitDepth=value;
-            }
-        }
-
-        ///<summary> BitDepth in bits (8, 16, 20, 24) formated as string </summary>
-        public string BitDepthString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BitDepthString))
-                    this._BitDepthString = "";
-                return _BitDepthString;
-            }
-            set
-            {
-                this._BitDepthString = value;
-            }
-        }
-
-        ///<summary> Current Stream Size divided by uncompressed Stream Size </summary>
-        public double CompressionRatio
-        {
-            get
-            {
-                return _CompressionRatio;
-            }
-            set
-            {
-                this._CompressionRatio = value;
-            }
-        }
-
-        ///<summary> Delay fixed in the stream (relative) </summary>
-        public int Delay
-        {
-            get
-            {
-                return _Delay;
-            }
-            set
-            {
-                this._Delay=value;
-            }
-        }
-
-        ///<summary> Delay in format : XXx YYy only, YYy omitted if zero </summary>
-        public string DelayString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DelayString))
-                    this._DelayString = "";
-                return _DelayString;
-            }
-            set
-            {
-                this._DelayString = value;
-            }
-        }
-
-        ///<summary> Delay in format : HH:MM:SS.MMM </summary>
-        public string DelayStringFormatted
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DelayStringFormatted))
-                    this._DelayStringFormatted = "";
-                return _DelayStringFormatted;
-            }
-            set
-            {
-                this._DelayStringFormatted = value;
-            }
-        }
-
-        ///<summary> Delay (ms) fixed in the stream (absolute / video) </summary>
-        public int VideoDelay
-        {
-            get
-            {
-                return _VideoDelay;
-            }
-            set
-            {
-                this._VideoDelay=value;
-            }
-        }
-
-        ///<summary> Delay (ms) fixed in the stream (absolute / video) formated as string </summary>
-        public string VideoDelayString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._VideoDelayString))
-                    this._VideoDelayString = "";
-                return _VideoDelayString;
-            }
-            set
-            {
-                this._VideoDelayString = value;
-            }
-        }
-
-        ///<summary> Delay (ms) fixed in the stream (absolute / video) formated as string </summary>
-        public string VideoDelayStringFormatted
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._VideoDelayStringFormatted))
-                    this._VideoDelayStringFormatted = "";
-                return _VideoDelayStringFormatted;
-            }
-            set
-            {
-                this._VideoDelayStringFormatted = value;
-            }
-        }
+        // Other
 
         ///<summary> Play time of the stream </summary>
-        public ulong DurationMillisec
-        {
-            get
-            {
-                return _DurationMillisec;
-            }
-            set
-            {
-                this._DurationMillisec = value;
-            }
+        [Obsolete("DurationMillisec  is deprecated.")]
+        public double? DurationMillisec
+        { get => Duration;
+            set => Duration = value;
         }
-
         ///<summary> Play time in format : HH:MM:SS.MMM </summary>
+        [Obsolete("DurationStringFormatted  is deprecated.")]
         public string DurationStringFormatted
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DurationStringFormatted))
-                    this._DurationStringFormatted = "";
-                return _DurationStringFormatted;
-            }
-            set
-            {
-                this._DurationStringFormatted = value;
-            }
+            get => DurationFormatted;
+            set => DurationFormatted = value; 
         }
-
-        ///<summary> The gain to apply to reach 89dB SPL on playback </summary>
-        public int ReplayGainGain
+        ///<summary> Channel mode </summary>
+        [Obsolete("ChannelMode  is deprecated.")]
+        public string ChannelMode
+        { get; set; }
+        ///<summary> Delay in format : HH:MM:SS.MMM </summary>
+        [Obsolete("DelayStringFormatted  is deprecated.")]
+        public string DelayStringFormatted
         {
-            get
-            {
-                return _ReplayGainGain;
-            }
-            set
-            {
-                this._ReplayGainGain = value;
-            }
+            get => DelayFormatted;
+            set => DelayFormatted = value;
         }
-
-        ///<summary> The gain to apply to reach 89dB SPL on playback formated as string </summary>
-        public string ReplayGainGainString
+        ///<summary> Delay in format : HH:MM:SS.MMM </summary>
+        [Obsolete("VideoDelayStringFormatted  is deprecated.")]
+        public string VideoDelayStringFormatted
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ReplayGainGainString))
-                    this._ReplayGainGainString = "";
-                return _ReplayGainGainString;
-            }
-            set
-            {
-                this._ReplayGainGainString = value;
-            }
+            get => VideoDelayFormatted;
+            set => VideoDelayFormatted = value;
         }
-
-        ///<summary> The maximum absolute peak value of the item </summary>
-        public string ReplayGainPeak
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ReplayGainPeak))
-                    this._ReplayGainPeak = "";
-                return _ReplayGainPeak;
-            }
-            set
-            {
-                this._ReplayGainPeak = value;
-            }
-        }
-
-        ///<summary> Streamsize in bytes </summary>
-        public ulong StreamSize
-        {
-            get
-            {
-                return _StreamSize;
-            }
-            set
-            {
-                this._StreamSize = value;
-            }
-        }
-
         ///<summary> Streamsize with percentage value </summary>
-        public string StreamSizeString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._StreamSizeString))
-                    this._StreamSizeString = "";
-                return _StreamSizeString;
-            }
-            set
-            {
-                this._StreamSizeString = value;
-            }
-        }
-
-        ///<summary> Streamsize with percentage value </summary>
+        [Obsolete("StreamSizeStringRounded is deprecated.")]
         public string StreamSizeStringRounded
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._StreamSizeStringRounded))
-                    this._StreamSizeStringRounded = "";
-                return _StreamSizeStringRounded;
-            }
-            set
-            {
-                this._StreamSizeStringRounded = value;
-            }
+            get => StreamSizeString1;
+            set => StreamSizeString1 = value;
         }
-
+    
         ///<summary> Streamsize with percentage value </summary>
+        [Obsolete("StreamSizeStringPrecise is deprecated.")]
         public string StreamSizeStringPrecise
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._StreamSizeStringPrecise))
-                    this._StreamSizeStringPrecise = "";
-                return _StreamSizeStringPrecise;
-            }
-            set
-            {
-                this._StreamSizeStringPrecise = value;
-            }
-        }
-
-        ///<summary> Stream size divided by file size </summary>
-        public double StreamSizeProportion
-        {
-            get
-            {
-                return _StreamSizeProportion;
-            }
-            set
-            {
-                this._StreamSizeProportion = value;
-            }
-        }
-
-        ///<summary> How this stream file is aligned in the container </summary>
-        public string Alignment
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Alignment))
-                    this._Alignment = "";
-                return _Alignment;
-            }
-            set
-            {
-                this._Alignment = value;
-            }
-        }
-
-        ///<summary> Where this stream file is aligned in the container </summary>
-        public string AlignmentString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._AlignmentString))
-                    this._AlignmentString = "";
-                return _AlignmentString;
-            }
-            set
-            {
-                this._AlignmentString = value;
-            }
-        }
-
-        ///<summary> Between how many video frames the stream is inserted </summary>
-        public string InterleaveVideoFrames
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._InterleaveVideoFrames))
-                    this._InterleaveVideoFrames = "";
-                return _InterleaveVideoFrames;
-            }
-            set
-            {
-                this._InterleaveVideoFrames = value;
-            }
-        }
-
-        ///<summary> Between how much time (ms) the stream is inserted </summary>
-        public string InterleaveDuration
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._InterleaveDuration))
-                    this._InterleaveDuration = "";
-                return _InterleaveDuration;
-            }
-            set
-            {
-                this._InterleaveDuration = value;
-            }
-        }
-
-        ///<summary> Between how much time and video frames the stream is inserted (with measurement) </summary>
-        public string InterleaveDurationString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._InterleaveDurationString))
-                    this._InterleaveDurationString = "";
-                return _InterleaveDurationString;
-            }
-            set
-            {
-                this._InterleaveDurationString = value;
-            }
-        }
-
-        ///<summary> How much time is buffered before the first video frame </summary>
-        public string InterleavePreload
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._InterleavePreload))
-                    this._InterleavePreload = "";
-                return _InterleavePreload;
-            }
-            set
-            {
-                this._InterleavePreload = value;
-            }
-        }
-
-        ///<summary> How much time is buffered before the first video frame (with measurement) </summary>
-        public string InterleavePreloadString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._InterleavePreloadString))
-                    this._InterleavePreloadString = "";
-                return _InterleavePreloadString;
-            }
-            set
-            {
-                this._InterleavePreloadString = value;
-            }
-        }
-
-        ///<summary> Software used to create the file </summary>
-        public string EncodedLibrary
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibrary))
-                    this._EncodedLibrary = "";
-                return _EncodedLibrary;
-            }
-            set
-            {
-                this._EncodedLibrary = value;
-            }
-        }
-
-        ///<summary> Software used to create the file formated as string </summary>
-        public string EncodedLibraryString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibraryString))
-                    this._EncodedLibraryString = "";
-                return _EncodedLibraryString;
-            }
-            set
-            {
-                this._EncodedLibraryString = value;
-            }
-        }
-
-        ///<summary> Name of the Software used to create the file </summary>
-        public string EncodedLibraryName
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibraryName))
-                    this._EncodedLibraryName = "";
-                return _EncodedLibraryName;
-            }
-            set
-            {
-                this._EncodedLibraryName = value;
-            }
+            get => StreamSizeString4;
+            set => StreamSizeString4 = value;
         }
 
 
-        ///<summary> Version of the Software used to create the file </summary>
-        public string EncodedLibraryVersion
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibraryVersion))
-                    this._EncodedLibraryVersion = "";
-                return _EncodedLibraryVersion;
-            }
-            set
-            {
-                this._EncodedLibraryVersion = value;
-            }
-        }
-
-        ///<summary> Date of the Software used to create the file </summary>
-        public string EncodedLibraryDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibraryDate))
-                    this._EncodedLibraryDate = "";
-                return _EncodedLibraryDate;
-            }
-            set
-            {
-                this._EncodedLibraryDate = value;
-            }
-        }
-
-        ///<summary> Parameters used by the software </summary>
-        public string EncodedLibrarySettings
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibrarySettings))
-                    this._EncodedLibrarySettings = "";
-                return _EncodedLibrarySettings;
-            }
-            set
-            {
-                this._EncodedLibrarySettings = value;
-            }
-        }
-
-        ///<summary> Language (2 letters) </summary>
-        public string Language
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Language))
-                    this._Language="";
-                return _Language;
-            }
-            set
-            {
-                this._Language=value;
-            }
-        }
-
-        ///<summary> Language (full) </summary>
-        public string LanguageString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._LanguageString))
-                    this._LanguageString="";
-                return _LanguageString;
-            }
-            set
-            {
-                this._LanguageString=value;
-            }
-        }
-
-        ///<summary> More info about Language (director s comment...) </summary>
-        public string LanguageMore
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._LanguageMore))
-                    this._LanguageMore="";
-                return _LanguageMore;
-            }
-            set
-            {
-                this._LanguageMore=value;
-            }
-        }
-
-        ///<summary> UTC time that the encoding of this item was completed began. </summary>
-        public string EncodedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedDate))
-                    this._EncodedDate = "";
-                return _EncodedDate;
-            }
-            set
-            {
-                this._EncodedDate = value;
-            }
-        }
-
-        ///<summary> UTC time that the tags were done for this item. </summary>
-        public string TaggedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TaggedDate))
-                    this._TaggedDate = "";
-                return _TaggedDate;
-            }
-            set
-            {
-                this._TaggedDate = value;
-            }
-        }
-
-        ///<summary> encryption string. </summary>
-        public string Encryption
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Encryption))
-                    this._Encryption = "";
-                return _Encryption;
-            }
-            set
-            {
-                this._Encryption = value;
-            }
-        }
-
-        ///<summary> Default Info </summary>
-        public bool Default
-        {
-            get
-            {
-                return _Default;
-            }
-            set
-            {
-                this._Default = value;
-            }
-        }
-
-        ///<summary> Default Info (string format)</summary>
-        public string DefaultString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DefaultString))
-                    this._DefaultString = "";
-                return _DefaultString;
-            }
-            set
-            {
-                this._DefaultString = value;
-            }
-        }
-
-        ///<summary> Forced Info </summary>
-        public bool Forced
-        {
-            get
-            {
-                return _Forced;
-            }
-            set
-            {
-                this._Forced = value;
-            }
-        }
-
-        ///<summary> Forced Info (string format)</summary>
-        public string ForcedString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ForcedString))
-                    this._ForcedString = "";
-                return _ForcedString;
-            }
-            set
-            {
-                this._ForcedString = value;
-            }
-        }
     }
 }

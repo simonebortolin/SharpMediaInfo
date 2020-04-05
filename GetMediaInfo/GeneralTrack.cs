@@ -1,2525 +1,811 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace GetMediaInfos
+namespace GetMediaInfoDDLV2
 {
     /// <summary>
     /// Contains properties for a GeneralTrack
     /// </summary>
     public class GeneralTrack
     {
-        private int _Count;
-        private int _StreamCount;
-        private string _StreamKind;
-        private int _StreamKindID;
-        private int _StreamOrder;
-        private string _Inform;
-        private int _ID;
-        private string _UniqueID;
-        private int _GeneralCount;
-        private int _VideoCount;
-        private int _AudioCount;
-        private int _TextCount;
-        private int _MenuCount;
-        private int _ImageCount;
-        private string _CompleteName;
-        private string _FolderName;
-        private string _FileName;
-        private string _FileExtension;
-        private ulong _FileSize;
-        private string _FileSizeRounded;
-        private string _FileSizePrecise;
-        private string _Format;
-        private string _FormatString;
-        private string _FormatInfo;
-        private string _FormatUrl;
-        private string _FormatExtensions;
-        private ulong _OveralBitRate;
-        private string _OveralBitRateString;
-        private ulong _PlayTimeMillisec;
-        private string _PlayTimeFormatted; 
-        private string _Title;
-        private string _TitleMore;
-        private string _PGCNumber;
-        private string _PGCCount;
-        private string _Domain;
-        private string _Collection;
-        private string _CollectionTotalParts;
-        private string _Season;
-        private string _Movie;
-        private string _MovieMore;
-        private string _Album;
-        private string _AlbumTotalParts;
-        private string _AlbumSort;
-        private string _Comic;
-        private string _ComicTotalParts;
-        private string _Part;
-        private string _PartTotalParts;
-        private string _PartPosition;
-        private string _Track;
-        private string _TrackPosition;
-        private string _TrackMore;
-        private string _TrackSort;
-        private string _Chapter;
-        private string _SubTrack;
-        private string _OriginalAlbum;
-        private string _OriginalMovie;
-        private string _OriginalPart;
-        private string _OriginalTrack;
-        private string _Author;
-        private string _Artist;
-        private string _PerformerSort;
-        private string _OriginalPerformer;
-        private string _Accompaniment;
-        private string _MusicianInstrument;
-        private string _Composer;
-        private string _ComposerNationality;
-        private string _Arranger;
-        private string _Lyricist;
-        private string _OriginalLyricist;
-        private string _Conductor;
-        private string _Actor;
-        private string _ActorCharacter;
-        private string _WrittenBy;
-        private string _ScreenplayBy;
-        private string _Director;
-        private string _AssistantDirector;
-        private string _DirectorOfPhotography;
-        private string _ArtDirector;
-        private string _EditedBy;
-        private string _Producer;
-        private string _CoProducer;
-        private string _ExecutiveProducer;
-        private string _ProductionDesigner;
-        private string _CostumeDesigner;
-        private string _Choregrapher;
-        private string _SoundEngineer;
-        private string _MasteredBy;
-        private string _RemixedBy;
-        private string _ProductionStudio;
-        private string _Publisher;
-        private string _PublisherURL;
-        private string _DistributedBy;
-        private string _EncodedBy;
-        private string _ThanksTo;
-        private string _Technician;
-        private string _CommissionedBy;
-        private string _EncodedOriginalDistributedBy;
-        private string _RadioStation;
-        private string _RadioStationOwner;
-        private string _RadioStationURL;
-        private string _ContentType;
-        private string _Subject;
-        private string _Synopsys;
-        private string _Summary;
-        private string _Description;
-        private string _Keywords;
-        private string _Period;
-        private string _LawRating;
-        private string _IRCA;
-        private string _Language;
-        private string _Medium;
-        private string _Product;
-        private string _Country;
-        private string _WrittenDate;
-        private string _RecordedDate;
-        private string _ReleasedDate;
-        private string _MasteredDate;
-        private string _EncodedDate;
-        private string _TaggedDate;
-        private string _OriginalReleasedDate;
-        private string _OriginalRecordedDate;
-        private string _WrittenLocation;
-        private string _RecordedLocation;
-        private string _ArchivalLocation;
-        private string _Genre;
-        private string _Mood;
-        private string _Comment;
-        private string _Rating;
-        private string _EncodedApplication;
-        private string _EncodedLibrary;
-        private string _EncodedLibrarySettings;
-        private string _EncodedOriginal;
-        private string _EncodedOriginalUrl;
-        private string _Copyright;
-        private string _ProducerCopyright;
-        private string _TermsOfUse;
-        private string _CopyrightUrl;
-        private string _ISRC;
-        private string _MSDI;
-        private string _ISBN;
-        private string _BarCode;
-        private string _LCCN;
-        private string _CatalogNumber;
-        private string _LabelCode;
-        private bool _Cover;
-        private string _CoverType;
-        private byte[] _CoverData;
-        private string _BPM;
-        private string _VideoCodecList;
-        private string _VideoLanguageList;
-        private string _AudioCodecList;
-        private string _AudioLanguageList;
-        private string _TextCodecList;
-        private string _TextLanguageList;
-        private string _ChaptersCodecList;
-        private string _ChaptersLanguageList;
-        private string _ImageCodecList;
-        private string _ImageLanguageList;
-        private string _Other;
+        private List<byte[]> _coverData;
+        internal bool CanGetCover = false;
 
-        ///<summary> Count of objects available in this stream </summary>
-        public int Count
+        ///<summary>  Count of objects available in this stream </summary>
+        public int? Count { get; set; }
+        ///<summary>  bit field (0=IsAccepted, 1=IsFilled, 2=IsUpdated, 3=IsFinished) </summary>
+        public string Status { get; set; }
+        ///<summary>  Count of streams of that kind available </summary>
+        public int? StreamCount { get; set; }
+        ///<summary>  Stream type name </summary>
+        public string StreamKind { get; set; }
+        ///<summary>  Stream type name </summary>
+        public string StreamKindString { get; set; }
+        ///<summary>  Number of the stream (base=0) </summary>
+        public int? StreamKindID { get; set; }
+        ///<summary>  When multiple streams, number of the stream (base=1) </summary>
+        public int? StreamKindPos { get; set; }
+        ///<summary>  Stream order in the file, whatever is the kind of stream (base=0) </summary>
+        public int? StreamOrder { get; set; }
+        ///<summary>  Order of the first fully decodable packet met in the file, whatever is the kind of stream (base=0) </summary>
+        public int? FirstPacketOrder { get; set; }
+        ///<summary>  Last **Inform** call </summary>
+        public string Inform { get; set; }
+        ///<summary>  The ID for this stream in this file </summary>
+        public string ID { get; set; }
+        ///<summary>  The ID for this stream in this file </summary>
+        public string IDString { get; set; }
+        ///<summary>  The ID for this stream in the original medium of the material </summary>
+        public string OriginalSourceMediumID { get; set; }
+        ///<summary>  The ID for this stream in the original medium of the material </summary>
+        public string OriginalSourceMediumIDString { get; set; }
+        ///<summary>  The unique ID for this stream, should be copied with stream copy </summary>
+        public string UniqueID { get; set; }
+        ///<summary>  The unique ID for this stream, should be copied with stream copy </summary>
+        public string UniqueIDString { get; set; }
+        ///<summary>  The menu ID for this stream in this file </summary>
+        public string MenuID { get; set; }
+        ///<summary>  The menu ID for this stream in this file </summary>
+        public string MenuIDString { get; set; }
+        ///<summary>  Number of general streams </summary>
+        public int? GeneralCount { get; set; }
+        ///<summary>  Number of video streams </summary>
+        public int? VideoCount { get; set; }
+        ///<summary>  Number of audio streams </summary>
+        public int? AudioCount { get; set; }
+        ///<summary>  Number of text streams </summary>
+        public int? TextCount { get; set; }
+        ///<summary>  Number of other streams </summary>
+        public int? OtherCount { get; set; }
+        ///<summary>  Number of image streams </summary>
+        public int? ImageCount { get; set; }
+        ///<summary>  Number of menu streams </summary>
+        public int? MenuCount { get; set; }
+        ///<summary>  Video Codecs in this file, separated by / </summary>
+        public List<string> VideoFormatList { get; set; }
+        ///<summary>  Video Codecs in this file with popular name (hint), separated by / </summary>
+        public List<string> VideoFormatWithHintList { get; set; }
+        ///<summary>  Video languagesin this file, full names, separated by / </summary>
+        public List<string> VideoLanguageList { get; set; }
+        ///<summary>  Audio Codecs in this file,separated by / </summary>
+        public List<string> AudioFormatList { get; set; }
+        ///<summary>  Audio Codecs in this file with popular name (hint), separated by / </summary>
+        public List<string> AudioFormatWithHintList { get; set; }
+        ///<summary>  Audio languages in this file separated by / </summary>
+        public List<string> AudioLanguageList { get; set; }
+        ///<summary>  Text Codecs in this file, separated by / </summary>
+        public List<string> TextFormatList { get; set; }
+        ///<summary>  Text Codecs in this file with popular name (hint),separated by / </summary>
+        public List<string> TextFormatWithHintList { get; set; }
+        ///<summary>  Text languages in this file, separated by / </summary>
+        public List<string> TextLanguageList { get; set; }
+        ///<summary>  Other formats in this file, separated by / </summary>
+        public List<string> OtherFormatList { get; set; }
+        ///<summary>  Other formats in this file with popular name (hint), separated by / </summary>
+        public List<string> OtherFormatWithHintLis { get; set; }
+        ///<summary>  Chapters languages in this file, separated by / </summary>
+        public List<string> OtherLanguageList { get; set; }
+        ///<summary>  Image Codecs in this file, separated by / </summary>
+        public List<string> ImageFormatList { get; set; }
+        ///<summary>  Image Codecs in this file with popular name (hint), separated by / </summary>
+        public List<string> ImageFormatWithHintLis { get; set; }
+        ///<summary>  Image languages in this file, separated by / </summary>
+        public List<string> ImageLanguageList { get; set; }
+        ///<summary>  Menu Codecsin this file, separated by / </summary>
+        public List<string> MenuFormatList { get; set; }
+        ///<summary>  Menu Codecs in this file with popular name (hint),separated by / </summary>
+        public List<string> MenuFormatWithHintList { get; set; }
+        ///<summary>  Menu languages in this file, separated by / </summary>
+        public List<string> MenuLanguageList { get; set; }
+        ///<summary>  Complete name (Folder+Name+Extension) </summary>
+        public string CompleteName { get; set; }
+        ///<summary>  Folder name only </summary>
+        public string FolderName { get; set; }
+        ///<summary>  File name and extension </summary>
+        public string FileNameExtension { get; set; }
+        ///<summary>  File name only </summary>
+        public string FileName { get; set; }
+        ///<summary>  File extension only </summary>
+        public string FileExtension { get; set; }
+        ///<summary>  Complete name (Folder+Name+Extension) of the last file (in the case of a sequence of files) </summary>
+        public string CompleteNameLast { get; set; }
+        ///<summary>  Folder name only of the last file (in the case of a sequence of files) </summary>
+        public string FolderNameLast { get; set; }
+        ///<summary>  File name and extension of the last file (in the case of a sequence of files) </summary>
+        public string FileNameExtensionLast { get; set; }
+        ///<summary>  File name only of the last file (in the case of a sequence of files) </summary>
+        public string FileNameLast { get; set; }
+        ///<summary>  File extension only of the last file (in the case of a sequence of files) </summary>
+        public string FileExtensionLast { get; set; }
+        ///<summary>  Format used </summary>
+        public string Format { get; set; }
+        ///<summary>  Info about this Format </summary>
+        public string FormatInfo { get; set; }
+        ///<summary>  Link to a description of this format </summary>
+        public string FormatUrl { get; set; }
+        ///<summary>  Known extensions of this format </summary>
+        public string FormatExtensions { get; set; }
+        ///<summary>  Commercial name used by vendor for theses setings or Format field if there is no difference </summary>
+        public string FormatCommercial { get; set; }
+        ///<summary>  Commercial name used by vendor for theses setings if there is one </summary>
+        public string FormatCommercialIfAny { get; set; }
+        ///<summary>  Version of this format </summary>
+        public string FormatVersion { get; set; }
+        ///<summary>  Profile of the Format (old XML: 'Profile@Level' format </summary>
+        public string FormatProfile { get; set; }
+        ///<summary>  Level of the Format (only MIXML) </summary>
+        public string FormatLevel { get; set; }
+        ///<summary>  Compression method used </summary>
+        public string FormatCompression { get; set; }
+        ///<summary>  Settings needed for decoder used </summary>
+        public string FormatSettings { get; set; }
+        ///<summary>  Internet Media Type (aka MIME Type, Content-Type) </summary>
+        public string InternetMediaType { get; set; }
+        ///<summary>  Codec ID (found in some containers) </summary>
+        public string CodecID { get; set; }
+        ///<summary>  Codec ID (found in some containers) </summary>
+        public string CodecIDString { get; set; }
+        ///<summary>  Info about this codec </summary>
+        public string CodecIDInfo { get; set; }
+        ///<summary>  A hint/popular name for this codec </summary>
+        public string CodecIDHint { get; set; }
+        ///<summary>  A link to more details about this codec ID </summary>
+        public string CodecIDUrl { get; set; }
+        ///<summary>  Manual description given by the container </summary>
+        public string CodecIDDescription { get; set; }
+        ///<summary>  Version of the CodecID </summary>
+        public string CodecIDVersion { get; set; }
+        ///<summary>  Compatible CodecIDs </summary>
+        public string CodecIDCompatible { get; set; }
+        ///<summary>  If Audio and video are muxed </summary>
+        public string Interleaved { get; set; }
+        ///<summary>  File size in bytes </summary>
+        public ulong? FileSize { get; set; }
+        ///<summary>  File size (with measure) </summary>
+        public string FileSizeString { get; set; }
+        ///<summary>  File size (with measure, 1 digit mini) </summary>
+        internal string FileSizeString1 { get; set; }
+        ///<summary>  File size (with measure, 2 digit mini) </summary>
+        internal string FileSizeString2 { get; set; }
+        ///<summary>  File size (with measure, 3 digit mini) </summary>
+        internal string FileSizeString3 { get; set; }
+        ///<summary>  File size (with measure, 4 digit mini) </summary>
+        public string FileSizeFormatted { get; set; }
+        ///<summary>  Play time of the stream </summary>
+        public double? Duration { get; set; }
+        ///<summary>  Play time of the stream in MilliSecond </summary>
+        public ulong? DurationMilliSecond => Duration.HasValue ? (ulong?)Duration.Value  : null;
+        ///<summary>  Play time in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationString { get; set; }
+        ///<summary>  Play time in format HHh MMmn SSs MMMms, XX omited if zero </summary>
+        internal string DurationString1 { get; set; }
+        ///<summary>  Play time in format XXx YYy only, YYy omited if zero </summary>
+        internal string DurationString2 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.MMM </summary>
+        public string DurationFormatted { get; set; }
+        ///<summary>  Play time in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DurationString4 { get; set; }
+        ///<summary>  Play time in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DurationString5 { get; set; }
+        ///<summary>   </summary>
+        public string DurationStart { get; set; }
+        ///<summary>   </summary>
+        public string DurationEnd { get; set; }
+        ///<summary>  Bit rate mode of all streams (VBR, CBR) </summary>
+        public string OverallBitRateMode { get; set; }
+        ///<summary>  Bit rate mode of all streams (Variable, Constant) </summary>
+        public string OverallBitRateModeString { get; set; }
+        ///<summary>  Bit rate of all streams in bps </summary>
+        public double? OverallBitRate { get; set; }
+        ///<summary>  Bit rate of all streams (with measure) </summary>
+        public string OverallBitRateString { get; set; }
+        ///<summary>  Minimum Bit rate in bps </summary>
+        public double? OverallBitRateMinimum { get; set; }
+        ///<summary>  Minimum Bit rate (with measurement) </summary>
+        public string OverallBitRateMinimumString { get; set; }
+        ///<summary>  Nominal Bit rate in bps </summary>
+        public double? OverallBitRateNominal { get; set; }
+        ///<summary>  Nominal Bit rate (with measurement) </summary>
+        public string OverallBitRateNominalString { get; set; }
+        ///<summary>  Maximum Bit rate in bps </summary>
+        public double? OverallBitRateMaximum { get; set; }
+        ///<summary>  Maximum Bit rate (with measurement) </summary>
+        public string OverallBitRateMaximumString { get; set; }
+        ///<summary>  Frames per second </summary>
+        public double? FrameRate { get; set; }
+        ///<summary>  Frames per second (with measurement) </summary>
+        public string FrameRateString { get; set; }
+        ///<summary>  Frames per second, numerator </summary>
+        public double? FrameRateNum { get; set; }
+        ///<summary>  Frames per second, denominator </summary>
+        public double? FrameRateDen { get; set; }
+        ///<summary>  Frame count (a frame contains a count of samples depends of the format) </summary>
+        public int? FrameCount { get; set; }
+        ///<summary>  Delay fixed in the stream (relative) </summary>
+        public double? Delay { get; set; }
+        ///<summary>  Delay fixed in the stream (relative) IN MilliSecond </summary>
+        public ulong? DelayMilliSecond => Delay.HasValue ? (ulong?)Delay.Value  : null;
+        ///<summary>  Delay with measurement </summary>
+        public string DelayString { get; set; }
+        ///<summary>  Delay with measurement </summary>
+        internal string DelayString1 { get; set; }
+        ///<summary>  Delay with measurement </summary>
+        internal string DelayString2 { get; set; }
+        ///<summary>  format HH:MM:SS.MMM </summary>
+        public string DelayFormatted { get; set; }
+        ///<summary>  Delay in format HH:MM:SS:FF, last colon replaced by semicolon for drop frame if available </summary>
+        internal string DelayString4 { get; set; }
+        ///<summary>  Delay in format HH:MM:SS.mmm (HH:MM:SS:FF) </summary>
+        internal string DelayString5 { get; set; }
+        ///<summary>  Delay settings (in case of timecode for example) </summary>
+        public string DelaySettings { get; set; }
+        ///<summary>  Delay drop frame </summary>
+        public string DelayDropFrame { get; set; }
+        ///<summary>  Delay source (Container or Stream or empty) </summary>
+        public string DelaySource { get; set; }
+        ///<summary>  Delay source (Container or Stream or empty) </summary>
+        public string DelaySourceString { get; set; }
+        ///<summary>  Stream size in bytes </summary>
+        public ulong? StreamSize { get; set; }
+        ///<summary>   </summary>
+        public string StreamSizeString { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString1 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString2 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString3 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeString4 { get; set; }
+        ///<summary>  Stream size divided by file size </summary>
+        public double? StreamSizeProportion { get; set; }
+        ///<summary>  StreamSize in bytes of hte stream after demux </summary>
+        public ulong? StreamSizeDemuxed { get; set; }
+        ///<summary>  StreamSize_Demuxed in with percentage value </summary>
+        public string StreamSizeDemuxedString { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString1 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString2 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString3 { get; set; }
+        ///<summary>   </summary>
+        internal string StreamSizeDemuxedString4 { get; set; }
+        ///<summary>   </summary>
+        public string HeaderSize { get; set; }
+        ///<summary>   </summary>
+        public string DataSize { get; set; }
+        ///<summary>   </summary>
+        public string FooterSize { get; set; }
+        ///<summary>   </summary>
+        public string IsStreamable { get; set; }
+        ///<summary>  The gain to apply to reach 89dB SPL on playback </summary>
+        public string AlbumReplayGainGain { get; set; }
+        ///<summary>   </summary>
+        public string AlbumReplayGainGainString { get; set; }
+        ///<summary>  The maximum absolute peak value of the item </summary>
+        public string AlbumReplayGainPeak { get; set; }
+        ///<summary>   </summary>
+        public string Encryption { get; set; }
+        ///<summary>   </summary>
+        public string EncryptionFormat { get; set; }
+        ///<summary>   </summary>
+        public string EncryptionLength { get; set; }
+        ///<summary>   </summary>
+        public string EncryptionMethod { get; set; }
+        ///<summary>   </summary>
+        public string EncryptionMode { get; set; }
+        ///<summary>   </summary>
+        public string EncryptionPadding { get; set; }
+        ///<summary>   </summary>
+        public string EncryptionInitializationVector { get; set; }
+        ///<summary>  Universal Ad ID, see https://ad-id.org </summary>
+        public string UniversalAdIDString { get; set; }
+        ///<summary>  Universal Ad ID registry </summary>
+        public string UniversalAdIDRegistry { get; set; }
+        ///<summary>  Universal Ad ID value </summary>
+        public string UniversalAdIDValue { get; set; }
+        ///<summary>  (Generic)Title of file </summary>
+        public string Title { get; set; }
+        ///<summary>  (Generic)More info about the title of file </summary>
+        public string TitleMore { get; set; }
+        ///<summary>  (Generic)Url </summary>
+        public string TitleUrl { get; set; }
+        ///<summary>  Univers movies belong to, e.g. Starwars, Stargate, Buffy, Dragonballs </summary>
+        public string Domain { get; set; }
+        ///<summary>  Name of the series, e.g. Starwars movies, Stargate SG-1, Stargate Atlantis, Buffy, Angel </summary>
+        public string Collection { get; set; }
+        ///<summary>  Name of the season, e.g. Strawars first Trilogy, Season 1 </summary>
+        public string Season { get; set; }
+        ///<summary>  Number of the Season </summary>
+        public int? SeasonPosition { get; set; }
+        ///<summary>  Place of the season e.g. 2 of 7 </summary>
+        public string SeasonPositionTotal { get; set; }
+        ///<summary>  Name of the movie. Eg </summary>
+        public string Movie { get; set; }
+
+        ///<summary>  More infos about the movie </summary>
+        public string MovieMore { get; set; }
+        ///<summary>  Country, where the movie was procuced </summary>
+        public int? MovieCountry { get; set; }
+        ///<summary>  Homepage for the movie </summary>
+        public string MovieUrl { get; set; }
+        ///<summary>  Name of an audio-album. Eg </summary>
+        public string Album { get; set; }
+        ///<summary>   </summary>
+        public string Thejoshuatree { get; set; }
+        ///<summary>  More infos about the album </summary>
+        public string AlbumMore { get; set; }
+        ///<summary>   </summary>
+        public string AlbumSort { get; set; }
+        ///<summary>  Album performer/artist of this file </summary>
+        public string AlbumPerformer { get; set; }
+        ///<summary>   </summary>
+        public string AlbumPerformerSort { get; set; }
+        ///<summary>  Homepage of the album performer/artist </summary>
+        public string AlbumPerformerUrl { get; set; }
+        ///<summary>  Name of the comic. </summary>
+        public string Comic { get; set; }
+        ///<summary>   </summary>
+        public string ComicMore { get; set; }
+        ///<summary>   </summary>
+        public string ComicPositionTotal { get; set; }
+        ///<summary>  Name of the part. e.g. CD1, CD2 </summary>
+        public string Part { get; set; }
+        ///<summary>  Number of the part </summary>
+        public int? PartPosition { get; set; }
+        ///<summary>  Place of the part e.g. 2 of 3 </summary>
+        public string PartPositionTotal { get; set; }
+        ///<summary>  Name of the track. e.g. track1, track 2 </summary>
+        public string Track { get; set; }
+        ///<summary>  More infos about the track </summary>
+        public string TrackMore { get; set; }
+        ///<summary>  Link to a site about this track </summary>
+        public string TrackUrl { get; set; }
+        ///<summary>   </summary>
+        public string TrackSort { get; set; }
+        ///<summary>  Number of this track </summary>
+        public int? TrackPosition { get; set; }
+        ///<summary>  Place of this track, e.g. 3 of 15 </summary>
+        public string TrackPositionTotal { get; set; }
+        ///<summary>  Package name i.e. technical flavor of the content </summary>
+        public string PackageName { get; set; }
+        ///<summary>  iTunes grouping </summary>
+        public string Grouping { get; set; }
+        ///<summary>  Name of the chapter. </summary>
+        public string Chapter { get; set; }
+        ///<summary>  Name of the subtrack. </summary>
+        public string SubTrack { get; set; }
+        ///<summary>  Original name of album, serie... </summary>
+        public string OriginalAlbum { get; set; }
+        ///<summary>  Original name of the movie </summary>
+        public string OriginalMovie { get; set; }
+        ///<summary>  Original name of the part in the original support </summary>
+        public string OriginalPart { get; set; }
+        ///<summary>  Original name of the track in the original support </summary>
+        public string OriginalTrack { get; set; }
+        ///<summary>  iTunes compilation </summary>
+        public string Compilation { get; set; }
+        ///<summary>  iTunes compilation </summary>
+        public string CompilationString { get; set; }
+        ///<summary>  Main performer/artist of this file </summary>
+        public string Performer { get; set; }
+        ///<summary>   </summary>
+        public string PerformerSort { get; set; }
+        ///<summary>  Homepage of the performer/artist </summary>
+        public string PerformerUrl { get; set; }
+        ///<summary>  Original artist(s)/performer(s). </summary>
+        public string OriginalPerformer { get; set; }
+        ///<summary>  Band/orchestra/accompaniment/musician. </summary>
+        public string Accompaniment { get; set; }
+        ///<summary>  Name of the original composer. </summary>
+        public string Composer { get; set; }
+        ///<summary>  Nationality of the main composer of the item, mostly for classical music. </summary>
+        public string ComposerNationality { get; set; }
+        ///<summary>   </summary>
+        public string ComposerSort { get; set; }
+        ///<summary>  The person who arranged the piece. e.g. Ravel. </summary>
+        public string Arranger { get; set; }
+        ///<summary>  The person who wrote the lyrics for a musical item. </summary>
+        public string Lyricist { get; set; }
+        ///<summary>  Original lyricist(s)/text writer(s). </summary>
+        public string OriginalLyricist { get; set; }
+        ///<summary>  The artist(s) who performed the work. In classical music this would be the conductor, orchestra, soloists. </summary>
+        public string Conductor { get; set; }
+        ///<summary>  Name of the director. </summary>
+        public string Director { get; set; }
+        ///<summary>  Name of the codirector. </summary>
+        public string CoDirector { get; set; }
+        ///<summary>  Name of the assistant director. </summary>
+        public string AssistantDirector { get; set; }
+        ///<summary>  The name of the director of photography, also known as cinematographer. </summary>
+        public string DirectorOfPhotography { get; set; }
+        ///<summary>  The name of the sound engineer or sound recordist. </summary>
+        public string SoundEngineer { get; set; }
+        ///<summary>  The person who oversees the artists and craftspeople who build the sets. </summary>
+        public string ArtDirector { get; set; }
+        ///<summary>  The person responsible for designing the Overall visual appearance of a movie. </summary>
+        public string ProductionDesigner { get; set; }
+        ///<summary>  The name of the choregrapher. </summary>
+        public string Choregrapher { get; set; }
+        ///<summary>  The name of the costume designer. </summary>
+        public string CostumeDesigner { get; set; }
+        ///<summary>  Real name of an actor or actress playing a role in the movie. </summary>
+        public string Actor { get; set; }
+        ///<summary>  Name of the character an actor or actress plays in this movie. </summary>
+        public string ActorCharacter { get; set; }
+        ///<summary>  The author of the story or script. </summary>
+        public string WrittenBy { get; set; }
+        ///<summary>  The author of the screenplay or scenario (used for movies and TV shows). </summary>
+        public string ScreenplayBy { get; set; }
+        ///<summary>  Editors name </summary>
+        public string EditedBy { get; set; }
+        ///<summary>  name of the person or organization that commissioned the subject of the file </summary>
+        public string CommissionedBy { get; set; }
+        ///<summary>  Name of the producer of the movie. </summary>
+        public string Producer { get; set; }
+        ///<summary>  The name of a co-producer. </summary>
+        public string CoProducer { get; set; }
+        ///<summary>  The name of an executive producer. </summary>
+        public string ExecutiveProducer { get; set; }
+        ///<summary>  Main music-artist for a movie </summary>
+        public string MusicBy { get; set; }
+        ///<summary>  Company the item is mainly distributed by </summary>
+        public string DistributedBy { get; set; }
+        ///<summary>  The engineer who mastered the content for a physical medium or for digital distribution. </summary>
+        public string MasteredBy { get; set; }
+        ///<summary>  Name of the person or organisation that encoded/ripped the audio file. </summary>
+        public string EncodedBy { get; set; }
+        ///<summary>  Name of the artist(s), that interpreted, remixed, or otherwise modified the item. </summary>
+        public string RemixedBy { get; set; }
+        ///<summary>  Main production studio </summary>
+        public string ProductionStudio { get; set; }
+        ///<summary>  A very general tag for everyone else that wants to be listed. </summary>
+        public string ThanksTo { get; set; }
+        ///<summary>  Name of the organization publishing the album (i.e. the 'record label') or movie. </summary>
+        public string Publisher { get; set; }
+        ///<summary>  Publishers official webpage. </summary>
+        public string PublisherURL { get; set; }
+        ///<summary>  Brand or trademark associated with the marketing of music recordings and music videos. </summary>
+        public string Label { get; set; }
+        ///<summary>  The main genre of the audio or video. e.g. classical, ambient-house, synthpop, sci-fi, drama, etc. </summary>
+        public string Genre { get; set; }
+        ///<summary>  Podcast category </summary>
+        public string PodcastCategory { get; set; }
+        ///<summary>  Intended to reflect the mood of the item with a few keywords, e.g. Romantic, Sad, Uplifting, etc. </summary>
+        public string Mood { get; set; }
+        ///<summary>  The type of the item. e.g. Documentary, Feature Film, Cartoon, Music Video, Music, Sound FX, etc. </summary>
+        public string ContentType { get; set; }
+        ///<summary>  Describes the topic of the file, such as Aerial view of Seattle.. </summary>
+        public string Subject { get; set; }
+        ///<summary>  A short description of the contents, such as Two birds flying. </summary>
+        public string Description { get; set; }
+        ///<summary>  Keywords to the item separated by a comma, used for searching. </summary>
+        public string Keywords { get; set; }
+        ///<summary>  A plot outline or a summary of the story. </summary>
+        public string Summary { get; set; }
+        ///<summary>  A description of the story line of the item. </summary>
+        public string Synopsis { get; set; }
+        ///<summary>  Describes the period that the piece is from or about. e.g. Renaissance. </summary>
+        public string Period { get; set; }
+        ///<summary>  Depending on the country it's the format of the rating of a movie (P, R, X in the USA, an age in other countries or a URI defining a logo). </summary>
+        public int? LawRating { get; set; }
+        ///<summary>  Reason for the law rating </summary>
+        public string LawRatingReason { get; set; }
+        ///<summary>  The ICRA rating. (Previously RSACi) </summary>
+        public string ICRA { get; set; }
+        ///<summary>  The date/year that the item was released. </summary>
+        public string ReleasedDate { get; set; }
+        ///<summary>  The date/year that the item was originaly released. </summary>
+        public string OriginalReleasedDate { get; set; }
+        ///<summary>  The time/date/year that the recording began. </summary>
+        public string RecordedDate { get; set; }
+        ///<summary>  The time/date/year that the encoding of this item was completed began. </summary>
+        public string EncodedDate { get; set; }
+        ///<summary>  The time/date/year that the tags were done for this item. </summary>
+        public string TaggedDate { get; set; }
+        ///<summary>  The time/date/year that the composition of the music/script began. </summary>
+        public string WrittenDate { get; set; }
+        ///<summary>  The time/date/year that the item was tranfered to a digitalmedium. </summary>
+        public string MasteredDate { get; set; }
+        ///<summary>  The time that the file was created on the file system </summary>
+        public string FileCreatedDate { get; set; }
+        ///<summary>  The time that the file was created on the file system (Warning: this field depends of local configuration, do not use it in an international database) </summary>
+        public string FileCreatedDateLocal { get; set; }
+        ///<summary>  The time that the file was modified on the file system </summary>
+        public string FileModifiedDate { get; set; }
+        ///<summary>  The time that the file was modified on the file system (Warning: this field depends of local configuration, do not use it in an international database) </summary>
+        public string FileModifiedDateLocal { get; set; }
+        ///<summary>  Location where track was recorded. (See COMPOSITION_LOCATION for format) </summary>
+        public string RecordedLocation { get; set; }
+        ///<summary>  Location that the item was originaly designed/written. Information should be stored in the following format: country code, state/province, city where the coutry code is the same 2 octets as in Internet domains, or possibly ISO-3166. e.g. US, Texas, Austin or US, , Austin. </summary>
+        public int? WrittenLocation { get; set; }
+        ///<summary>  Location, where an item is archived, e.eg. Louvre,Paris,France </summary>
+        public string ArchivalLocation { get; set; }
+        ///<summary>  Name of the software package used to create the file, such as Microsoft WaveEdiTY </summary>
+        public string EncodedApplication { get; set; }
+        ///<summary>  Name of the software package used to create the file, such as Microsoft WaveEdit, trying to have the format 'CompanyName ProductName (OperatingSystem) Version (Date)' </summary>
+        public string EncodedApplicationString { get; set; }
+        ///<summary>  Name of the company </summary>
+        public string EncodedApplicationCompany { get; set; }
+        ///<summary>  Name of the product </summary>
+        public string EncodedApplicationName { get; set; }
+        ///<summary>  Version of the product </summary>
+        public string EncodedApplicationVersion { get; set; }
+        ///<summary>  Name of the software package used to create the file, such as Microsoft WaveEdit. </summary>
+        public string EncodedApplicationUrl { get; set; }
+        ///<summary>  Software used to create the file </summary>
+        public string EncodedLibrary { get; set; }
+        ///<summary>  Software used to create the file, trying to have the format 'CompanyName ProductName (OperatingSystem) Version (Date)' </summary>
+        public string EncodedLibraryString { get; set; }
+        ///<summary>  Name of the company </summary>
+        public string EncodedLibraryCompanyName { get; set; }
+        ///<summary>  Name of the the encoding-software </summary>
+        public string EncodedLibraryName { get; set; }
+        ///<summary>  Version of encoding-software </summary>
+        public string EncodedLibraryVersion { get; set; }
+        ///<summary>  Release date of software </summary>
+        public string EncodedLibraryDate { get; set; }
+        ///<summary>  Parameters used by the software </summary>
+        public string EncodedLibrarySettings { get; set; }
+        ///<summary>  Operating System of encoding-software </summary>
+        public string EncodedOperatingSystem { get; set; }
+        ///<summary>  Describes whether an image has been cropped and, if so, how it was cropped. </summary>
+        public string Cropped { get; set; }
+        ///<summary>  Specifies the size of the original subject of the file. eg 8.5 in h, 11 in w </summary>
+        public string Dimensions { get; set; }
+        ///<summary>  Stores dots per inch setting of the digitizer used to produce the file </summary>
+        public string DotsPerInch { get; set; }
+        ///<summary>  Describes the changes in lightness settings on the digitizer required to produce the file </summary>
+        public string Lightness { get; set; }
+        ///<summary>  Original medium of the material, e.g. vinyl, Audio-CD, Super8 or BetaMax </summary>
+        public string OriginalSourceMedium { get; set; }
+        ///<summary>  Original form of the material, e.g. slide, paper, map </summary>
+        public string OriginalSourceForm { get; set; }
+        ///<summary>  Name of the product the file was originally intended for </summary>
+        public string OriginalSourceFormName { get; set; }
+        ///<summary>  Software used to tag this file </summary>
+        public string TaggedApplication { get; set; }
+        ///<summary>  Average number of beats per minute </summary>
+        public int? BPM { get; set; }
+        ///<summary>  International Standard Recording Code, excluding the ISRC prefix and including hyphens. </summary>
+        public string ISRC { get; set; }
+        ///<summary>  International Standard Book Number. </summary>
+        public int? ISBN { get; set; }
+        ///<summary>  EAN-13 (13-digit European Article Numbering) or UPC-A (12-digit Universal Product Code) bar code identifier. </summary>
+        public int? BarCode { get; set; }
+        ///<summary>  Library of Congress Control Number. </summary>
+        public int? LCCN { get; set; }
+        ///<summary>  A label-specific catalogue number used to identify the release. e.g. TIC 01. </summary>
+        public int? CatalogNumber { get; set; }
+        ///<summary>  A 4-digit or 5-digit number to identify the record label, typically printed as (LC) xxxx or (LC) 0xxxx on CDs medias or covers, with only the number being stored. </summary>
+        public int? LabelCode { get; set; }
+        ///<summary>  Owner of the file </summary>
+        public string Owner { get; set; }
+        ///<summary>  Copyright attribution. </summary>
+        public string Copyright { get; set; }
+        ///<summary>  Link to a site with copyright/legal information. </summary>
+        public string CopyrightUrl { get; set; }
+        ///<summary>  The copyright information as per the productioncopyright holder. </summary>
+        public string ProducerCopyright { get; set; }
+        ///<summary>  License information, e.g., All Rights Reserved,Any Use Permitted. </summary>
+        public ulong? TermsOfUse { get; set; }
+        ///<summary>   </summary>
+        public string ServiceName { get; set; }
+        ///<summary>   </summary>
+        public string ServiceChannel { get; set; }
+        ///<summary>   </summary>
+        public string ServiceUrl { get; set; }
+        ///<summary>   </summary>
+        public string ServiceProvider { get; set; }
+        ///<summary>   </summary>
+        public string ServiceProviderUrl { get; set; }
+        ///<summary>   </summary>
+        public string ServiceType { get; set; }
+        ///<summary>   </summary>
+        public string NetworkName { get; set; }
+        ///<summary>   </summary>
+        public string OriginalNetworkName { get; set; }
+        ///<summary>   </summary>
+        public string Country { get; set; }
+        ///<summary>   </summary>
+        public string TimeZone { get; set; }
+        ///<summary>  Is there a cover </summary>
+        internal List<bool?> Cover { get; set; }
+        ///<summary>  short descriptio, e.g. Earth in space </summary>
+        public List<string> CoverDescription { get; set; }
+        ///<summary>   </summary>
+        public List<string> CoverType { get; set; }
+        ///<summary>   </summary>
+        public List<string >CoverMime { get; set; }
+
+        ///<summary>  Cover, in binary format encoded BASE64 </summary>
+        public List<byte[]> CoverData
         {
             get
             {
-                return _Count;
+                if(!CanGetCover) throw new Exception("Unable to get cover");
+                return _coverData;
             }
-            set
-            {
-                this._Count = value;
-            }
+            set => _coverData = value;
         }
 
-        ///<summary> Count of streams of that kind available </summary>
-        public int StreamCount
-        {
-            get
-            {
-                return _StreamCount;
-            }
-            set
-            {
-                this._StreamCount = value;
-            }
-        }
-
-        ///<summary> DVD PGC Count </summary>
-        public string PGCCount
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PGCCount))
-                    this._PGCCount = "";
-                return _PGCCount;
-            }
-            set
-            {
-                this._PGCCount = value;
-            }
-        }
-
-        ///<summary> DVD PGC Number </summary>
-        public string PGCNumber
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PGCNumber))
-                    this._PGCNumber = "";
-                return _PGCNumber;
-            }
-            set
-            {
-                this._PGCNumber = value;
-            }
-        }
-
-        ///<summary> Stream name </summary>
-        public string StreamKind
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._StreamKind))
-                    this._StreamKind = "";
-                return _StreamKind;
-            }
-            set
-            {
-                this._StreamKind = value;
-            }
-        }
-
-        ///<summary> When multiple streams, number of the stream </summary>
-        public int StreamKindID
-        {
-            get
-            {
-                return _StreamKindID;
-            }
-            set
-            {
-                this._StreamKindID = value;
-            }
-        }
-
-        ///<summary>Stream order in the file, whatever is the kind of stream (base=0)</summary>
-        public int StreamOrder
-        {
-            get
-            {
-                return _StreamOrder;
-            }
-            set
-            {
-                this._StreamOrder = value;
-            }
-        }
-
-        ///<summary> Last   Inform   call </summary>
-        public string Inform
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Inform))
-                    this._Inform = "";
-                return _Inform;
-            }
-            set
-            {
-                this._Inform = value;
-            }
-        }
-
-        ///<summary> A ID for this stream in this file </summary>
-        public int ID
-        {
-            get
-            {
-                return _ID;
-            }
-            set
-            {
-                this._ID = value;
-            }
-        }
-
-        ///<summary> A unique ID for this stream, should be copied with stream copy </summary>
-        public string UniqueID
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._UniqueID))
-                    this._UniqueID = "";
-                return _UniqueID;
-            }
-            set
-            {
-                this._UniqueID = value;
-            }
-        }
-
-        ///<summary> Count of streams </summary>
-        public int GeneralCount
-        {
-            get
-            {
-                return _GeneralCount;
-            }
-            set
-            {
-                this._GeneralCount = value;
-            }
-        }
-
-        ///<summary> Count of video streams </summary>
-        public int VideoCount
-        {
-            get
-            {
-                return _VideoCount;
-            }
-            set
-            {
-                this._VideoCount = value;
-            }
-        }
-
-        ///<summary> Count of audio streams </summary>
-        public int AudioCount
-        {
-            get
-            {
-                return _AudioCount;
-            }
-            set
-            {
-                this._AudioCount = value;
-            }
-        }
-
-        ///<summary> Count of text streams </summary>
-        public int TextCount
-        {
-            get
-            {
-                return _TextCount;
-            }
-            set
-            {
-                this._TextCount = value;
-            }
-        }
-
-        ///<summary> Count of menus streams </summary>
-        public int MenuCount
-        {
-            get
-            {
-                return _MenuCount;
-            }
-            set
-            {
-                this._MenuCount = value;
-            }
-        }
-
-        ///<summary> Count of image streams </summary>
-        public int ImageCount
-        {
-            get
-            {
-                return _ImageCount;
-            }
-            set
-            {
-                this._ImageCount = value;
-            }
-        }
-
-        ///<summary> Complete name (Folder+Name+Extension) </summary>
-        public string CompleteName
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CompleteName))
-                    this._CompleteName = "";
-                return _CompleteName;
-            }
-            set
-            {
-                this._CompleteName = value;
-            }
-        }
-
-        ///<summary> Folder name only </summary>
-        public string FolderName
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FolderName))
-                    this._FolderName = "";
-                return _FolderName;
-            }
-            set
-            {
-                this._FolderName = value;
-            }
-        }
-
-        ///<summary> File name only </summary>
-        public string FileName
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FileName))
-                    this._FileName = "";
-                return _FileName;
-            }
-            set
-            {
-                this._FileName = value;
-            }
-        }
-
-        ///<summary> File extension only </summary>
-        public string FileExtension
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FileExtension))
-                    this._FileExtension = "";
-                return _FileExtension;
-            }
-            set
-            {
-                this._FileExtension = value;
-            }
-        }
-
-        ///<summary> File size in bytes </summary>
-        public ulong FileSize
-        {
-            get
-            {
-                return _FileSize;
-            }
-            set
-            {
-                this._FileSize = value;
-            }
-        }
-
-        ///<summary> Rounded File size (with measure). Ex. 13.0 GiB </summary>
-        public string FileSizeRounded
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FileSizeRounded))
-                    this._FileSizeRounded = "";
-                return _FileSizeRounded;
-            }
-            set
-            {
-                this._FileSizeRounded = value;
-            }
-        }
-
-        ///<summary> Precise File size (with measure). Ex. 12.96 GiB </summary>
-        public string FileSizePrecise
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FileSizePrecise))
-                    this._FileSizePrecise = "";
-                return _FileSizePrecise;
-            }
-            set
-            {
-                this._FileSizePrecise = value;
-            }
-        }
-
-        ///<summary> Format (short name) </summary>
-        public string Format
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Format))
-                    this._Format = "";
-                return _Format;
-            }
-            set
-            {
-                this._Format = value;
-            }
-        }
-
-        ///<summary> Format (full name) </summary>
-        public string FormatString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatString))
-                    this._FormatString = "";
-                return _FormatString;
-            }
-            set
-            {
-                this._FormatString = value;
-            }
-        }
-
-        ///<summary> More information about this format </summary>
-        public string FormatInfo
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatInfo))
-                    this._FormatInfo = "";
-                return _FormatInfo;
-            }
-            set
-            {
-                this._FormatInfo = value;
-            }
-        }
-
-        ///<summary> Url about this format </summary>
-        public string FormatUrl
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatUrl))
-                    this._FormatUrl = "";
-                return _FormatUrl;
-            }
-            set
-            {
-                this._FormatUrl = value;
-            }
-        }
-
-        ///<summary> Known extensions of format </summary>
-        public string FormatExtensions
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._FormatExtensions))
-                    this._FormatExtensions = "";
-                return _FormatExtensions;
-            }
-            set
-            {
-                this._FormatExtensions = value;
-            }
-        }
-
-        ///<summary> BitRate of all streams </summary>
-        public ulong OveralBitRate
-        {
-            get
-            {
-                return _OveralBitRate;
-            }
-            set
-            {
-                this._OveralBitRate = value;
-            }
-        }
-
-        ///<summary> BitRate of all streams (with measure) </summary>
-        public string OveralBitRateString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OveralBitRateString))
-                    this._OveralBitRateString = "";
-                return _OveralBitRateString;
-            }
-            set
-            {
-                this._OveralBitRateString = value;
-            }
-        }
-
-        ///<summary> Play time of the file in milliseconds</summary>
-        public ulong PlayTimeMillisec
-        {
-            get
-            {
-                return _PlayTimeMillisec;
-            }
-            set
-            {
-                this._PlayTimeMillisec = value;
-            }
-        }
-
-        ///<summary> Play time in format : HH:MM:SS.MMM </summary>
-        public string PlayTimeFormatted
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PlayTimeFormatted))
-                    this._PlayTimeFormatted = "";
-                return _PlayTimeFormatted;
-            }
-            set
-            {
-                this._PlayTimeFormatted = value;
-            }
-        }
-
-        ///<summary> (Generic)Title of file </summary>
-        public string Title
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Title))
-                    this._Title = "";
-                return _Title;
-            }
-            set
-            {
-                this._Title = value;
-            }
-        }
-
-        ///<summary> (Generic)More info about the title of file </summary>
-        public string TitleMore
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TitleMore))
-                    this._TitleMore = "";
-                return _TitleMore;
-            }
-            set
-            {
-                this._TitleMore = value;
-            }
-        }
-
-        ///<summary> Level=8. Eg : Starwars, Stargate, U2 </summary>
-        public string Domain
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Domain))
-                    this._Domain = "";
-                return _Domain;
-            }
-            set
-            {
-                this._Domain = value;
-            }
-        }
-
-        ///<summary> Level=7. Name of the collection. Eg : Starwars movies, Stargate movie, Stargate SG-1, Stargate Atlantis </summary>
-        public string Collection
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Collection))
-                    this._Collection = "";
-                return _Collection;
-            }
-            set
-            {
-                this._Collection = value;
-            }
-        }
-
-        ///<summary> Total count of seasons </summary>
-        public string CollectionTotalParts
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CollectionTotalParts))
-                    this._CollectionTotalParts = "";
-                return _CollectionTotalParts;
-            }
-            set
-            {
-                this._CollectionTotalParts = value;
-            }
-        }
-
-        ///<summary> Level=6. Name of the season. Eg : Strawars first Trilogy, Season 1 </summary>
-        public string Season
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Season))
-                    this._Season = "";
-                return _Season;
-            }
-            set
-            {
-                this._Season = value;
-            }
-        }
-
-        ///<summary> Level=5. Name of the movie. Eg : Starwars, a new hope </summary>
-        public string Movie
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Movie))
-                    this._Movie = "";
-                return _Movie;
-            }
-            set
-            {
-                this._Movie = value;
-            }
-        }
-
-        ///<summary> More information about this movie </summary>
-        public string MovieMore
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MovieMore))
-                    this._MovieMore = "";
-                return _MovieMore;
-            }
-            set
-            {
-                this._MovieMore = value;
-            }
-        }
-
-        ///<summary> Level=5. Name of album. Eg : The joshua tree </summary>
-        public string Album
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Album))
-                    this._Album = "";
-                return _Album;
-            }
-            set
-            {
-                this._Album = value;
-            }
-        }
-
-        ///<summary> Total number of track or parts (depend if there is a part) </summary>
-        public string AlbumTotalParts
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._AlbumTotalParts))
-                    this._AlbumTotalParts = "";
-                return _AlbumTotalParts;
-            }
-            set
-            {
-                this._AlbumTotalParts = value;
-            }
-        }
-
-        ///<summary> Sort order </summary>
-        public string AlbumSort
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._AlbumSort))
-                    this._AlbumSort = "";
-                return _AlbumSort;
-            }
-            set
-            {
-                this._AlbumSort = value;
-            }
-        }
-
-        ///<summary> Level=5. Name of the comic. </summary>
-        public string Comic
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Comic))
-                    this._Comic = "";
-                return _Comic;
-            }
-            set
-            {
-                this._Comic = value;
-            }
-        }
-
-        ///<summary> Total number of pages in the comic </summary>
-        public string ComicTotalParts
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ComicTotalParts))
-                    this._ComicTotalParts = "";
-                return _ComicTotalParts;
-            }
-            set
-            {
-                this._ComicTotalParts = value;
-            }
-        }
-
-        ///<summary> Level=4. Name of the part. Eg : CD1, CD2 </summary>
-        public string Part
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Part))
-                    this._Part = "";
-                return _Part;
-            }
-            set
-            {
-                this._Part = value;
-            }
-        }
-
-        ///<summary> Total count of track or episode </summary>
-        public string PartTotalParts
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PartTotalParts))
-                    this._PartTotalParts = "";
-                return _PartTotalParts;
-            }
-            set
-            {
-                this._PartTotalParts = value;
-            }
-        }
-
-        ///<summary> Part number </summary>
-        public string PartPosition
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PartPosition))
-                    this._PartPosition = "";
-                return _PartPosition;
-            }
-            set
-            {
-                this._PartPosition = value;
-            }
-        }
-
-        ///<summary> Level=3. Name of the track. Eg : track1, track 2 </summary>
-        public string Track
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Track))
-                    this._Track = "";
-                return _Track;
-            }
-            set
-            {
-                this._Track = value;
-            }
-        }
-
-        ///<summary> Track number or episode number... </summary>
-        public string TrackPosition
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TrackPosition))
-                    this._TrackPosition = "";
-                return _TrackPosition;
-            }
-            set
-            {
-                this._TrackPosition = value;
-            }
-        }
-
-        ///<summary> More information about this track (subtitle) </summary>
-        public string TrackMore
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TrackMore))
-                    this._TrackMore = "";
-                return _TrackMore;
-            }
-            set
-            {
-                this._TrackMore = value;
-            }
-        }
-
-        ///<summary> Sort order </summary>
-        public string TrackSort
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TrackSort))
-                    this._TrackSort = "";
-                return _TrackSort;
-            }
-            set
-            {
-                this._TrackSort = value;
-            }
-        }
-
-        ///<summary> Level=3. Name of the chapter. </summary>
-        public string Chapter
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Chapter))
-                    this._Chapter = "";
-                return _Chapter;
-            }
-            set
-            {
-                this._Chapter = value;
-            }
-        }
-
-        ///<summary> Level=2, Name of the subtrack. </summary>
-        public string SubTrack
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._SubTrack))
-                    this._SubTrack = "";
-                return _SubTrack;
-            }
-            set
-            {
-                this._SubTrack = value;
-            }
-        }
-
-        ///<summary> Original name of album, serie... </summary>
-        public string OriginalAlbum
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalAlbum))
-                    this._OriginalAlbum = "";
-                return _OriginalAlbum;
-            }
-            set
-            {
-                this._OriginalAlbum = value;
-            }
-        }
-
-        ///<summary> Original name of the movie </summary>
-        public string OriginalMovie
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalMovie))
-                    this._OriginalMovie = "";
-                return _OriginalMovie;
-            }
-            set
-            {
-                this._OriginalMovie = value;
-            }
-        }
-
-        ///<summary> Name of the part in the original support </summary>
-        public string OriginalPart
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalPart))
-                    this._OriginalPart = "";
-                return _OriginalPart;
-            }
-            set
-            {
-                this._OriginalPart = value;
-            }
-        }
-
-        ///<summary> Original name of the track in the original support </summary>
-        public string OriginalTrack
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalTrack))
-                    this._OriginalTrack = "";
-                return _OriginalTrack;
-            }
-            set
-            {
-                this._OriginalTrack = value;
-            }
-        }
-
+        ///<summary>  Text of a song </summary>
+        public string Lyrics { get; set; }
+        ///<summary>  Any comment related to the content. </summary>
+        public string Comment { get; set; }
+        ///<summary>  A numeric value defining how much a person likes the song/movie. The number is between 0 and 5 with decimal values possible (e.g. 2.7), 5(.0) being the highest possible rating. </summary>
+        public int? Rating { get; set; }
+        ///<summary>  Date/year the item was added to the owners collection </summary>
+        public string AddedDate { get; set; }
+        ///<summary>  The date, the owner first played an item </summary>
+        public string PlayedFirstDate { get; set; }
+        ///<summary>  The date, the owner last played an item </summary>
+        public string PlayedLastDate { get; set; }
+        ///<summary>  Number of times an item was played </summary>
+        public int? PlayedCount { get; set; }
+        ///<summary>   </summary>
+        public string EPGPositionsBegin { get; set; }
+        ///<summary>   </summary>
+        public string EPGPositionsEnd { get; set; }
         ///<summary> (Generic)Performer of the file </summary>
         public string Author
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Author))
-                    this._Author = "";
-                return _Author;
-            }
-            set
-            {
-                this._Author = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Duplicate of Performer </summary>
         public string Artist
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Artist))
-                    this._Artist = "";
-                return _Artist;
-            }
-            set
-            {
-                this._Artist = value;
-            }
-        }
-
-        ///<summary> Sort order </summary>
-        public string PerformerSort
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PerformerSort))
-                    this._PerformerSort = "";
-                return _PerformerSort;
-            }
-            set
-            {
-                this._PerformerSort = value;
-            }
-        }
-
-        ///<summary> Original artist(s)_performer(s). </summary>
-        public string OriginalPerformer
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalPerformer))
-                    this._OriginalPerformer = "";
-                return _OriginalPerformer;
-            }
-            set
-            {
-                this._OriginalPerformer = value;
-            }
-        }
-
-        ///<summary> Band_orchestra_accompaniment_musician. </summary>
-        public string Accompaniment
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Accompaniment))
-                    this._Accompaniment = "";
-                return _Accompaniment;
-            }
-            set
-            {
-                this._Accompaniment = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Name of the character an actor or actress plays in this movie. </summary>
         public string MusicianInstrument
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MusicianInstrument))
-                    this._MusicianInstrument = "";
-                return _MusicianInstrument;
-            }
-            set
-            {
-                this._MusicianInstrument = value;
-            }
-        }
-
-        ///<summary> Name of the original composer. </summary>
-        public string Composer
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Composer))
-                    this._Composer = "";
-                return _Composer;
-            }
-            set
-            {
-                this._Composer = value;
-            }
-        }
-
-        ///<summary> Nationality of the main composer of the item, mostly for classical music. </summary>
-        public string ComposerNationality
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ComposerNationality))
-                    this._ComposerNationality = "";
-                return _ComposerNationality;
-            }
-            set
-            {
-                this._ComposerNationality = value;
-            }
-        }
-
-        ///<summary> The person who arranged the piece. e.g. Ravel. </summary>
-        public string Arranger
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Arranger))
-                    this._Arranger = "";
-                return _Arranger;
-            }
-            set
-            {
-                this._Arranger = value;
-            }
-        }
-
-        ///<summary> The person who wrote the lyrics for a musical item. </summary>
-        public string Lyricist
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Lyricist))
-                    this._Lyricist = "";
-                return _Lyricist;
-            }
-            set
-            {
-                this._Lyricist = value;
-            }
-        }
-
-        ///<summary> Original lyricist(s)_text writer(s). </summary>
-        public string OriginalLyricist
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalLyricist))
-                    this._OriginalLyricist = "";
-                return _OriginalLyricist;
-            }
-            set
-            {
-                this._OriginalLyricist = value;
-            }
-        }
-
-        ///<summary> The artist(s) who performed the work. In classical music this would be the conductor, orchestra, soloists. </summary>
-        public string Conductor
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Conductor))
-                    this._Conductor = "";
-                return _Conductor;
-            }
-            set
-            {
-                this._Conductor = value;
-            }
-        }
-
-        ///<summary> Real name of actor or actress playing a role in the movie. </summary>
-        public string Actor
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Actor))
-                    this._Actor = "";
-                return _Actor;
-            }
-            set
-            {
-                this._Actor = value;
-            }
-        }
-
-        ///<summary> Name of the character an actor or actress plays in this movie. </summary>
-        public string ActorCharacter
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ActorCharacter))
-                    this._ActorCharacter = "";
-                return _ActorCharacter;
-            }
-            set
-            {
-                this._ActorCharacter = value;
-            }
-        }
-
-        ///<summary> The author of the story or script. </summary>
-        public string WrittenBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._WrittenBy))
-                    this._WrittenBy = "";
-                return _WrittenBy;
-            }
-            set
-            {
-                this._WrittenBy = value;
-            }
-        }
-
-        ///<summary> The author of the screenplay or scenario (used for movies and TV shows). </summary>
-        public string ScreenplayBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ScreenplayBy))
-                    this._ScreenplayBy = "";
-                return _ScreenplayBy;
-            }
-            set
-            {
-                this._ScreenplayBy = value;
-            }
-        }
-
-        ///<summary> Name of the director. </summary>
-        public string Director
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Director))
-                    this._Director = "";
-                return _Director;
-            }
-            set
-            {
-                this._Director = value;
-            }
-        }
-
-        ///<summary> Name of the assistant director. </summary>
-        public string AssistantDirector
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._AssistantDirector))
-                    this._AssistantDirector = "";
-                return _AssistantDirector;
-            }
-            set
-            {
-                this._AssistantDirector = value;
-            }
-        }
-
-        ///<summary> The name of the director of photography, also known as cinematographer. </summary>
-        public string DirectorOfPhotography
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DirectorOfPhotography))
-                    this._DirectorOfPhotography = "";
-                return _DirectorOfPhotography;
-            }
-            set
-            {
-                this._DirectorOfPhotography = value;
-            }
-        }
-
-        ///<summary> The person who oversees the artists and craftspeople who build the sets. </summary>
-        public string ArtDirector
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ArtDirector))
-                    this._ArtDirector = "";
-                return _ArtDirector;
-            }
-            set
-            {
-                this._ArtDirector = value;
-            }
-        }
-
-        ///<summary> Editor name </summary>
-        public string EditedBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EditedBy))
-                    this._EditedBy = "";
-                return _EditedBy;
-            }
-            set
-            {
-                this._EditedBy = value;
-            }
-        }
-
-        ///<summary> Name of the producer of the movie. </summary>
-        public string Producer
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Producer))
-                    this._Producer = "";
-                return _Producer;
-            }
-            set
-            {
-                this._Producer = value;
-            }
-        }
-
-        ///<summary> The name of a co-producer. </summary>
-        public string CoProducer
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CoProducer))
-                    this._CoProducer = "";
-                return _CoProducer;
-            }
-            set
-            {
-                this._CoProducer = value;
-            }
-        }
-
-        ///<summary> The name of an executive producer. </summary>
-        public string ExecutiveProducer
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ExecutiveProducer))
-                    this._ExecutiveProducer = "";
-                return _ExecutiveProducer;
-            }
-            set
-            {
-                this._ExecutiveProducer = value;
-            }
-        }
-
-        ///<summary> Artist responsible for designing the overall visual appearance of a movie. </summary>
-        public string ProductionDesigner
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ProductionDesigner))
-                    this._ProductionDesigner = "";
-                return _ProductionDesigner;
-            }
-            set
-            {
-                this._ProductionDesigner = value;
-            }
-        }
-
-        ///<summary> The name of the costume designer. </summary>
-        public string CostumeDesigner
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CostumeDesigner))
-                    this._CostumeDesigner = "";
-                return _CostumeDesigner;
-            }
-            set
-            {
-                this._CostumeDesigner = value;
-            }
-        }
-
-        ///<summary> The name of the choregrapher. </summary>
-        public string Choregrapher
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Choregrapher))
-                    this._Choregrapher = "";
-                return _Choregrapher;
-            }
-            set
-            {
-                this._Choregrapher = value;
-            }
-        }
-
-        ///<summary> The name of the sound engineer or sound recordist. </summary>
-        public string SoundEngineer
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._SoundEngineer))
-                    this._SoundEngineer = "";
-                return _SoundEngineer;
-            }
-            set
-            {
-                this._SoundEngineer = value;
-            }
-        }
-
-        ///<summary> The engineer who mastered the content for a physical medium or for digital distribution. </summary>
-        public string MasteredBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MasteredBy))
-                    this._MasteredBy = "";
-                return _MasteredBy;
-            }
-            set
-            {
-                this._MasteredBy = value;
-            }
-        }
-
-        ///<summary> Interpreted, remixed, or otherwise modified by. </summary>
-        public string RemixedBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._RemixedBy))
-                    this._RemixedBy = "";
-                return _RemixedBy;
-            }
-            set
-            {
-                this._RemixedBy = value;
-            }
-        }
-
-        ///<summary>   </summary>
-        public string ProductionStudio
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ProductionStudio))
-                    this._ProductionStudio = "";
-                return _ProductionStudio;
-            }
-            set
-            {
-                this._ProductionStudio = value;
-            }
-        }
-
-        ///<summary> Name of the organization producing the track (i.e. the  record label ). </summary>
-        public string Publisher
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Publisher))
-                    this._Publisher = "";
-                return _Publisher;
-            }
-            set
-            {
-                this._Publisher = value;
-            }
-        }
-
-        ///<summary> Publishers official webpage. </summary>
-        public string PublisherURL
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._PublisherURL))
-                    this._PublisherURL = "";
-                return _PublisherURL;
-            }
-            set
-            {
-                this._PublisherURL = value;
-            }
-        }
-
-        ///<summary>   </summary>
-        public string DistributedBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._DistributedBy))
-                    this._DistributedBy = "";
-                return _DistributedBy;
-            }
-            set
-            {
-                this._DistributedBy = value;
-            }
-        }
-
-        ///<summary> Name of the person or organisation that encoded_ripped the audio file. </summary>
-        public string EncodedBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedBy))
-                    this._EncodedBy = "";
-                return _EncodedBy;
-            }
-            set
-            {
-                this._EncodedBy = value;
-            }
-        }
-
-        ///<summary> A very general tag for everyone else that wants to be listed. </summary>
-        public string ThanksTo
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ThanksTo))
-                    this._ThanksTo = "";
-                return _ThanksTo;
-            }
-            set
-            {
-                this._ThanksTo = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Technician. Identifies the technician who digitized the subject file. For example, Smith, John. </summary>
         public string Technician
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Technician))
-                    this._Technician = "";
-                return _Technician;
-            }
-            set
-            {
-                this._Technician = value;
-            }
-        }
-
-        ///<summary> Commissioned. Lists the name of the person or organization that commissioned the subject of the file. e.g. Pope Julian II. </summary>
-        public string CommissionedBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CommissionedBy))
-                    this._CommissionedBy = "";
-                return _CommissionedBy;
-            }
-            set
-            {
-                this._CommissionedBy = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Source. Identifies the name of the person or organization who supplied the original subject of the file. For example, Trey Research. </summary>
         public string EncodedOriginalDistributedBy
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedOriginalDistributedBy))
-                    this._EncodedOriginalDistributedBy = "";
-                return _EncodedOriginalDistributedBy;
-            }
-            set
-            {
-                this._EncodedOriginalDistributedBy = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Contains the name of the internet radio station from which the audio is streamed. </summary>
         public string RadioStation
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._RadioStation))
-                    this._RadioStation = "";
-                return _RadioStation;
-            }
-            set
-            {
-                this._RadioStation = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Contains the name of the owner of the internet radio station from which the audio is streamed. </summary>
         public string RadioStationOwner
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._RadioStationOwner))
-                    this._RadioStationOwner = "";
-                return _RadioStationOwner;
-            }
-            set
-            {
-                this._RadioStationOwner = value;
-            }
-        }
-
-        ///<summary> Official internet radio station homepage. </summary>
+        { get; set; }
+        /// <summary> Official internet radio station homepage. </summary>
         public string RadioStationURL
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._RadioStationURL))
-                    this._RadioStationURL = "";
-                return _RadioStationURL;
-            }
-            set
-            {
-                this._RadioStationURL = value;
-            }
-        }
 
-        ///<summary> The type of the item. e.g. Documentary, Feature Film, Cartoon, Music Video, Music, Sound FX, etc. </summary>
-        public string ContentType
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ContentType))
-                    this._ContentType = "";
-                return _ContentType;
-            }
-            set
-            {
-                this._ContentType = value;
-            }
-        }
-
-        ///<summary> Describes the topic of the file, such as Aerial view of Seattle.. </summary>
-        public string Subject
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Subject))
-                    this._Subject = "";
-                return _Subject;
-            }
-            set
-            {
-                this._Subject = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> A description of the story line of the item. </summary>
         public string Synopsys
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Synopsys))
-                    this._Synopsys = "";
-                return _Synopsys;
-            }
-            set
-            {
-                this._Synopsys = value;
-            }
-        }
-
-        ///<summary> A plot outline or a summary of the story. </summary>
-        public string Summary
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Summary))
-                    this._Summary = "";
-                return _Summary;
-            }
-            set
-            {
-                this._Summary = value;
-            }
-        }
-
-        ///<summary> A short description of the contents, such as Two birds flying. </summary>
-        public string Description
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Description))
-                    this._Description = "";
-                return _Description;
-            }
-            set
-            {
-                this._Description = value;
-            }
-        }
-
-        ///<summary> Keywords to the item separated by a comma, used for searching. </summary>
-        public string Keywords
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Keywords))
-                    this._Keywords = "";
-                return _Keywords;
-            }
-            set
-            {
-                this._Keywords = value;
-            }
-        }
-
-        ///<summary> Describes the period that the piece is from or about. e.g. Renaissance. </summary>
-        public string Period
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Period))
-                    this._Period = "";
-                return _Period;
-            }
-            set
-            {
-                this._Period = value;
-            }
-        }
-
-        ///<summary> Depending on the country it s the format of the rating of a movie (P, R, X in the USA, an age in other countries or a URI defining a logo). </summary>
-        public string LawRating
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._LawRating))
-                    this._LawRating = "";
-                return _LawRating;
-            }
-            set
-            {
-                this._LawRating = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> The ICRA rating. (Previously RSACi) </summary>
         public string IRCA
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._IRCA))
-                    this._IRCA = "";
-                return _IRCA;
-            }
-            set
-            {
-                this._IRCA = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Language(s) of the item in the bibliographic ISO-639-2 form. </summary>
         public string Language
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Language))
-                    this._Language = "";
-                return _Language;
-            }
-            set
-            {
-                this._Language = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Medium. Describes the original subject of the file, such as, computer image, drawing, lithograph, and so forth. Not necessarily the same as ISRF. </summary>
         public string Medium
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Medium))
-                    this._Medium = "";
-                return _Medium;
-            }
-            set
-            {
-                this._Medium = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Product. Specifies the name of the title the file was originally intended for, such as Encyclopedia of Pacific Northwest Geography. </summary>
         public string Product
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Product))
-                    this._Product = "";
-                return _Product;
-            }
-            set
-            {
-                this._Product = value;
-            }
-        }
-
-        ///<summary> Country </summary>
-        public string Country
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Country))
-                    this._Country = "";
-                return _Country;
-            }
-            set
-            {
-                this._Country = value;
-            }
-        }
-
-        ///<summary> The time that the composition of the music_script began. </summary>
-        public string WrittenDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._WrittenDate))
-                    this._WrittenDate = "";
-                return _WrittenDate;
-            }
-            set
-            {
-                this._WrittenDate = value;
-            }
-        }
-
-        ///<summary> The time that the recording began. </summary>
-        public string RecordedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._RecordedDate))
-                    this._RecordedDate = "";
-                return _RecordedDate;
-            }
-            set
-            {
-                this._RecordedDate = value;
-            }
-        }
-
-        ///<summary> The time that the item was originaly released. </summary>
-        public string ReleasedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ReleasedDate))
-                    this._ReleasedDate = "";
-                return _ReleasedDate;
-            }
-            set
-            {
-                this._ReleasedDate = value;
-            }
-        }
-
-        ///<summary> The time that the item was tranfered to a digitalmedium. </summary>
-        public string MasteredDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MasteredDate))
-                    this._MasteredDate = "";
-                return _MasteredDate;
-            }
-            set
-            {
-                this._MasteredDate = value;
-            }
-        }
-
-        ///<summary> The time that the encoding of this item was completed began. </summary>
-        public string EncodedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedDate))
-                    this._EncodedDate = "";
-                return _EncodedDate;
-            }
-            set
-            {
-                this._EncodedDate = value;
-            }
-        }
-
-        ///<summary> The time that the tags were done for this item. </summary>
-        public string TaggedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TaggedDate))
-                    this._TaggedDate = "";
-                return _TaggedDate;
-            }
-            set
-            {
-                this._TaggedDate = value;
-            }
-        }
-
-        ///<summary> Contains a timestamp describing when the original recording of the audio was released. </summary>
-        public string OriginalReleasedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalReleasedDate))
-                    this._OriginalReleasedDate = "";
-                return _OriginalReleasedDate;
-            }
-            set
-            {
-                this._OriginalReleasedDate = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Contains a timestamp describing when the original recording of the audio was recorded. </summary>
         public string OriginalRecordedDate
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._OriginalRecordedDate))
-                    this._OriginalRecordedDate = "";
-                return _OriginalRecordedDate;
-            }
-            set
-            {
-                this._OriginalRecordedDate = value;
-            }
-        }
-
-        ///<summary> Location that the item was originaly designed_written. Information should be stored in the following format: country code, state_province, city where the coutry code is the same 2 octets as in Internet domains, or possibly ISO-3166. e.g. US, Texas, Austin or US, , Austin. </summary>
-        public string WrittenLocation
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._WrittenLocation))
-                    this._WrittenLocation = "";
-                return _WrittenLocation;
-            }
-            set
-            {
-                this._WrittenLocation = value;
-            }
-        }
-
-        ///<summary> Location where track was recorded. (See COMPOSITION_LOCATION for format) </summary>
-        public string RecordedLocation
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._RecordedLocation))
-                    this._RecordedLocation = "";
-                return _RecordedLocation;
-            }
-            set
-            {
-                this._RecordedLocation = value;
-            }
-        }
-
-        ///<summary> Archival Location. Indicates where the subject of the file is archived. </summary>
-        public string ArchivalLocation
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ArchivalLocation))
-                    this._ArchivalLocation = "";
-                return _ArchivalLocation;
-            }
-            set
-            {
-                this._ArchivalLocation = value;
-            }
-        }
-
-        ///<summary> The main genre of the audio or video. e.g. classical, ambient-house, synthpop, sci-fi, drama, etc. </summary>
-        public string Genre
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Genre))
-                    this._Genre = "";
-                return _Genre;
-            }
-            set
-            {
-                this._Genre = value;
-            }
-        }
-
-        ///<summary> Intended to reflect the mood of the item with a few keywords, e.g. Romantic, Sad, Uplifting, etc. </summary>
-        public string Mood
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Mood))
-                    this._Mood = "";
-                return _Mood;
-            }
-            set
-            {
-                this._Mood = value;
-            }
-        }
-
-        ///<summary> Any comment related to the content. </summary>
-        public string Comment
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Comment))
-                    this._Comment = "";
-                return _Comment;
-            }
-            set
-            {
-                this._Comment = value;
-            }
-        }
-
-        ///<summary> A numeric value defining how much a person likes the song_movie. The number is between 0 and 5 with decimal values possible (e.g. 2.7), 5(.0) being the highest possible rating. </summary>
-        public string Rating
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Rating))
-                    this._Rating = "";
-                return _Rating;
-            }
-            set
-            {
-                this._Rating = value;
-            }
-        }
-
-        ///<summary> Software. Identifies the name of the software package used to create the file, such as Microsoft WaveEdit. </summary>
-        public string EncodedApplication
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedApplication))
-                    this._EncodedApplication = "";
-                return _EncodedApplication;
-            }
-            set
-            {
-                this._EncodedApplication = value;
-            }
-        }
-
-        ///<summary> The software or hardware used to encode this item. e.g. LAME or XviD </summary>
-        public string EncodedLibrary
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibrary))
-                    this._EncodedLibrary = "";
-                return _EncodedLibrary;
-            }
-            set
-            {
-                this._EncodedLibrary = value;
-            }
-        }
-
-        ///<summary> A list of the settings used for encoding this item. No specific format. </summary>
-        public string EncodedLibrarySettings
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedLibrarySettings))
-                    this._EncodedLibrarySettings = "";
-                return _EncodedLibrarySettings;
-            }
-            set
-            {
-                this._EncodedLibrarySettings = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Identifies the original recording media form from which the material originated, such as CD, cassette, LP, radio broadcast, slide, paper, etc. </summary>
         public string EncodedOriginal
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedOriginal))
-                    this._EncodedOriginal = "";
-                return _EncodedOriginal;
-            }
-            set
-            {
-                this._EncodedOriginal = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Official audio source webpage. e.g. a movie. </summary>
         public string EncodedOriginalUrl
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._EncodedOriginalUrl))
-                    this._EncodedOriginalUrl = "";
-                return _EncodedOriginalUrl;
-            }
-            set
-            {
-                this._EncodedOriginalUrl = value;
-            }
-        }
-
-        ///<summary> Copyright attribution. </summary>
-        public string Copyright
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Copyright))
-                    this._Copyright = "";
-                return _Copyright;
-            }
-            set
-            {
-                this._Copyright = value;
-            }
-        }
-
-        ///<summary> The copyright information as per the productioncopyright holder. </summary>
-        public string ProducerCopyright
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ProducerCopyright))
-                    this._ProducerCopyright = "";
-                return _ProducerCopyright;
-            }
-            set
-            {
-                this._ProducerCopyright = value;
-            }
-        }
-
-        ///<summary> License information, e.g., All Rights Reserved,Any Use Permitted. </summary>
-        public string TermsOfUse
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TermsOfUse))
-                    this._TermsOfUse = "";
-                return _TermsOfUse;
-            }
-            set
-            {
-                this._TermsOfUse = value;
-            }
-        }
-
-        ///<summary> Copyright_legal information. </summary>
-        public string CopyrightUrl
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CopyrightUrl))
-                    this._CopyrightUrl = "";
-                return _CopyrightUrl;
-            }
-            set
-            {
-                this._CopyrightUrl = value;
-            }
-        }
-
-        ///<summary> International Standard Recording Code, excluding the ISRC prefix and including hyphens. </summary>
-        public string ISRC
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ISRC))
-                    this._ISRC = "";
-                return _ISRC;
-            }
-            set
-            {
-                this._ISRC = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> This is a binary dump of the TOC of the CDROM that this item was taken from. </summary>
         public string MSDI
+        { get; set; }
+        /// <summary>
+        /// Is there a cover
+        /// </summary>
+        public bool HasCover => (Cover?.Contains(true)).GetValueOrDefault();
+        /// <summary>
+        /// Count of cover
+        /// </summary>
+        public int CoverCount => Cover?.Count(i => i == true) ?? 0;
+
+        // Other
+
+        /// <summary>
+        /// Bit rate of all streams in bps
+        /// </summary>
+        [Obsolete("OveralBitRate is deprecated, please use OverallBitRate instead.")]
+        public double? OveralBitRate
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._MSDI))
-                    this._MSDI = "";
-                return _MSDI;
-            }
-            set
-            {
-                this._MSDI = value;
-            }
+            get => OverallBitRate;
+            set => OverallBitRate = value;
         }
 
-        ///<summary> International Standard Book Number. </summary>
-        public string ISBN
+        ///<summary>  Bit rate of all streams (with measure) </summary>
+        [Obsolete("OveralBitRate is deprecated, please use OverallBitRate instead.")]
+        public string OveralBitRateString
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ISBN))
-                    this._ISBN = "";
-                return _ISBN;
-            }
-            set
-            {
-                this._ISBN = value;
-            }
+            get => OverallBitRateString;
+            set => OverallBitRateString = value;
         }
-
-        ///<summary> EAN-13 (13-digit European Article Numbering) or UPC-A (12-digit Universal Product Code) bar code identifier. </summary>
-        public string BarCode
+        /// <summary>
+        /// 
+        /// </summary>
+        [Obsolete("PlayTimeMillisec is deprecated.")]
+        public double? PlayTimeMillisec
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BarCode))
-                    this._BarCode = "";
-                return _BarCode;
-            }
-            set
-            {
-                this._BarCode = value;
-            }
+            get => Duration;
+            set => Duration = value;
         }
-
-        ///<summary> Library of Congress Control Number. </summary>
-        public string LCCN
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._LCCN))
-                    this._LCCN = "";
-                return _LCCN;
-            }
-            set
-            {
-                this._LCCN = value;
-            }
-        }
-
-        ///<summary> A label-specific catalogue number used to identify the release. e.g. TIC 01. </summary>
-        public string CatalogNumber
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CatalogNumber))
-                    this._CatalogNumber = "";
-                return _CatalogNumber;
-            }
-            set
-            {
-                this._CatalogNumber = value;
-            }
-        }
-
-        ///<summary> A 4-digit or 5-digit number to identify the record label, typically printed as (LC) xxxx or (LC) 0xxxx on CDs medias or covers, with only the number being stored. </summary>
-        public string LabelCode
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._LabelCode))
-                    this._LabelCode = "";
-                return _LabelCode;
-            }
-            set
-            {
-                this._LabelCode = value;
-            }
-        }
-
-        ///<summary> Is there a cover </summary>
-        public bool Cover
-        {
-            get
-            {
-                return _Cover;
-            }
-            set
-            {
-                this._Cover = value;
-            }
-        }
-
-        ///<summary> Cover format </summary>
-        public string CoverType
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._CoverType))
-                    this._CoverType = "";
-                return _CoverType;
-            }
-            set
-            {
-                this._CoverType = value;
-            }
-        }
-
-        ///<summary> Cover, in binary format </summary>
-        public byte[] CoverData
-        {
-            get
-            {
-                if (this._CoverData.Length == 0)
-                    this._CoverData = new byte[0];
-                return _CoverData;
-            }
-            set
-            {
-                this._CoverData = value;
-            }
-        }
-
-        ///<summary> Average number of beats per minute </summary>
-        public string BPM
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._BPM))
-                    this._BPM = "";
-                return _BPM;
-            }
-            set
-            {
-                this._BPM = value;
-            }
-        }
-
         ///<summary> Video Codecs separated by _ </summary>
+        [Obsolete("VideoCodecList is deprecated.")]
         public string VideoCodecList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._VideoCodecList))
-                    this._VideoCodecList = "";
-                return _VideoCodecList;
-            }
-            set
-            {
-                this._VideoCodecList = value;
-            }
-        }
-
-        ///<summary> Video languages separated by _ </summary>
-        public string VideoLanguageList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._VideoLanguageList))
-                    this._VideoLanguageList = "";
-                return _VideoLanguageList;
-            }
-            set
-            {
-                this._VideoLanguageList = value;
-            }
-        }
+        { get; set; }
 
         ///<summary> Audio Codecs separated by _ </summary>
+        [Obsolete("AudioCodecList is deprecated by MediaInfo.")]
         public string AudioCodecList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._AudioCodecList))
-                    this._AudioCodecList = "";
-                return _AudioCodecList;
-            }
-            set
-            {
-                this._AudioCodecList = value;
-            }
-        }
-
-        ///<summary> Audio languages separated by _ </summary>
-        public string AudioLanguageList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._AudioLanguageList))
-                    this._AudioLanguageList = "";
-                return _AudioLanguageList;
-            }
-            set
-            {
-                this._AudioLanguageList = value;
-            }
-        }
+        { get; set; }
 
         ///<summary> Text Codecs separated by _ </summary>
+        [Obsolete("TextCodecList is deprecated by MediaInfo.")]
         public string TextCodecList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TextCodecList))
-                    this._TextCodecList = "";
-                return _TextCodecList;
-            }
-            set
-            {
-                this._TextCodecList = value;
-            }
-        }
-
-        ///<summary> Text languages separated by _ </summary>
-        public string TextLanguageList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._TextLanguageList))
-                    this._TextLanguageList = "";
-                return _TextLanguageList;
-            }
-            set
-            {
-                this._TextLanguageList = value;
-            }
-        }
+        { get; set; }
 
         ///<summary> Chapters Codecs separated by _ </summary>
+        [Obsolete("ChaptersCodecList is deprecated.")]
         public string ChaptersCodecList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ChaptersCodecList))
-                    this._ChaptersCodecList = "";
-                return _ChaptersCodecList;
-            }
-            set
-            {
-                this._ChaptersCodecList = value;
-            }
-        }
-
+        { get; set; }
         ///<summary> Chapters languages separated by _ </summary>
+        [Obsolete("ChaptersLanguageList is deprecated.")]
         public string ChaptersLanguageList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ChaptersLanguageList))
-                    this._ChaptersLanguageList = "";
-                return _ChaptersLanguageList;
-            }
-            set
-            {
-                this._ChaptersLanguageList = value;
-            }
-        }
+        { get; set; }
 
         ///<summary> Image Codecs separated by _ </summary>
+        [Obsolete("ImageCodecList is deprecated by MediaInfo.")]
         public string ImageCodecList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ImageCodecList))
-                    this._ImageCodecList = "";
-                return _ImageCodecList;
-            }
-            set
-            {
-                this._ImageCodecList = value;
-            }
-        }
-
-        ///<summary> Image languages separated by _ </summary>
-        public string ImageLanguageList
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(this._ImageLanguageList))
-                    this._ImageLanguageList = "";
-                return _ImageLanguageList;
-            }
-            set
-            {
-                this._ImageLanguageList = value;
-            }
-        }
+        { get; set; }
 
         ///<summary> Other tags not known... </summary>
+        [Obsolete("Other is deprecated.")]
         public string Other
+        { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Obsolete("FileSizePrecise is deprecated.")]
+        public string FileSizePrecise
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this._Other))
-                    this._Other = "";
-                return _Other;
-            }
-            set
-            {
-                this._Other = value;
-            }
+            get => FileSizeFormatted;
+            set => FileSizeFormatted = value;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Obsolete("FileSizeRounded is deprecated.")]
+        public string FileSizeRounded
+        {
+            get => FileSizeString;
+            set => FileSizeString = value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Obsolete("PlayTimeFormatted is deprecated.")]
+        public string PlayTimeFormatted
+        {
+            get => PlayTimeString3;
+            set => PlayTimeString3 = value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Obsolete("PlayTimeString3 is deprecated.")]
+        public string PlayTimeString3 { get; set; }
     }
 }
