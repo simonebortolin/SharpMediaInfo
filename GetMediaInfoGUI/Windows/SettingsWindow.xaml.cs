@@ -1,6 +1,7 @@
 ﻿using GetMediaInfoGUI.Configuration;
 using GetMediaInfoGUI.Extensions;
 using GetMediaInfoGUI.History;
+using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Utils;
 using System;
 using System.Diagnostics;
@@ -67,8 +68,8 @@ namespace GetMediaInfoGUI
             //Appearence
             ComboBoxFontSize.SelectedValue = ConfigHelper.GetConfig().ReportFontSize;
             ComboBoxFontFamily.SelectedIndex = ComboBoxFontFamily.Items.Cast<FontFamily>().FindIndex(i => i.Source.Equals(ConfigHelper.GetConfig().ReportFontFamily));
-            BoldControl.SetChecked(ConfigHelper.GetConfig().Bold);    
-            ItalicControl.SetChecked(ConfigHelper.GetConfig().Italic);
+            BoldControl.SetChecked(ConfigHelper.GetConfig().ReportBoldStyle);    
+            ItalicControl.SetChecked(ConfigHelper.GetConfig().ReportItalicStyle);
 
             //History
             HistorySize.Value = HistoryHelper.GetHistory().MaxSize;
@@ -144,8 +145,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableSimple_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().DisableSimpleReport = DisableSimple.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().DisableSimpleReport = DisableSimple.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -155,8 +157,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableComplete_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().DisableCompleteReport = DisableComplete.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().DisableCompleteReport = DisableComplete.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -166,8 +169,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void DisableTree_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().DisableTreeReport = DisableTree.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().DisableTreeReport = DisableTree.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -177,8 +181,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void EnableMilliseconds_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().ShowMilliseconds = EnableMilliseconds.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().ShowMilliseconds = EnableMilliseconds.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -188,8 +193,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AutoSaveReport_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().AutoSaveReport = AutoSaveReport.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().AutoSaveReport = AutoSaveReport.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -199,8 +205,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void RemoveSpace_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().RemoveJustification = RemoveSpace.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().RemoveJustification = RemoveSpace.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -210,8 +217,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ShowCover_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-                ConfigHelper.GetConfig().ShowCover = ShowCover.IsChecked.GetValueOrDefault();
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().ShowCover = ShowCover.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -221,11 +229,10 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void BoldControl_Click(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-            {
-                ConfigHelper.GetConfig().Bold = !ConfigHelper.GetConfig().Bold;
-                BoldControl.SetChecked(ConfigHelper.GetConfig().Bold);
-            }
+            if (initialization) { return; }
+            
+            ConfigHelper.GetConfig().ReportBoldStyle = !ConfigHelper.GetConfig().ReportBoldStyle;
+            BoldControl.SetChecked(ConfigHelper.GetConfig().ReportBoldStyle);         
         }
 
         /// <summary>
@@ -235,11 +242,10 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ItalicControl_Click(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-            {
-                ConfigHelper.GetConfig().Italic = !ConfigHelper.GetConfig().Italic;
-                ItalicControl.SetChecked(ConfigHelper.GetConfig().Italic);
-            }
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().ReportItalicStyle = !ConfigHelper.GetConfig().ReportItalicStyle;
+            ItalicControl.SetChecked(ConfigHelper.GetConfig().ReportItalicStyle);      
         }
 
         /// <summary>
@@ -249,10 +255,10 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void ComboBoxFont_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!initialization)
-            {
-                ConfigHelper.GetConfig().ReportFontFamily = ComboBoxFontFamily?.SelectedValue as string ?? ConfigHelper.GetConfig().ReportFontFamily;
-            }               
+            if (initialization) { return; }
+            
+            var newFont = ComboBoxFontFamily?.SelectedValue as FontFamily;
+            ConfigHelper.GetConfig().ReportFontFamily = newFont?.Source ?? ConfigHelper.GetConfig().ReportFontFamily;                        
         }
 
         /// <summary>
@@ -262,10 +268,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void ComboBoxSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!initialization)
-            {
-                ConfigHelper.GetConfig().ReportFontSize = (double)(ComboBoxFontSize?.SelectedValue ?? ConfigHelper.GetConfig().ReportFontSize);
-            }            
+            if (initialization) { return; }
+
+            ConfigHelper.GetConfig().ReportFontSize = (double)(ComboBoxFontSize?.SelectedValue ?? ConfigHelper.GetConfig().ReportFontSize);            
         }
 
         /// <summary>
@@ -275,6 +280,8 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
+            if (initialization) { return; }
+
             StartUpdater();
         }
 
@@ -285,12 +292,11 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void HistorySize_ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (!initialization)
-            {
-                var historySize = (int)HistorySize.Value;
-                ConfigHelper.GetConfig().HistorySize = historySize;
-                HistoryHelper.GetHistory().ChangeMaximumSize(historySize);
-            }          
+            if (initialization) { return; }
+
+            var historySize = (int)HistorySize.Value;
+            ConfigHelper.GetConfig().HistorySize = historySize;
+            HistoryHelper.GetHistory().ChangeMaximumSize(historySize);         
         }
 
         /// <summary>
@@ -300,6 +306,8 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ClearRecentFileList_Click(object sender, RoutedEventArgs e)
         {
+            if (initialization) { return; }
+
             HistoryHelper.GetHistory().Clear();
         }
         #endregion
@@ -311,24 +319,16 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void VerifyMediaInfoVersion()
         {
-            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MediaInfo.dll")))
+            var fileVersionInfo = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("MediaInfo.dll"));
+            if (!string.IsNullOrWhiteSpace(fileVersionInfo))
             {
-                FileVersionInfo FileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MediaInfo.dll"));
-                if (!string.IsNullOrWhiteSpace(FileVersionInfo.FileVersion))
-                {
-                    StatusMediaInfo.Text = FileVersionInfo.FileVersion;
-                    StatusMediaInfo.Foreground = Brushes.Green;
-                }
-                else
-                {
-                    StatusMediaInfo.Text = "Unable to find version";
-                    StatusMediaInfo.Foreground = Brushes.DarkOrange;
-                }
+                StatusMediaInfo.Text = fileVersionInfo;
+                StatusMediaInfo.Foreground = Brushes.Green;
             }
             else
             {
-                StatusMediaInfo.Text = "ERROR";
-                StatusMediaInfo.Foreground = Brushes.Red;
+                StatusMediaInfo.Text = "not available";
+                StatusMediaInfo.Foreground = Brushes.DarkRed;
             }
         }
 
@@ -337,24 +337,16 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void VerifyGetMediaInfoVersion()
         {
-            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GetMediaInfo.dll")))
+            var fileVersionInfo = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("GetMediaInfo.dll"));
+            if (!string.IsNullOrWhiteSpace(fileVersionInfo))
             {
-                FileVersionInfo FileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GetMediaInfo.dll"));
-                if (!string.IsNullOrWhiteSpace(FileVersionInfo.FileVersion))
-                {
-                    StatusGetMediaInfo.Text = FileVersionInfo.FileVersion;
-                    StatusGetMediaInfo.Foreground = Brushes.Green;
-                }
-                else
-                {
-                    StatusGetMediaInfo.Text = "Unable to find version";
-                    StatusGetMediaInfo.Foreground = Brushes.YellowGreen;
-                }
+                StatusGetMediaInfo.Text = fileVersionInfo;
+                StatusGetMediaInfo.Foreground = Brushes.Green;
             }
             else
             {
-                StatusGetMediaInfo.Text = "ERROR";
-                StatusGetMediaInfo.Foreground = Brushes.Red;
+                StatusGetMediaInfo.Text = "not available";
+                StatusGetMediaInfo.Foreground = Brushes.DarkRed;
             }
         }
 
@@ -383,11 +375,11 @@ namespace GetMediaInfoGUI
                         UpdaterProgress.Text = "The Mediainfo library is already at its latest version.";
                     }  
                 }
-            } catch
+            } catch (Exception ex)
             {
-                MessageBox.Show("An error occurred while trying to retrieve the latest version of Mediainfo.", "Error");
-            }
-                  
+                MessageBoxHelper.ShowError(this, $"Unable to retrieve the latest version of Mediainfo library: {ex.Message}");
+                Logger.Error(ex);
+            }                 
         }
         #endregion
     }

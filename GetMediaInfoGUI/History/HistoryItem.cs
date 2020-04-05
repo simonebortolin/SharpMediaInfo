@@ -16,7 +16,7 @@ namespace GetMediaInfoGUI.History
         /// <summary>
         /// The timestamp.
         /// </summary>
-        [XmlElement("ts", DataType = "dateTime")]
+        [XmlElement(DataType = "dateTime")]
         public DateTime Timestamp { get; set; } = DateTime.Now;
        
         /// <summary>

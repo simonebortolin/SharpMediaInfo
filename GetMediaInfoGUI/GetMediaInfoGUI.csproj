@@ -93,7 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\ConfigHelper.cs" />
     <Compile Include="Controls\Converters\ButtonHeightConverter.cs" />
     <Compile Include="Controls\Converters\ButtonShowGridConverter.cs" />
@@ -106,16 +106,23 @@
     <Compile Include="History\HistoryHelper.cs" />
     <Compile Include="History\HistoryItem.cs" />
     <Compile Include="History\HistoryItemList.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Interop\CrossProcessLockFactory.cs" />
     <Compile Include="Models\FileTab.cs" />
     <Compile Include="History\FixedSizeQueue.cs" />
     <Compile Include="Extensions\ButtonExtensions.cs" />
     <Compile Include="Interop\InterProcComm.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\FolderUtils.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Utils\MessageBoxHelper.cs" />
     <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="Windows\AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -127,6 +134,10 @@
     <Page Include="Controls\NumericUpDown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

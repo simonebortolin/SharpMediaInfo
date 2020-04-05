@@ -15,6 +15,8 @@ using GetMediaInfoGUI.Utils;
 using GetMediaInfoGUI.Interop;
 using GetMediaInfoGUI.Configuration;
 using GetMediaInfoGUI.History;
+using GetMediaInfoGUI.Logging;
+using GetMediaInfoGUI.Windows;
 
 namespace GetMediaInfoGUI
 {
@@ -78,7 +80,8 @@ namespace GetMediaInfoGUI
                 }
             } catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace, "GetMediaInfo constructor");
+                MessageBoxHelper.ShowError(this, $"Unable to create main window: {ex.Message}");
+                Logger.Error(ex);
             }
         }
         #endregion
@@ -102,11 +105,26 @@ namespace GetMediaInfoGUI
                 VerifyGetMediaInfo();
 
                 var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
-                ProcessArgs(args);              
+                ProcessArgs(args);
+
+                //if the last update check is over 7 days ago, ask user whether to check for a new update
+                var lastCheckDate = ConfigHelper.GetConfig().LastUpdateCheck;
+                if (DateTime.Now.Date.Subtract(lastCheckDate).Days > 7)
+                {
+                    var result = MessageBoxHelper.Show(this, 
+                        $"The latest Mediainfo library version was checked at {lastCheckDate.ToString("g")}. Do you want to check again?", 
+                        "Mediainfo update check", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        StartUpdater();
+                    }
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace, "GetMediaInfo loading");
+                MessageBoxHelper.ShowError(this, $"Unable to correctly load main window: {ex.Message}");
+                Logger.Error(ex);
             }
         }
 
@@ -447,6 +465,21 @@ namespace GetMediaInfoGUI
             HistoryMenuItem.Items.Clear();
             HistoryHelper.GetHistory().Clear();
         }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemAbout control.
+        /// </summary>
+        /// <param name="sender">The source of the event</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data</param>
+        private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow()
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = Window.GetWindow(this)
+            };
+            aboutWindow.ShowDialog();
+        }
         #endregion
 
         #region TabControl
@@ -771,8 +804,10 @@ namespace GetMediaInfoGUI
 
             if (inputpaths.Length > 10)
             {
-                if (MessageBox.Show("Are you sure do you want to open " + inputpaths.Length + " files?", 
-                    "Multiple files opening confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                var result = MessageBoxHelper.Show(this, $"Are you sure do you want to open {inputpaths.Length} files?",
+                    "Multiple files opening confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.No)
                 {
                     return;
                 }
@@ -839,7 +874,8 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Unable to save user settings: {ex.Message}");
+                MessageBoxHelper.ShowError(this, $"Unable to save user settings: {ex.Message}");
+                Logger.Error(ex);
             }
         }
 
@@ -854,7 +890,8 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Unable to load user settings: {ex.Message}");
+                MessageBoxHelper.ShowError(this, $"Unable to load user settings: {ex.Message}");
+                Logger.Error(ex);
             }
         }
         #endregion
@@ -871,7 +908,8 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Unable to save recent file history: {ex.Message}");
+                MessageBoxHelper.ShowError(this, $"Unable to save recent file history: {ex.Message}");
+                Logger.Error(ex);
             }
         }
 
@@ -884,7 +922,9 @@ namespace GetMediaInfoGUI
             {
                 HistoryHelper.LoadHistory();
                 UpdateHistoryMenuItem();
-            } catch (Exception) { }         
+            } catch (Exception ex) {
+                Logger.Error(ex);
+            }         
         }
 
         /// <summary>
@@ -948,7 +988,8 @@ namespace GetMediaInfoGUI
                     }
                     else
                     {
-                        MessageBox.Show("MediaInfo.dll library not found.","ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBoxHelper.ShowError(this, $"Unable to download the latest version of Mediainfo library");
+                        Logger.Error("Unable to download the latest version of Mediainfo library");
                         Application.Current.Shutdown();
                     }
                 }
@@ -963,7 +1004,8 @@ namespace GetMediaInfoGUI
             if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GetMediaInfo.dll")))
             {
                 GeneralGrid.IsEnabled = false;
-                MessageBox.Show("GetMediaInfo.dll library not found.", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError(this, $"GetMediaInfo.dll library not found");
+                Logger.Error("GetMediaInfo.dll library not found");
                 Application.Current.Shutdown();
             }
         }
@@ -977,8 +1019,9 @@ namespace GetMediaInfoGUI
         {
             if (_libraryAlreadyLoaded)
             {
-                if (MessageBox.Show("In order to update the library the program needs to be restarted, do you want to restart now?", 
-                    "Update confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                var result = MessageBox.Show("In order to update the library the program needs to be restarted, do you want to restart now?", 
+                    "Update confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result != MessageBoxResult.Yes)
                 {
                     return false;
                 }
@@ -1007,13 +1050,16 @@ namespace GetMediaInfoGUI
                 StatusLab.Content = updater.GetMessageStatus();
                 VerifyMediaInfo(true);
                 
-                return updater.GetStatus() == UpdaterWindow.Status.Success;
+                if (updater.GetStatus() == UpdaterWindow.Status.Success || 
+                    updater.GetStatus() == UpdaterWindow.Status.NotNeeded)
+                {
+                    ConfigHelper.GetConfig().LastUpdateCheck = DateTime.Now;
+                    return true;
+                }
+
+                return false;
             }
         }
-        #endregion
-
-        #region Helper Methods
-
         #endregion
 
         #region Inter Process Communication
@@ -1079,7 +1125,8 @@ namespace GetMediaInfoGUI
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace, "Window message handling");
+                    MessageBoxHelper.ShowError(this, $"Unable to process system window message: {ex.Message}");
+                    Logger.Error(ex);
                 }
             };
         }

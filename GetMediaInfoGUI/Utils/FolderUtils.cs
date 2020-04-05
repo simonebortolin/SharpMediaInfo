@@ -22,5 +22,15 @@ namespace GetMediaInfoGUI.Utils
             }
             return folder;
         }
+
+        /// <summary>
+        /// Gets the abolute path from a relative path starting from the assembly base directory.
+        /// </summary>
+        /// <param name="relativePath">The relative path</param>
+        /// <returns>the absolute path</returns>
+        public static string GetAbsolutePathFromBaseDir(string relativePath)
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+        }
     }
 }

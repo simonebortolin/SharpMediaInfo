@@ -1,4 +1,5 @@
-﻿using SevenZip;
+﻿using GetMediaInfoGUI.Utils;
+using SevenZip;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -207,18 +208,7 @@ namespace GetMediaInfoGUI
         /// <returns></returns>
         private string GetLocalMediaInfoVersion()
         {
-            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MediaInfo.dll")))
-            {
-                System.Diagnostics.FileVersionInfo FileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MediaInfo.dll"));
-
-                if (!string.IsNullOrEmpty(FileVersionInfo.FileVersion))
-                {
-                    return FileVersionInfo.FileVersion;
-                }
-            }
-
-            return string.Empty;
+            return FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("MediaInfo.dll"));
         }
 
         #endregion

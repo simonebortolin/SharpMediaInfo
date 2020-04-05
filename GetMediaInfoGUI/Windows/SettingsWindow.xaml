@@ -78,7 +78,7 @@
         </GroupBox>
         
         <!-- Appearence settings -->
-        <GroupBox Grid.Row="3" Header="Appearance" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+        <GroupBox Grid.Row="3" Header="Report appearance" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <Grid Margin="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150"/>

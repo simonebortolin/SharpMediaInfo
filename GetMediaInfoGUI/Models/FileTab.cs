@@ -750,8 +750,8 @@ namespace GetMediaInfoGUI
             }
 
             FontSize = ConfigHelper.GetConfig().ReportFontSize;
-            FontWeight = ConfigHelper.GetConfig().Bold ? FontWeights.Bold : FontWeights.Normal;
-            FontStyle = ConfigHelper.GetConfig().Italic ? FontStyles.Italic : FontStyles.Normal;
+            FontWeight = ConfigHelper.GetConfig().ReportBoldStyle ? FontWeights.Bold : FontWeights.Normal;
+            FontStyle = ConfigHelper.GetConfig().ReportItalicStyle ? FontStyles.Italic : FontStyles.Normal;
 
             GetMediaInfoReports();
             CreateSimpleReport();
@@ -1998,7 +1998,7 @@ namespace GetMediaInfoGUI
         /// Notifies the property changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        private void NotifyPropertyChanged(String propertyName)
+        private void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

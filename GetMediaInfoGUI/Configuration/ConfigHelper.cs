@@ -9,13 +9,13 @@ namespace GetMediaInfoGUI.Configuration
     /// </summary>
     public class ConfigHelper
     {
-        private static Configuration configuration = new Configuration();
+        private static Config configuration = new Config();
 
         /// <summary>
         /// Gets the configuration.
         /// </summary>
         /// <returns>The configuration</returns>
-        public static Configuration GetConfig()
+        public static Config GetConfig()
         {
             return configuration;
         }
@@ -30,15 +30,15 @@ namespace GetMediaInfoGUI.Configuration
             if (File.Exists(path))
             {
                 // Create an instance of the XmlSerializer.
-                var serializer = new XmlSerializer(typeof(Configuration));
+                var serializer = new XmlSerializer(typeof(Config));
 
                 using (Stream reader = new FileStream(path, FileMode.Open))
                 {
-                    configuration = serializer.Deserialize(reader) as Configuration;
+                    configuration = serializer.Deserialize(reader) as Config;
                 }
             } else
             {
-                throw new FileNotFoundException("Unable to load configuration, fhe file was not found");
+                throw new FileNotFoundException("File not found");
             } 
         }
 
@@ -50,7 +50,7 @@ namespace GetMediaInfoGUI.Configuration
             var path = Path.Combine(FolderUtils.GetAppDataFolder(), Constants.ConfigurationFileName);
 
             // Create an instance of the XmlSerializer.
-            var serializer = new XmlSerializer(typeof(Configuration));
+            var serializer = new XmlSerializer(typeof(Config));
 
             using (Stream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write))
             using (var writer = new StreamWriter(stream))

@@ -61,7 +61,7 @@
                     <MenuItem Header="_Settings" Click="MenuItemSettings_Click"/>
                     <MenuItem Header="_Updater" Click="MenuItemUpdater_Click" />
                 </MenuItem>
-                <MenuItem Header="_About"/>
+                <MenuItem Header="_About" Click="MenuItemAbout_Click"/>
             </Menu>
         </DockPanel>
         <!-- TabControl -->
