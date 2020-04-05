@@ -63,9 +63,6 @@
     <StartupObject>GetMediaInfoGUI.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GetMediaInfo">
-      <HintPath>..\..\getmediainfo\GetMediaInfo\bin\Debug\GetMediaInfo.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -218,7 +215,12 @@
   <ItemGroup>
     <Resource Include="Resources\loading.gif" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\GetMediaInfo\GetMediaInfo.csproj">
+      <Project>{ab0e4816-51ae-46b1-b9d9-af3b2cb96d27}</Project>
+      <Name>GetMediaInfo</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
