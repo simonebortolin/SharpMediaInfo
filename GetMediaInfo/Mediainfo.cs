@@ -96,11 +96,23 @@ namespace GetMediaInfo
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="parseCoverData">If set to <c>true</c> all covers data are parsed. (default: false)</param>
+        MediaInfo(bool parseCoverData = false)
+        {
+            this._ParseCoverData = parseCoverData;
+            //forces to parse cover data
+            SetCoverDataParsing(parseCoverData);
+        }
+
         /// <summary>
         /// Creates a new MediaInfo object instance by copying all information from the input MediaInfo object.
         /// </summary>
         /// <param name="mediaInfo">The MediaInfo object</param>
-        public MediaInfo(MediaInfo mediaInfo)
+        public MediaInfo(MediaInfo mediaInfo) : this()
         {
             this._General = new List<GeneralTrack>(mediaInfo._General);
             this._GeneralCount = mediaInfo._GeneralCount;
@@ -129,7 +141,7 @@ namespace GetMediaInfo
         /// <param name="path">The path of the file to analyze.</param>
         /// <param name="parseCoverData">If set to <c>true</c> all covers data are parsed. (default: false)</param>
         /// <param name="parseReports">If set to <c>true</c> both specific and complete reports are immediately parsed. (default: false)</param>
-        public MediaInfo(string path, bool parseCoverData = false, bool parseReports = false)
+        public MediaInfo(string path, bool parseCoverData = false, bool parseReports = false) : this(parseCoverData)
         {
             try
             {
@@ -144,7 +156,7 @@ namespace GetMediaInfo
                 sw.Restart();
 #endif     
 
-                RetrieveInformation(parseReports, parseCoverData);
+                RetrieveInformation(parseReports);
 
 #if DEBUG
                 sw.Stop();
@@ -168,7 +180,7 @@ namespace GetMediaInfo
         /// <param name="stream">The stream that contains the file content to analyze.</param>
         /// <param name="parseCoverData">If set to <c>true</c> all covers data are parsed. (default: false)</param>
         /// <param name="parseReports">If set to <c>true</c> both specific and complete reports are immediately parsed. (default: false)</param>
-        public MediaInfo(Stream stream, bool parseCoverData = false, bool parseReports = false)
+        public MediaInfo(Stream stream, bool parseCoverData = false, bool parseReports = false) : this(parseCoverData)
         {
             try
             {
@@ -184,7 +196,7 @@ namespace GetMediaInfo
                 sw.Restart();
 #endif     
 
-                RetrieveInformation(parseReports, parseCoverData);
+                RetrieveInformation(parseReports);
 
                 //check if mediainfo can get filename
                 this._FileName = General.Count > 0 && !string.IsNullOrEmpty(General[0].FileNameExtension) ? General[0].FileNameExtension : "stream";
@@ -269,13 +281,8 @@ namespace GetMediaInfo
         /// Retrieves all informations from Mediainfo library.
         /// </summary>
         /// <param name="parseReports">Flag to determine whether to parse reports or not.</param>
-        /// <param name="parseCoverData">Flag to determine whether to parse cover data or not.</param>
-        private void RetrieveInformation(bool parseReports, bool parseCoverData)
+        private void RetrieveInformation(bool parseReports)
         {
-            this._ParseCoverData = parseCoverData;
-            //forces to parse cover data
-            EnableCoverDataParsing(parseCoverData);
-
             //retrieve all information
             GetStreamCount();
             ParseInformation();
@@ -325,9 +332,9 @@ namespace GetMediaInfo
         private void GetCompleteReport()
         {
             MediaInfoLib.SetOption(this.Handle, "Complete", "1");
-            EnableCoverDataParsing(false);
+            SetCoverDataParsing(false);
             _InfoComplete = Marshal.PtrToStringUni(MediaInfoLib.Inform(this.Handle, 0));
-            EnableCoverDataParsing(true);
+            SetCoverDataParsing(true);
         }
 
         /// <summary>
@@ -336,9 +343,9 @@ namespace GetMediaInfo
         private void GetStandardReport()
         {
             MediaInfoLib.SetOption(this.Handle, "Complete", "");
-            EnableCoverDataParsing(false);
+            SetCoverDataParsing(false);
             _InfoStandard = Marshal.PtrToStringUni(MediaInfoLib.Inform(this.Handle, 0));
-            EnableCoverDataParsing(true);
+            SetCoverDataParsing(true);
         }
         #endregion
 
@@ -2252,25 +2259,43 @@ namespace GetMediaInfo
         /// <returns>The string that represents the formatted list of Mediainfo library capacities.</returns>
         public static string Capacities()
         {
-            return Marshal.PtrToStringUni(MediaInfoLib.SetOption((IntPtr)0, "Info_Capacities", ""));
+            return Marshal.PtrToStringUni(MediaInfoLib.SetOption(IntPtr.Zero, "Info_Capacities", ""));
         }
 
         /// <summary>
         /// Lists all info parameters of the MediaInfo library.
         /// </summary>
         /// <returns>The string that represents the formatted list of all available parameters.</returns>
-        public static string ParameterList()
+        public static string ParametersList(bool csvFormat = false)
         {
-            return Marshal.PtrToStringUni(MediaInfoLib.SetOption((IntPtr)0, "Info_Parameters", ""));
+            return Marshal.PtrToStringUni(MediaInfoLib.SetOption(IntPtr.Zero, csvFormat ? "Info_Parameters_CSV" : "Info_Parameters", ""));
         }
-        
+
         /// <summary>
         /// Lists all supported codecs.
         /// </summary>
         /// <returns>The string that represents the formatted list of all supported codecs</returns>
         public static string KnownCodecs()
         {
-            return Marshal.PtrToStringUni(MediaInfoLib.SetOption((IntPtr)0, "Info_Codecs", ""));
+            return Marshal.PtrToStringUni(MediaInfoLib.SetOption(IntPtr.Zero, "Info_Codecs", ""));
+        }
+
+        /// <summary>
+        /// MediaInfo library version.
+        /// </summary>
+        /// <returns>The library version</returns>
+        public static string LibraryVersion()
+        {
+            return Marshal.PtrToStringUni(MediaInfoLib.SetOption(IntPtr.Zero, "Info_Version", ""));
+        }
+
+        /// <summary>
+        /// MediaInfo library url.
+        /// </summary>
+        /// <returns>The library url</returns>
+        public static string LibraryUrl()
+        {
+            return Marshal.PtrToStringUni(MediaInfoLib.SetOption(IntPtr.Zero, "Info_Url", ""));
         }
 
         #region Helpers
@@ -2317,10 +2342,11 @@ namespace GetMediaInfo
         /// Changes the mediainfo option that determines whether to parse the cover data or not (only if the parseCoverData flag is true).
         /// </summary>
         /// <param name="flag">True, if the cover data parsing needs to be enabled; otherwise false.</param>
-        private void EnableCoverDataParsing(bool flag)
+        private void SetCoverDataParsing(bool flag)
         {
             if (this._ParseCoverData)
             {
+                //must be set before opening the handle
                 MediaInfoLib.SetOption(this.Handle, "Cover_Data", flag ? "base64" : "");
             }        
         }
@@ -2603,12 +2629,12 @@ namespace GetMediaInfo
 
             this.Handle = IntPtr.Zero;
 
-            this._Video.Clear();
-            this._General.Clear();
-            this._Audio.Clear();
-            this._Text.Clear();
-            this._Image.Clear();
-            this._Menu.Clear();
+            this._Video?.Clear();
+            this._General?.Clear();
+            this._Audio?.Clear();
+            this._Text?.Clear();
+            this._Image?.Clear();
+            this._Menu?.Clear();
 
             this._Video = null;
             this._General = null;

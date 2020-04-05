@@ -31,11 +31,11 @@ namespace GetMediaInfo
         /// Configures the MediaInfoLib.
         /// </summary>
         /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="OptionString">The name of the option</param>
+        /// <param name="Option">The name of the option</param>
         /// <param name="Value">The value of the option</param>
         /// <returns>Empty string, if it fails; otherwise some additional information depending on the configured option</returns>
         [DllImport(MEDIAINFO_LIB_FILENAME, CharSet = CharSet.Unicode, EntryPoint = "MediaInfo_Option")]
-        public static extern IntPtr SetOption(IntPtr Handle, string OptionString, string Value);
+        public static extern IntPtr SetOption(IntPtr Handle, string Option, string Value);
         #endregion
 
         #region File
