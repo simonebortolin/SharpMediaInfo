@@ -353,6 +353,10 @@ namespace GetMediaInfoGUI
             var previousTheme = ConfigHelper.GetConfig().Theme;
             var selectedTheme = ThemeHelper.ParseAppTheme(ThemeSelector.SelectedValue as string);
 
+            //save selected theme
+            ConfigHelper.GetConfig().Theme = selectedTheme;
+
+            //if auto, select the current system theme
             if (selectedTheme == AppTheme.Auto)
             {
                 selectedTheme = WindowsThemeDetector.GetCurrentTheme();
@@ -371,8 +375,6 @@ namespace GetMediaInfoGUI
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        ConfigHelper.GetConfig().Theme = selectedTheme;
-
                         try
                         {
                             ConfigHelper.SaveConfig();
@@ -389,9 +391,6 @@ namespace GetMediaInfoGUI
                 } else {
                     ThemeHelper.SetTheme(selectedTheme);
                 }
-            } else
-            {
-                ThemeHelper.SetTheme(selectedTheme);
             }
         }
         #endregion
