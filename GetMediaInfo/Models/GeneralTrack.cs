@@ -14,7 +14,7 @@ namespace GetMediaInfo
         /// </summary>
         public int? Count { get; set; } //Count
         /// <summary>
-        /// Count of streams of that kind available.
+        /// Count of streams of this kind available (base=1).
         /// </summary>
         public int? StreamCount { get; set; } //StreamCount
         /// <summary>
@@ -22,15 +22,15 @@ namespace GetMediaInfo
         /// </summary>
         public string StreamKind { get; set; } //StreamKind
         /// <summary>
-        /// Number of the stream (base=0).
+        /// Stream number (base=0).
         /// </summary>
         public int? StreamKindID { get; set; } //StreamKindID
         /// <summary>
-        /// When multiple streams, number of the stream (base=1).
+        /// Number of the stream, when multiple (base=1).
         /// </summary>
         public int? StreamKindPos { get; set; } //StreamKindPos
         /// <summary>
-        /// Stream order in the file, whatever is the kind of stream (base=0).
+        /// Order of the first fully decodable packet met in the file for stream type (base=0).
         /// </summary>
         public int? StreamOrder { get; set; } //StreamOrder
         /// <summary>
@@ -74,63 +74,63 @@ namespace GetMediaInfo
         /// </summary>
         public int? MenuCount { get; set; } //MenuCount
         /// <summary>
-        /// List of Video Codecs in this file.
+        /// List of Video Codecs in this file (separated by '/').
         /// </summary>
         public List<string> VideoFormatList { get; set; } //Video_Format_List
         /// <summary>
-        /// List of Video Codecs in this file with popular name (hint).
+        /// List of Video Codecs in this file with popular name (hint, separated by '/').
         /// </summary>
         public List<string> VideoFormatListWithHint { get; set; } //Video_Format_WithHint_List
         /// <summary>
-        /// List of Video languages in this file.
+        /// List of Video languages in this file (separated by '/').
         /// </summary>
         public List<string> VideoLanguageList { get; set; } //Video_Language_List
         /// <summary>
-        /// List of Audio Codecs in this file.
+        /// List of Audio Codecs in this file (separated by '/').
         /// </summary>
         public List<string> AudioFormatList { get; set; } //Audio_Format_List
         /// <summary>
-        /// List of Audio Codecs in this file with popular name (hint).
+        /// List of Audio Codecs in this file with popular name (hint, separated by '/').
         /// </summary>
         public List<string> AudioFormatListWithHint { get; set; } //Audio_Format_WithHint_List
         /// <summary>
-        /// List of Audio languages in this file.
+        /// List of Audio languages in this file (separated by '/').
         /// </summary>
         public List<string> AudioLanguageList { get; set; } //Audio_Language_List
         /// <summary>
-        /// List of Text Codecs in this file.
+        /// List of Text Codecs in this file (separated by '/').
         /// </summary>
         public List<string> TextFormatList  { get; set; } //Text_Format_List
         /// <summary>
-        /// List of Text Codecs in this file with popular name (hint).
+        /// List of Text Codecs in this file with popular name (hint, separated by '/').
         /// </summary>
         public List<string> TextFormatListWithHint { get; set; } //Text_Format_WithHint_List
         /// <summary>
-        /// List of Text languages in this file.
+        /// List of Text languages in this file (separated by '/').
         /// </summary>
         public List<string> TextLanguageList { get; set; } //Text_Language_List
         /// <summary>
-        /// List of Image Codecs in this file.
+        /// List of Image Codecs in this file (separated by '/').
         /// </summary>
         public List<string> ImageFormatList { get; set; } //Image_Format_List
         /// <summary>
-        /// List of Image Codecs in this file with popular name (hint).
+        /// List of Image Codecs in this file with popular name (hint, separated by '/').
         /// </summary>
         public List<string> ImageFormatListWithHint { get; set; } //Image_Format_WithHint_Lis
         /// <summary>
-        /// List of Image languages in this file.
+        /// List of Image languages in this file (separated by '/').
         /// </summary>
         public List<string> ImageLanguageList { get; set; } //Image_Language_List
         /// <summary>
-        /// List of Menu Codecs in this file.
+        /// List of Menu Codecs in this file (separated by '/').
         /// </summary>
         public List<string> MenuFormatList { get; set; } //Menu_Format_List
         /// <summary>
-        /// List of Menu Codecs in this file with popular name (hint).
+        /// List of Menu Codecs in this file with popular name (hint, separated by '/').
         /// </summary>
         public List<string> MenuFormatListWithHint { get; set; } //Menu_Format_WithHint_List
         /// <summary>
-        /// List of Menu languages in this file.
+        /// List of Menu languages in this file (separated by '/').
         /// </summary>
         public List<string> MenuLanguageList { get; set; } //Menu_Language_List
         /// <summary>
@@ -174,7 +174,7 @@ namespace GetMediaInfo
         /// </summary>
         public string FormatExtensions { get; set; } //Format/Extensions
         /// <summary>
-        /// Commercial name used by vendor for theses setings or Format field if there is no difference.
+        /// Commercial name used by vendor for these settings or Format field if there is no difference.
         /// </summary>
         public string FormatCommercial { get; set; } //Format_Commercial
         /// <summary>
@@ -208,17 +208,17 @@ namespace GetMediaInfo
         public int? CodecID { get; set; } //CodecID
 
         /// <summary>
-        /// Info about this codec.
+        /// Info about this Codec.
         /// </summary>
         public string CodecIDInfo { get; set; } //CodecID/Info
 
         /// <summary>
-        /// A hint/popular name for this codec.
+        /// A hint/popular name for this Codec.
         /// </summary>
         public string CodecIDHint { get; set; } //CodecID/Hint
 
         /// <summary>
-        /// A link to more details about this codec ID.
+        /// A link to more details about this Codec ID.
         /// </summary>
         public string CodecIDUrl { get; set; } //CodecID/Url
 
@@ -263,7 +263,7 @@ namespace GetMediaInfo
         public string FileSizeStringAccurate { get; set; } //FileSize/String4
 
         /// <summary>
-        /// Play time of the stream in ms.
+        /// Play time of the stream (in ms).
         /// </summary>
         public int? Duration { get; set; } //Duration
 
@@ -288,7 +288,7 @@ namespace GetMediaInfo
         public string OverallBitRateMode { get; set; } //OverallBitRate_Mode
 
         /// <summary>
-        /// Bit rate of all streams in bps.
+        /// Bit rate of all streams (in bps).
         /// </summary>
         public ulong? OverallBitRate { get; set; } //OverallBitRate
 
@@ -298,32 +298,32 @@ namespace GetMediaInfo
         public string OverallBitRateFormatted { get; set; } //OverallBitRate/String
 
         /// <summary>
-        /// Minimum Bit rate in bps.
+        /// Minimum bit rate (in bps).
         /// </summary>
         public ulong? OverallBitRateMinimum { get; set; } //OverallBitRate_Minimum
 
         /// <summary>
-        /// Minimum Bit rate (with measurement).
+        /// Minimum bit rate (with measurement).
         /// </summary>
         public string OverallBitRateMinimumFormatted { get; set; } //OverallBitRate_Minimum/String
 
         /// <summary>
-        /// Nominal Bit rate in bps.
+        /// Nominal bit rate (in bps).
         /// </summary>
         public ulong? OverallBitRateNominal { get; set; } //OverallBitRate_Nominal
 
         /// <summary>
-        /// Nominal Bit rate (with measurement).
+        /// Nominal bit rate (with measurement).
         /// </summary>
         public string OverallBitRateNominalFormatted { get; set; } //OverallBitRate_Nominal/String
 
         /// <summary>
-        /// Maximum Bit rate in bps.
+        /// Maximum bit rate (in bps).
         /// </summary>
         public ulong? OverallBitRateMaximum { get; set; } //OverallBitRate_Maximum
 
         /// <summary>
-        /// Maximum Bit rate (with measurement).
+        /// Maximum bit rate (with measurement).
         /// </summary>
         public string OverallBitRateMaximumFormatted { get; set; } //OverallBitRate_Maximum/String
 
@@ -348,12 +348,12 @@ namespace GetMediaInfo
         public int? FrameRateDen { get; set; } //FrameRate_Den
 
         /// <summary>
-        /// Frame count (a frame contains a count of samples depends of the format).
+        /// Frame count (if a frame contains a count of samples).
         /// </summary>
         public int? FrameCount { get; set; } //FrameCount
 
         /// <summary>
-        /// Delay fixed in the stream (relative) IN MS.
+        /// Delay fixed in the stream (relative) (in ms).
         /// </summary>
         public int? Delay { get; set; } //Delay
 
@@ -373,7 +373,7 @@ namespace GetMediaInfo
         public string DelayTimecode { get; set; } //Delay/String3
 
         /// <summary>
-        /// Delay settings (in case of timecode for example).
+        /// Delay settings (in case of timecode, for example).
         /// </summary>
         public string DelaySettings { get; set; } //Delay_Settings
 
@@ -383,12 +383,17 @@ namespace GetMediaInfo
         public string DelayDropFrame { get; set; } //Delay_DropFrame
 
         /// <summary>
-        /// Delay source (Container or Stream or empty).
+        /// Delay source (Container, Stream, empty).
         /// </summary>
         public string DelaySource { get; set; } //Delay_Source
 
         /// <summary>
-        /// Stream size in bytes.
+        /// Delay source (Container, Stream, empty).
+        /// </summary>
+        public string DelaySourceFormatted { get; set; } //Delay_Source/String
+
+        /// <summary>
+        /// Stream size (in bytes).
         /// </summary>
         public ulong? StreamSize { get; set; } //StreamSize
 
@@ -433,17 +438,17 @@ namespace GetMediaInfo
         public string TitleUrl { get; set; } //Title/Url
 
         /// <summary>
-        /// Univers movies belong to, e.g. Starwars, Stargate, Buffy, Dragonballs.
+        /// Univers movies belong to, e.g. Star Wars, Stargate, Buffy, Dragonballs.
         /// </summary>
         public string Domain { get; set; } //Domain
 
         /// <summary>
-        /// Name of the series, e.g. Starwars movies, Stargate SG-1, Stargate Atlantis, Buffy, Angel.
+        /// Name of the series, e.g. Star Wars movies, Stargate SG-1, Stargate Atlantis, Buffy, Angel.
         /// </summary>
         public string Collection { get; set; } //Collection
 
         /// <summary>
-        /// Name of the season, e.g. Strawars first Trilogy, Season 1.
+        /// Name of the season, e.g. Star Wars first Trilogy, Season 1.
         /// </summary>
         public string Season { get; set; } //Season
 
@@ -453,22 +458,22 @@ namespace GetMediaInfo
         public int? SeasonPosition { get; set; } //Season_Position
 
         /// <summary>
-        /// Place of the season e.g. 2 of 7.
+        /// Place of the season, e.g. 2 of 7.
         /// </summary>
         public string SeasonPositionTotal { get; set; } //Season_Position_Total
 
         /// <summary>
-        /// Name of the movie. Eg : Starwars, a new hope.
+        /// Name of the movie. Eg : Star Wars, A New Hope.
         /// </summary>
         public string Movie { get; set; } //Movie
 
         /// <summary>
-        /// More infos about the movie.
+        /// More info about the movie.
         /// </summary>
         public string MovieMore { get; set; } //Movie_More
 
         /// <summary>
-        /// Country, where the movie was procuced.
+        /// Country, where the movie was produced.
         /// </summary>
         public string MovieCountry { get; set; } //Movie/Country
 
@@ -478,12 +483,12 @@ namespace GetMediaInfo
         public string MovieUrl { get; set; } //Movie/Url
 
         /// <summary>
-        /// Name of an audio-album. Eg : The joshua tree.
+        /// Name of an audio-album. Eg : The Joshua Tree.
         /// </summary>
         public string Album { get; set; } //Album
 
         /// <summary>
-        /// More infos about the album.
+        /// More info about the album.
         /// </summary>
         public string AlbumInfo { get; set; } //Album_More
 
@@ -518,12 +523,12 @@ namespace GetMediaInfo
         public string PartPositionTotal { get; set; } //Part/Position_Total
 
         /// <summary>
-        /// Name of the track. e.g. track1, track 2.
+        /// Name of the track. e.g. track 1, track 2.
         /// </summary>
         public string Track { get; set; } //Track
 
         /// <summary>
-        /// More infos about the track.
+        /// More info about the track.
         /// </summary>
         public string TrackInfo { get; set; } //Track_More
 
@@ -563,7 +568,7 @@ namespace GetMediaInfo
         public string SubTrack { get; set; } //SubTrack
 
         /// <summary>
-        /// Original name of album, serie...
+        /// Original name of the album.
         /// </summary>
         public string OriginalAlbum { get; set; } //Original/Album
 
@@ -573,12 +578,12 @@ namespace GetMediaInfo
         public string OriginalMovie { get; set; } //Original/Movie
 
         /// <summary>
-        /// Original name of the part in the original support.
+        /// Original name of the part.
         /// </summary>
         public string OriginalPart { get; set; } //Original/Part
 
         /// <summary>
-        /// Original name of the track in the original support.
+        /// Original name of the track.
         /// </summary>
         public string OriginalTrack { get; set; } //Original/Track
 
@@ -593,7 +598,7 @@ namespace GetMediaInfo
         public string CompilationString { get; set; } //Compilation/String
 
         /// <summary>
-        /// Main performer/artist of this file.
+        /// Main performer(s)/artist(s).
         /// </summary>
         public string Performer { get; set; } //Performer
 
@@ -618,17 +623,17 @@ namespace GetMediaInfo
         public string Composer { get; set; } //Composer
 
         /// <summary>
-        /// Nationality of the main composer of the item, mostly for classical music.
+        /// Nationality of the primary composer of the piece (mostly for classical music).
         /// </summary>
         public string ComposerNationality { get; set; } //Composer/Nationality
 
         /// <summary>
-        /// The person who arranged the piece. e.g. Ravel.
+        /// The person who arranged the piece (e.g. Ravel).
         /// </summary>
         public string Arranger { get; set; } //Arranger
 
         /// <summary>
-        /// The person who wrote the lyrics for a musical item.
+        /// The person who wrote the lyrics for the piece.
         /// </summary>
         public string Lyricist { get; set; } //Lyricist
 
@@ -638,7 +643,7 @@ namespace GetMediaInfo
         public string OriginalLyricist { get; set; } //Original/Lyricist
 
         /// <summary>
-        /// The artist(s) who performed the work. In classical music this would be the conductor, orchestra, soloists.
+        /// The artist(s) who performed the work. In classical music this would be the conductor, orchestra, soloists, etc.
         /// </summary>
         public string Conductor { get; set; } //Conductor
 
@@ -658,32 +663,32 @@ namespace GetMediaInfo
         public string AssistantDirector { get; set; } //AssistantDirector
 
         /// <summary>
-        /// The name of the director of photography, also known as cinematographer.
+        /// Name of the director of photography, also known as cinematographer.
         /// </summary>
         public string DirectorOfPhotography { get; set; } //DirectorOfPhotography
 
         /// <summary>
-        /// The name of the sound engineer or sound recordist.
+        /// Name of the sound engineer or sound recordist.
         /// </summary>
         public string SoundEngineer { get; set; } //SoundEngineer
 
         /// <summary>
-        /// The person who oversees the artists and craftspeople who build the sets.
+        /// Name of the person who oversees the artists and craftspeople who build the sets.
         /// </summary>
         public string ArtDirector { get; set; } //ArtDirector
 
         /// <summary>
-        /// The person responsible for designing the Overall visual appearance of a movie.
+        /// Name of the person responsible for designing the Overall visual appearance of a movie.
         /// </summary>
         public string ProductionDesigner { get; set; } //ProductionDesigner
 
         /// <summary>
-        /// The name of the choreographer.
+        /// Name of the choreographer.
         /// </summary>
         public string Choreographer { get; set; } //Choreographer
 
         /// <summary>
-        /// The name of the costume designer.
+        /// Name of the costume designer.
         /// </summary>
         public string CostumeDesigner { get; set; } //CostumeDesigner
 
@@ -698,12 +703,12 @@ namespace GetMediaInfo
         public string ActorCharacter { get; set; } //Actor_Character
 
         /// <summary>
-        /// The author of the story or script.
+        /// Author of the story or script.
         /// </summary>
         public string WrittenBy { get; set; } //WrittenBy
 
         /// <summary>
-        /// The author of the screenplay or scenario (used for movies and TV shows).
+        /// Author of the screenplay or scenario (used for movies and TV shows).
         /// </summary>
         public string ScreenplayBy { get; set; } //ScreenplayBy
 
@@ -713,7 +718,7 @@ namespace GetMediaInfo
         public string EditedBy { get; set; } //EditedBy
 
         /// <summary>
-        /// name of the person or organization that commissioned the subject of the file.
+        /// Name of the person or organization that commissioned the subject of the file.
         /// </summary>
         public string CommissionedBy { get; set; } //CommissionedBy
 
@@ -723,22 +728,22 @@ namespace GetMediaInfo
         public string Producer { get; set; } //Producer
 
         /// <summary>
-        /// The name of a co-producer.
+        /// Name of a co-producer.
         /// </summary>
         public string CoProducer { get; set; } //CoProducer
 
         /// <summary>
-        /// The name of an executive producer.
+        /// Name of an executive producer.
         /// </summary>
         public string ExecutiveProducer { get; set; } //ExecutiveProducer
 
         /// <summary>
-        /// Main music-artist for a movie.
+        /// Main musical artist for a movie.
         /// </summary>
         public string MusicBy { get; set; } //MusicBy
 
         /// <summary>
-        /// Company the item is mainly distributed by.
+        /// Company responsible for distribution of the content.
         /// </summary>
         public string DistributedBy { get; set; } //DistributedBy
 
@@ -753,12 +758,12 @@ namespace GetMediaInfo
         public string MasteredBy { get; set; } //MasteredBy
 
         /// <summary>
-        /// Name of the person or organisation that encoded/ripped the audio file.
+        /// Name of the person/organisation that encoded/ripped the audio file.
         /// </summary>
         public string EncodedBy { get; set; } //EncodedBy
 
         /// <summary>
-        /// Name of the artist(s), that interpreted, remixed, or otherwise modified the item.
+        /// Name of the artist(s), that interpreted, remixed, or otherwise modified the content.
         /// </summary>
         public string RemixedBy { get; set; } //RemixedBy
 
@@ -778,7 +783,7 @@ namespace GetMediaInfo
         public string Publisher { get; set; } //Publisher
         
         /// <summary>
-        /// Publishers official webpage.
+        /// Publisher's official webpage.
         /// </summary>
         public string PublisherURL { get; set; } //Publisher/URL
 
@@ -788,7 +793,7 @@ namespace GetMediaInfo
         public string Label { get; set; } //Label
 
         /// <summary>
-        /// The main genre of the audio or video. e.g. classical, ambient-house, synthpop, sci-fi, drama, etc.
+        /// Main genre of the audio or video. e.g. classical, ambient-house, synthpop, sci-fi, drama, etc.
         /// </summary>
         public string Genre { get; set; } //Genre
 
@@ -798,32 +803,32 @@ namespace GetMediaInfo
         public string Mood { get; set; } //Mood
 
         /// <summary>
-        /// The type of the item. e.g. Documentary, Feature Film, Cartoon, Music Video, Music, Sound FX, etc.
+        /// The type or genre of the content. e.g. Documentary, Feature Film, Cartoon, Music Video, Music, Sound FX, etc.
         /// </summary>
         public string ContentType { get; set; } //ContentType
 
         /// <summary>
-        /// Describes the topic of the file, such as Aerial view of Seattle..
+        /// Describes the topic of the file, such as 'Aerial view of Seattle'.
         /// </summary>
         public string Subject { get; set; } //Subject
 
         /// <summary>
-        /// A short description of the contents, such as Two birds flying.
+        /// A short description of the contents, such as 'Two birds flying'.
         /// </summary>
         public string Description { get; set; } //Description
 
         /// <summary>
-        /// Keywords to the item separated by a comma, used for searching.
+        /// Keywords for the content separated by a comma, used for searching.
         /// </summary>
         public string Keywords { get; set; } //Keywords
 
         /// <summary>
-        /// A plot outline or a summary of the story.
+        /// Plot outline or a summary of the story.
         /// </summary>
         public string Summary { get; set; } //Summary
 
         /// <summary>
-        /// A description of the story line of the item.
+        /// Description of the story line of the item.
         /// </summary>
         public string Synopsis { get; set; } //Synopsis
 
@@ -833,7 +838,7 @@ namespace GetMediaInfo
         public string Period { get; set; } //Period
 
         /// <summary>
-        /// Depending on the country it's the format of the rating of a movie (P, R, X in the USA, an age in other countries or a URI defining a logo).
+        /// Legal rating of a movie. Format depends on country of origin (e.g. PG or R in the USA, an age in other countries or a URI defining a logo).
         /// </summary>
         public string LawRating { get; set; } //LawRating
 
@@ -843,62 +848,62 @@ namespace GetMediaInfo
         public string LawRatingReason { get; set; } //LawRating_Reason
 
         /// <summary>
-        /// The ICRA rating. (Previously RSACi).
+        /// The ICRA rating (previously RSACi).
         /// </summary>
         public string ICRA { get; set; } //ICRA
 
         /// <summary>
-        /// The date/year that the item was released.
+        /// Date/year that the content was released.
         /// </summary>
         public string ReleasedDate { get; set; } //Released_Date
 
         /// <summary>
-        /// The date/year that the item was originaly released.
+        /// Date/year that the content was originally released.
         /// </summary>
         public string OriginalReleasedDate { get; set; } //Original/Released_Date
 
         /// <summary>
-        /// The time/date/year that the recording began.
+        /// Time/date/year that the recording began.
         /// </summary>
         public string RecordedDate { get; set; } //Recorded_Date
 
         /// <summary>
-        /// The time/date/year that the encoding of this item was completed began.
+        /// Time/date/year that the encoding of this content was completed.
         /// </summary>
         public string EncodedDate { get; set; } //Encoded_Date
 
         /// <summary>
-        /// The time/date/year that the tags were done for this item.
+        /// Time/date/year that the tags were added to this content.
         /// </summary>
         public string TaggedDate { get; set; } //Tagged_Date
 
         /// <summary>
-        /// The time/date/year that the composition of the music/script began.
+        /// Time/date/year that the composition of the music/script began.
         /// </summary>
         public string WrittenDate { get; set; } //Written_Date
 
         /// <summary>
-        /// The time/date/year that the item was tranfered to a digitalmedium.
+        /// Time/date/year that the content was transferred to a digital medium.
         /// </summary>
         public string MasteredDate { get; set; } //Mastered_Date
 
         /// <summary>
-        /// The time that the file was created on the file system.
+        /// Time that the file was created on the file system.
         /// </summary>
         public string FileCreatedDate { get; set; } //File_Created_Date
 
         /// <summary>
-        /// The time that the file was created on the file system (Warning: this field depends of local configuration, do not use it in an international database).
+        /// Time that the file was created on the file system (Warning: this field depends of local configuration, do not use it in an international database).
         /// </summary>
         public string FileCreatedDateLocal { get; set; } //File_Created_Date_Local
 
         /// <summary>
-        /// The time that the file was modified on the file system.
+        /// Time that the file was last modified on the file system.
         /// </summary>
         public string FileModifiedDate { get; set; } //File_Modified_Date
 
         /// <summary>
-        /// The time that the file was modified on the file system (Warning: this field depends of local configuration, do not use it in an international database).
+        /// Time that the file was last modified on the file system (Warning: this field depends of local configuration, do not use it in an international database).
         /// </summary>
         public string FileModifiedDateLocal { get; set; } //File_Modified_Date_Local
 
@@ -908,12 +913,12 @@ namespace GetMediaInfo
         public string RecordedLocation { get; set; } //Recorded_Location
 
         /// <summary>
-        /// Location that the item was originaly designed/written. Information should be stored in the following format: country code, state/province, city where the coutry code is the same 2 octets as in Internet domains, or possibly ISO-3166. e.g. US, Texas, Austin or US, , Austin.
+        /// Location that the item was originally designed/written. Information should be stored in the following format: country code, state/province, city where the country code is the same 2 octets as in Internet domains, or possibly ISO-3166. e.g. US, Texas, Austin or US, , Austin.
         /// </summary>
         public string WrittenLocation { get; set; } //Written_Location
 
         /// <summary>
-        /// Location, where an item is archived, e.eg. Louvre,Paris,France.
+        /// Location where an item is archived (e.g. Louvre, Paris, France).
         /// </summary>
         public string ArchivalLocation { get; set; } //Archival_Location
 
@@ -928,22 +933,22 @@ namespace GetMediaInfo
         public string EncodedApplicationString { get; set; } //Encoded_Application/String
 
         /// <summary>
-        /// Name of the company.
+        /// Name of the company of the encoding application.
         /// </summary>
         public string EncodedApplicationCompany { get; set; } //Encoded_Application_Company
 
         /// <summary>
-        /// Name of the product.
+        /// Name of the encoding product.
         /// </summary>
         public string EncodedApplicationName { get; set; } //Encoded_Application_Name
 
         /// <summary>
-        /// Version of the product.
+        /// Version of the encoding product.
         /// </summary>
         public string EncodedApplicationVersion { get; set; } //Encoded_Application_Version
 
         /// <summary>
-        /// Name of the software package used to create the file, such as Microsoft WaveEdit.
+        /// URL associated with the encoding software.
         /// </summary>
         public string EncodedApplicationUrl { get; set; } //Encoded_Application_Url
 
@@ -963,27 +968,27 @@ namespace GetMediaInfo
         public string EncodedLibraryCompanyName { get; set; } //Encoded_Library_CompanyName
 
         /// <summary>
-        /// Name of the the encoding-software.
+        /// Name of the the encoding library.
         /// </summary>
         public string EncodedLibraryName { get; set; } //Encoded_Library_Name
 
         /// <summary>
-        /// Version of encoding-software.
+        /// Version of encoding library.
         /// </summary>
         public string EncodedLibraryVersion { get; set; } //Encoded_Library_Version
 
         /// <summary>
-        /// Release date of software.
+        /// Release date of encoding library.
         /// </summary>
         public string EncodedLibraryDate { get; set; } //Encoded_Library_Date
 
         /// <summary>
-        /// Parameters used by the software.
+        /// Parameters used by the encoding library.
         /// </summary>
         public string EncodedLibrarySettings { get; set; } //Encoded_Library_Settings
 
         /// <summary>
-        /// Operating System of encoding-software.
+        /// Operating System used by encoding application.
         /// </summary>
         public string EncodedOperatingSystem { get; set; } //Encoded_OperatingSystem
 
@@ -993,32 +998,32 @@ namespace GetMediaInfo
         public string Cropped { get; set; } //Cropped
 
         /// <summary>
-        /// Specifies the size of the original subject of the file. eg 8.5 in h, 11 in w.
+        /// Specifies the size of the original subject of the file (e.g. 8.5 in h, 11 in w).
         /// </summary>
         public string Dimensions { get; set; } //Dimensions
 
         /// <summary>
-        /// Stores dots per inch setting of the digitizer used to produce the file.
+        /// Stores dots per inch setting of the digitization mechanism used to produce the file.
         /// </summary>
         public string DotsPerInch { get; set; } //DotsPerInch
 
         /// <summary>
-        /// Describes the changes in lightness settings on the digitizer required to produce the file.
+        /// Describes the changes in lightness settings on the digitization mechanism made during the production of the file.
         /// </summary>
         public string Lightness { get; set; } //Lightness
 
         /// <summary>
-        /// Original medium of the material, e.g. vinyl, Audio-CD, Super8 or BetaMax.
+        /// Original medium of the material (e.g. vinyl, Audio-CD, Super8 or BetaMax).
         /// </summary>
         public string OriginalSourceMedium { get; set; } //OriginalSourceMedium
 
         /// <summary>
-        /// Original form of the material, e.g. slide, paper, map.
+        /// Original form of the material (e.g. slide, paper, map).
         /// </summary>
         public string OriginalSourceForm { get; set; } //OriginalSourceForm
 
         /// <summary>
-        /// Number of colors requested when digitizing, e.g. 256 for images or 32 bit RGB for video.
+        /// Number of colors requested when digitizing (e.g. 256 for images or 32 bit RGB for video).
         /// </summary>
         public string OriginalSourceFormNumColour { get; set; } //OriginalSourceForm/NumColour
 
@@ -1028,17 +1033,17 @@ namespace GetMediaInfo
         public string OriginalSourceFormName { get; set; } //OriginalSourceForm/Name
 
         /// <summary>
-        /// Describes whether an image has been cropped and, if so, how it was cropped. e.g. 16:9 to 4:3, top and bottom.
+        /// Describes whether the original image has been cropped and, if so, how it was cropped (e.g. 16:9 to 4:3, top and bottom).
         /// </summary>
         public string OriginalSourceFormCropped { get; set; } //OriginalSourceForm/Cropped
 
         /// <summary>
-        /// Identifies the changes in sharpness for the digitizer requiered to produce the file.
+        /// Identifies changes in sharpness the digitization mechanism made during the production of the file.
         /// </summary>
         public string OriginalSourceFormSharpness { get; set; } //OriginalSourceForm/Sharpness
 
         /// <summary>
-        /// Software used to tag this file.
+        /// Software used to tag the file.
         /// </summary>
         public string TaggedApplication { get; set; } //Tagged_Application
 
@@ -1093,12 +1098,12 @@ namespace GetMediaInfo
         public string CopyrightUrl { get; set; } //Copyright/Url
 
         /// <summary>
-        /// The copyright information as per the productioncopyright holder.
+        /// Copyright information as per the productioncopyright holder.
         /// </summary>
         public string ProducerCopyright { get; set; } //Producer_Copyright
 
         /// <summary>
-        /// License information, e.g., All Rights Reserved,Any Use Permitted.
+        /// License information (e.g. All Rights Reserved, Any Use Permitted).
         /// </summary>
         public string TermsOfUse { get; set; } //TermsOfUse
 
@@ -1108,17 +1113,17 @@ namespace GetMediaInfo
         public bool? Cover { get; set; } //Cover
 
         /// <summary>
-        /// short descriptio, e.g. Earth in space.
+        /// Short description (e.g. Earth in space).
         /// </summary>
         public List<string> CoverDescription { get; set; } = new List<string> { }; //Cover_Description
 
         /// <summary>
-        /// Cover_Mime
+        /// Mime type of cover file.
         /// </summary>
         public List<string> CoverType { get; set; } = new List<string> { }; //Cover_Mime
 
         /// <summary>
-        /// Cover, in binary format encoded BASE64.
+        /// Cover, in binary format, encoded as BASE64.
         /// </summary>
         public List<byte[]> CoverData { get; set; } = new List<byte[]> { }; //Cover_Data
 
@@ -1143,12 +1148,12 @@ namespace GetMediaInfo
         public string AddedDate { get; set; } //Added_Date
 
         /// <summary>
-        /// The date, the owner first played an item.
+        /// Date the owner first played an item.
         /// </summary>
         public string PlayedFirstDate { get; set; } //Played_First_Date
 
         /// <summary>
-        /// The date, the owner last played an item.
+        /// Date the owner last played an item.
         /// </summary>
         public string PlayedLastDate { get; set; } //Played_Last_Date
 

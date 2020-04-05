@@ -422,9 +422,19 @@ namespace GetMediaInfo
         public string ChannelPositions { get; set; } //ChannelPositions
 
         /// <summary>
+        /// Position of channels.
+        /// </summary>
+        public string ChannelPositionsOriginal { get; set; } //ChannelPositions_Original
+
+        /// <summary>
         /// Position of channels (x/y.z format).
         /// </summary>
         public string ChannelPositionsFormatted { get; set; } //ChannelPositions/String2
+
+        /// <summary>
+        /// Position of channels (x/y.z format).
+        /// </summary>
+        public string ChannelPositionsOriginalFormatted { get; set; } //ChannelPositions_Original/String2
 
         /// <summary>
         /// Position of channels after matrix decoding.
@@ -440,6 +450,11 @@ namespace GetMediaInfo
         /// Layout of channels (in the stream).
         /// </summary>
         public string ChannelLayout { get; set; } //ChannelLayout
+
+        /// <summary>
+        /// Layout of channels (in the stream).
+        /// </summary>
+        public string ChannelLayoutOriginal { get; set; } //ChannelLayout_Original
 
         /// <summary>
         /// ID of layout of channels (e.g. MXF descriptor channel assignment). Warning, sometimes this is not enough for uniquely identifying a layout (e.g. MXF descriptor channel assignment is SMPTE 377-4). For AC-3, the form is x,y with x=acmod and y=lfeon.

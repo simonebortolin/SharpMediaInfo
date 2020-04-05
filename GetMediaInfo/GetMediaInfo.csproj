@@ -56,7 +56,7 @@
     <Compile Include="Models\ImageTrack.cs" />
     <Compile Include="Models\MenuTrack.cs" />
     <Compile Include="Models\GeneralTrack.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="Mediainfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\TextTrack.cs" />
     <Compile Include="Models\VideoTrack.cs" />
