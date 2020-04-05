@@ -127,30 +127,40 @@ namespace GetMediaInfo
         public string MultiViewLayout { get; set; } //MultiView_Layout
 
         /// <summary>
-        /// Dolby Vision info.
+        /// The HDR format.
         /// </summary>
-        public string DolbyVision { get; set; } //DolbyVision/String
+        public string HDRFormat { get; set; } //HDR_Format
 
         /// <summary>
-        /// Dolby Vision version.
+        /// The HDR format used + version + profile + level + layers + settings + compatibility.
         /// </summary>
-        public string DolbyVisionVersion { get; set; } //DolbyVision_Version
+        public string HDRFormatComplete { get; set; } //HDR_Format/String
 
         /// <summary>
-        /// Dolby Vision profile.
+        /// The commercial name used by vendor for the HDR settings or HDR Format field if there is no difference.
         /// </summary>
-        public string DolbyVisionProfile { get; set; } //DolbyVision_Profile 
+        public string HDRFormatCommercial { get; set; } //HDR_Format_Commercial
 
         /// <summary>
-        /// Dolby Vision level.
+        /// The HDR format version.
         /// </summary>
-        public string DolbyVisionLevel { get; set; } //DolbyVision_Level         
+        public string HDRFormatVersion { get; set; } //HDR_Format_Version
 
         /// <summary>
-        /// Dolby Vision layers.
+        /// The HDR format level.
         /// </summary>
-        public string DolbyVisionLayers { get; set; } //DolbyVision_Layers
+        public string HDRFormatLevel { get; set; } //HDR_Format_Level
 
+        /// <summary>
+        /// The HDR format settings.
+        /// </summary>
+        public string HDRFormatSettings { get; set; } //HDR_Format_Settings
+
+        /// <summary>
+        /// The HDR format compatibility with some commercial namings.
+        /// </summary>
+        public string HDRFormatCompatibility { get; set; } //HDR_Format_Compatibility
+        
         /// <summary>
         /// Settings needed for decoder used, summary.
         /// </summary>

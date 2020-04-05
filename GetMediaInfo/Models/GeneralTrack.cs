@@ -678,9 +678,9 @@ namespace GetMediaInfo
         public string ProductionDesigner { get; set; } //ProductionDesigner
 
         /// <summary>
-        /// The name of the choregrapher.
+        /// The name of the choreographer.
         /// </summary>
-        public string Choregrapher { get; set; } //Choregrapher
+        public string Choreographer { get; set; } //Choreographer
 
         /// <summary>
         /// The name of the costume designer.

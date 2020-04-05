@@ -741,7 +741,7 @@ namespace GetMediaInfo
                         SoundEngineer = GetSpecificInfo(StreamKind.General, index, "SoundEngineer"),
                         ArtDirector = GetSpecificInfo(StreamKind.General, index, "ArtDirector"),
                         ProductionDesigner = GetSpecificInfo(StreamKind.General, index, "ProductionDesigner"),
-                        Choregrapher = GetSpecificInfo(StreamKind.General, index, "Choregrapher"),
+                        Choreographer = GetSpecificInfo(StreamKind.General, index, "Choreographer"),
                         CostumeDesigner = GetSpecificInfo(StreamKind.General, index, "CostumeDesigner"),
                         Actor = GetSpecificInfo(StreamKind.General, index, "Actor"),
                         ActorCharacter = GetSpecificInfo(StreamKind.General, index, "Actor_Character"),
@@ -945,15 +945,18 @@ namespace GetMediaInfo
                         MultiViewCount = ParseInt(GetSpecificInfo(StreamKind.Video, index, "MultiView_Count")),
                         MultiViewLayout = GetSpecificInfo(StreamKind.Video, index, "MultiView_Layout"),
 
-                        DolbyVision = GetSpecificInfo(StreamKind.Video, index, "DolbyVision/String"),
-                        DolbyVisionVersion = GetSpecificInfo(StreamKind.Video, index, "DolbyVision_Version"),
-                        DolbyVisionProfile = GetSpecificInfo(StreamKind.Video, index, "DolbyVision_Profile"),
-                        DolbyVisionLevel = GetSpecificInfo(StreamKind.Video, index, "DolbyVision_Level"),
-                        DolbyVisionLayers = GetSpecificInfo(StreamKind.Video, index, "DolbyVision_Layers"),
+                        HDRFormat = GetSpecificInfo(StreamKind.Video, index, "HDR_Format"), //HDR_Format
+                        HDRFormatComplete = GetSpecificInfo(StreamKind.Video, index, "HDR_Format/String"), //HDR_Format/String
+                        HDRFormatCommercial = GetSpecificInfo(StreamKind.Video, index, "HDR_Format_Commercial"), //HDR_Format_Commercial
+                        HDRFormatVersion = GetSpecificInfo(StreamKind.Video, index, "HDR_Format_Version"), //HDR_Format_Version
+                        HDRFormatLevel = GetSpecificInfo(StreamKind.Video, index, "HDR_Format_Level"), //HDR_Format_Level
+                        HDRFormatSettings = GetSpecificInfo(StreamKind.Video, index, "HDR_Format_Settings"), //HDR_Format_Settings
+                        HDRFormatCompatibility = GetSpecificInfo(StreamKind.Video, index, "HDR_Format_Compatibility"), //HDR_Format_Compatibility
 
                         FormatSettings = GetSpecificInfo(StreamKind.Video, index, "Format_Settings"),
                         FormatSettingsBVOP = GetSpecificInfo(StreamKind.Video, index, "Format_Settings_BVOP"),
-                        //string FormatSettingsBVOPStri = getSpecificInfo(MediaInfoStreamKind.Video, index, "Format_Settings_BVOP/String");
+                        //string FormatSettingsBVOPString = getSpecificInfo(MediaInfoStreamKind.Video, index, "Format_Settings_BVOP/String");
+                        //string FormatSettingsBVOPString = getSpecificInfo(MediaInfoStreamKind.Video, index, "Format_Settings_BVOP/String");
                         FormatSettingsQPel = GetSpecificInfo(StreamKind.Video, index, "Format_Settings_QPel"),
                         //string FormatSettingsQPelString = getSpecificInfo(MediaInfoStreamKind.Video, index, "Format_Settings_QPel/String");
                         FormatSettingsGMC = GetSpecificInfo(StreamKind.Video, index, "Format_Settings_GMC"),
