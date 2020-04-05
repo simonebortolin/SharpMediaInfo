@@ -1,11 +1,14 @@
 ﻿using GetMediaInfoGUI.Extensions;
+using GetMediaInfoGUI.Utils;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Xml;
 
 namespace GetMediaInfoGUI
 {
@@ -361,12 +364,32 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void StartUpdater()
         {
-            UpdaterWindow updater = new UpdaterWindow();
-            updater.ShowDialog();
-            UpdaterProgress.Text = updater.GetMessageStatus();
-            VerifyMediaInfoVersion();
-        }
+            try
+            {
+                WebRequest request = WebRequest.Create(Constants.MediainfoRssUrl);
+                request.Timeout = 5000;
 
+                using (var response = request.GetResponse())
+                using (var reader = XmlReader.Create(response.GetResponseStream()))
+                {
+                    reader.ReadToFollowing("title");
+                    reader.ReadToFollowing("title");
+                    string latest = reader.ReadElementContentAsString();
+                    latest = latest.Replace("MediaInfo ", "");
+
+                    if (!StatusMediaInfo.Text.StartsWith(latest))
+                    {
+                        UpdaterProgress.Text = "A new Mediainfo library version is available (" + latest + ").";
+                    } else {
+                        UpdaterProgress.Text = "The Mediainfo library is already at its latest version.";
+                    }  
+                }
+            } catch
+            {
+                MessageBox.Show("An error occurred while trying to retrieve the latest version of Mediainfo.", "Error");
+            }
+                  
+        }
         #endregion
     }
 }

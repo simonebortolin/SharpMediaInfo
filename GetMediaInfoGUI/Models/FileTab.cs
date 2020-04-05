@@ -964,21 +964,27 @@ namespace GetMediaInfoGUI
                     //display additional infos if file is hdr
                     if (IsHDR(Video))
                     {
-                        if (!string.IsNullOrWhiteSpace(Video.DolbyVision))
+                        if (!string.IsNullOrWhiteSpace(Video.HDRFormat))
                         {
-                            stringBuilder.AppendLine(" > DolbyVision metadata:");
+                            stringBuilder.AppendLine(" > HDR format info:");
 
-                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionLayers))
-                                stringBuilder.AppendLine("   Layers: " + Video.DolbyVisionLayers);
+                            stringBuilder.Append("   Format: " + Video.HDRFormat);
+                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatCommercial))
+                            {
+                                stringBuilder.AppendLine(" (" + Video.HDRFormatCommercial + ")");
+                            } else
+                            {
+                                stringBuilder.AppendLine();
+                            }                               
 
-                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionLevel))
-                                stringBuilder.AppendLine("   Level: " + Video.DolbyVisionLevel);
+                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatLevel))
+                                stringBuilder.AppendLine("   Level: " + Video.HDRFormatLevel);
 
-                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionProfile))
-                                stringBuilder.AppendLine("   Profile: " + Video.DolbyVisionProfile);
+                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatLevel))
+                                stringBuilder.AppendLine("   Settings: " + Video.HDRFormatLevel);
 
-                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionVersion))
-                                stringBuilder.AppendLine("   Version: " + Video.DolbyVisionVersion);
+                            if (!string.IsNullOrWhiteSpace(Video.HDRFormatVersion))
+                                stringBuilder.AppendLine("   Version: " + Video.HDRFormatVersion);
                         }
 
                         var colourRange = Video.ColourRange;
@@ -1952,7 +1958,7 @@ namespace GetMediaInfoGUI
                     (!string.IsNullOrEmpty(infos.Format) && infos.Format.Contains("HEVC")))
                 {
                     if (!string.IsNullOrEmpty(infos.ColourPrimaries) && infos.ColourPrimaries.Contains("BT.2020") ||
-                        !string.IsNullOrEmpty(infos.DolbyVision))
+                        !string.IsNullOrEmpty(infos.HDRFormat))
                     {
                         return true;
                     }

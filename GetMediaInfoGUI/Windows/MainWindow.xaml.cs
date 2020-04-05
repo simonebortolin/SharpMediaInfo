@@ -38,6 +38,10 @@ namespace GetMediaInfoGUI
         /// The flag that defines whether the user was dragging a tab or not.
         /// </summary>
         private bool _wasDragging = false;
+        /// <summary>
+        /// Determines whether the mediainfo library has been already loaded (this will prevent the updater to delete the dll).
+        /// </summary>
+        private bool _libraryAlreadyLoaded = false;
         #endregion
 
         #region Constructor 
@@ -61,11 +65,19 @@ namespace GetMediaInfoGUI
                     }
 
                     InitializeComponent();
-                    ClearAll();      
+                    ClearAll();
+
+                    if (args.Contains(Constants.ForceUpdateMode))
+                    {
+                        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        StartUpdater(true);
+                    } else {
+                        StatusLab.Content = "Ready.";
+                    }
                 }
             } catch (Exception ex)
             {
-                MessageBox.Show("GetMediaInfo constructor", ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace );
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace, "GetMediaInfo constructor");
             }
         }
         #endregion
@@ -89,15 +101,12 @@ namespace GetMediaInfoGUI
                 VerifyGetMediaInfo();
 
                 var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
-                CheckDropMode(args);
-                ProcessArgs(args);
-
-                StatusLab.Content = "Ready.";
-                StatusLab.InvalidateVisual();              
+                //CheckDropMode(args);
+                ProcessArgs(args);              
             }
             catch (Exception ex)
             {
-                MessageBox.Show("GetMediaInfo loading", ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace);
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace, "GetMediaInfo loading");
             }
         }
 
@@ -735,9 +744,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void ProcessArgs(params string[] args)
         {
-            string[] arguments = args;
-
-            var paths = arguments.Where(i => File.Exists(i));
+            var paths = args.Where(i => File.Exists(i));
             AddTabItems(paths.ToArray());
         }
 
@@ -774,13 +781,14 @@ namespace GetMediaInfoGUI
                 }
             }
 
-            Task.Run(() => {
-                InitializeTabs();
-            }).ConfigureAwait(false);
-      
             if (inputpaths.Length > 0)
             {
+                Task.Run(() => {
+                    InitializeTabs();
+                }).ConfigureAwait(false);
+
                 FileTabControl.SelectedIndex = currCount;
+                _libraryAlreadyLoaded = true;
             }
         }
         #endregion
@@ -1135,24 +1143,44 @@ namespace GetMediaInfoGUI
         /// <summary>
         /// Starts the Updater.
         /// </summary>
+        /// <param name="centerScreen">Force the updater to position at the center of the screen.</param>
         /// <returns>Status of update.</returns>
-        private bool StartUpdater()
+        private bool StartUpdater(bool centerScreen = false)
         {
-            if (FileTabControl.Items.Count > 0)
+            if (_libraryAlreadyLoaded)
             {
-                MessageBox.Show("Detected open file tabs, in order to update the library it's necessary to close and reopen the program.", "WARNING", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
+                if (MessageBox.Show("In order to update the library the program needs to be restarted, do you want to restart now?", 
+                    "Update confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                {
+                    return false;
+                }
 
-            ClearAll();
-            UpdaterWindow updater = new UpdaterWindow()
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Process.GetCurrentProcess().MainModule.FileName,
+                    Arguments = Constants.ForceUpdateMode
+                });
+
+                Application.Current.Shutdown();
+                return true;
+            } else
             {
-                Owner = Window.GetWindow(this)
-            };
-            updater.ShowDialog();
-            VerifyMediaInfo(true);
-            StatusLab.Content = updater.GetMessageStatus();
-            return (updater.GetStatus() == UpdaterWindow.Status.Success);
+                var updater = new UpdaterWindow();
+                if (centerScreen)
+                {
+                    updater.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                } else
+                {
+                    updater.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    updater.Owner = Window.GetWindow(this);
+                }
+                updater.ShowDialog();
+
+                StatusLab.Content = updater.GetMessageStatus();
+                VerifyMediaInfo(true);
+                
+                return updater.GetStatus() == UpdaterWindow.Status.Success;
+            }
         }
         #endregion
 
@@ -1235,7 +1263,7 @@ namespace GetMediaInfoGUI
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.StackTrace);
+                    MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace, "Window message handling");
                 }
             };
         }
