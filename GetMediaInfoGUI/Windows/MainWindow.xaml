@@ -44,20 +44,22 @@
         <DockPanel>
             <Menu>
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open file/s" Click="MenuItemOpenFiles_Click" InputGestureText="Ctrl+O"/>
-                    <MenuItem Header="_Open folder" Click="MenuItemOpenFolder_Click" InputGestureText="Ctrl+Shift+O"/>
-                    <MenuItem Header="_Export standard report" Click="MenuItemSaveStandardReport_Click" InputGestureText="Ctrl+S"/>
-                    <MenuItem Header="_Export complete report" Click="MenuItemSaveCompleteReport_Click" InputGestureText="Ctrl+Shift+S"/>
-                    <MenuItem Header="_Close all files" Click="MenuItemCloseFiles_Click" InputGestureText="Ctrl+X"/>
-                    <Separator />
-                    <MenuItem Header="_Recent files" x:FieldModifier="private" x:Name="HistoryMenuItem" InputGestureText="Ctrl+H"/>
+                    <MenuItem Header="_Open file..." Click="MenuItemOpenFiles_Click" InputGestureText="Ctrl+O"/>
+                    <MenuItem Header="_Open folder..." Click="MenuItemOpenFolder_Click" InputGestureText="Ctrl+Shift+O"/>
+                    <MenuItem Header="_Open recent" x:FieldModifier="private" x:Name="HistoryMenuItem" InputGestureText="Ctrl+H"/>
+                    <MenuItem Header="_Close all" Click="MenuItemCloseFiles_Click" InputGestureText="Ctrl+X"/>
                     <Separator />
                     <MenuItem Header="_Exit" Click="MenuItemExit_Click" InputGestureText="Ctrl+E"/>
+                </MenuItem>
+                <MenuItem Header="_Selection">
+                    <MenuItem Header="_Export standard report" Click="MenuItemSaveStandardReport_Click" InputGestureText="Ctrl+S"/>
+                    <MenuItem Header="_Export complete report" Click="MenuItemSaveCompleteReport_Click" InputGestureText="Ctrl+Shift+S"/>
                 </MenuItem>
                 <MenuItem Header="_Tools">
                     <MenuItem Header="_Settings" Click="MenuItemSettings_Click"/>
                     <MenuItem Header="_Updater" Click="MenuItemUpdater_Click" />
                 </MenuItem>
+                <MenuItem Header="_About"/>
             </Menu>
         </DockPanel>
         <!-- TabControl -->
