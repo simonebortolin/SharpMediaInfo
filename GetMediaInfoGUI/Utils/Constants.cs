@@ -13,10 +13,16 @@
         /// The argument that signals to start the updater immediately before launching the frontend.
         /// </summary>
         public const string ForceUpdateMode = "forceUpdate";
+
         /// <summary>
         /// The mediainfo rss official url.
         /// </summary>
         public const string MediainfoRssUrl = "https://mediaarea.net/rss/mediainfo_updates.xml";
+        /// <summary>
+        /// The mediainfo base download URL
+        /// </summary>
+        public const string MediainfoBaseDownloadUrl = "https://mediaarea.net/download/binary/libmediainfo0/";
+
         /// <summary>
         /// The name of the configuration file.
         /// </summary>

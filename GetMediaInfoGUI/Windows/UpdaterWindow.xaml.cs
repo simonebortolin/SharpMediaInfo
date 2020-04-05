@@ -1,12 +1,13 @@
 ﻿using GetMediaInfoGUI.Utils;
-using SevenZip;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Net;
+using System.IO.Compression;
+using System.Linq;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using System.Xml;
 
 namespace GetMediaInfoGUI
@@ -17,9 +18,6 @@ namespace GetMediaInfoGUI
     public partial class UpdaterWindow : Window
     {
         #region Global Variables
-
-        private static string mediainfoBaseUrl = "https://mediaarea.net/download/binary/libmediainfo0/";
-
         /// <summary>
         /// Enumeration of the Current status of the operation.
         /// </summary>
@@ -28,7 +26,6 @@ namespace GetMediaInfoGUI
             NotNeeded,
             Success,
             ed,
-            MissingFiles,
             Error
         };
 
@@ -38,19 +35,13 @@ namespace GetMediaInfoGUI
         private Status? status;
 
         /// <summary>
-        /// The worker.
+        /// The cancellation token source.
         /// </summary>
-        private BackgroundWorker BackgroundWorker = new BackgroundWorker();
-
+        private CancellationTokenSource tokenSource = new CancellationTokenSource();
         /// <summary>
-        /// The semaphore to sync background worker and extraction.
+        /// The task scheduler for UI tasks.
         /// </summary>
-        private Semaphore semaphore;
-
-        /// <summary>
-        /// The flag used to  activities.
-        /// </summary>
-        private bool  = false;
+        private TaskScheduler uiScheduler;
         #endregion
 
         #region Constructor
@@ -60,36 +51,21 @@ namespace GetMediaInfoGUI
         /// </summary>
         public UpdaterWindow()
         {
-            BackgroundWorker.WorkerReportsProgress = true;
-            BackgroundWorker.WorkerSupportsCancellation = true;
-            BackgroundWorker.DoWork += BackgroundWorker_DoWork;
-            BackgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
-            BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
-
             InitializeComponent();
-            CancelButton.IsEnabled = false;
-            semaphore = new Semaphore(0, 1);
-            PerformUpdate();
         }
 
         #endregion
 
         #region Interface Handlers
-
         /// <summary>
-        /// Handles the Click event of the CancelButton control.
+        /// Handles the Loaded event of the Window control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            BackgroundWorker.CancelAsync();
-             = true;
-            try
-            {
-                semaphore.Release();
-            }
-            catch { }      
+            uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            PerformUpdate();
         }
 
         /// <summary>
@@ -106,7 +82,11 @@ namespace GetMediaInfoGUI
             }
             catch { }
 
-            BackgroundWorker.CancelAsync();
+            try
+            {
+                tokenSource.Dispose();
+            }
+            catch { }
         }
 
         /// <summary>
@@ -118,11 +98,9 @@ namespace GetMediaInfoGUI
         {
             ResizeMode = ResizeMode.CanResize;
             Expander.Height -= 150;
-            ExpanderGrid.Height = new GridLength(ExpanderGrid.Height.Value - 150.0);
             Height -= 150;
             ResizeMode = ResizeMode.NoResize;
-            Expander.Header = "Further information";
-
+            Expander.Header = "More details";
         }
 
         /// <summary>
@@ -134,12 +112,20 @@ namespace GetMediaInfoGUI
         {
             ResizeMode = ResizeMode.CanResize;
             Expander.Height += 150;
-            ExpanderGrid.Height = new GridLength(ExpanderGrid.Height.Value + 150.0);
             Height += 150;
             ResizeMode = ResizeMode.NoResize;
             Expander.Header = "Less details";
         }
 
+        /// <summary>
+        /// Handles the Click event of the CancelButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            tokenSource.Cancel();
+        }
         #endregion
 
         #region Helper Methods        
@@ -155,7 +141,6 @@ namespace GetMediaInfoGUI
                 case Status.ed: return "Mediainfo library update have been ed by the user.";
                 case Status.Error: return "Mediainfo library update failed.";
                 case Status.Success: return "MediaInfo library have been successfully updated.";
-                case Status.MissingFiles: return "Unable to update ( missing 7z.dll / SevenZipSharp.dll).";
                 default: return "Generic error.";
             }
         }
@@ -167,25 +152,6 @@ namespace GetMediaInfoGUI
         public Status GetStatus()
         {
             return status.GetValueOrDefault(Status.Error);
-        }
-
-        /// <summary>
-        /// Performs the update.
-        /// </summary>
-        private void PerformUpdate()
-        {
-            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7z.dll")) &&
-                File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SevenZipSharp.dll")))
-            {
-                CancelButton.IsEnabled = true;
-                BackgroundWorker.RunWorkerAsync();
-                status = null;
-            }
-            else
-            {
-                Log.AppendText("Unable to update, some libraries are missing (7z.dll and/or SevenZipSharp.dll).");
-                status = Status.MissingFiles;
-            }
         }
 
         /// <summary>
@@ -210,333 +176,240 @@ namespace GetMediaInfoGUI
         {
             return FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("MediaInfo.dll"));
         }
-
         #endregion
 
-        #region Threads
-
+        #region Operations
         /// <summary>
-        /// Handles the DoWork event of the worker control.
+        /// Performs the components update.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DoWorkEventArgs"/> instance containing the event data.</param>
-        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void PerformUpdate()
         {
-            Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 1 of 3"; }));
-
-            if (BackgroundWorker.CancellationPending)
+            Action checkCancellation = () =>
             {
-                e.Cancel = true;
-                return;
-            }
+                tokenSource.Token.ThrowIfCancellationRequested();
+            };
 
-            BackgroundWorker.ReportProgress(5, "Verifying local library version...");
-            string currMediaInfo = GetLocalMediaInfoVersion();
-
-            if (!string.IsNullOrEmpty(currMediaInfo))
+            Task.Run(async () =>
             {
-                BackgroundWorker.ReportProgress(45, "Found version: " + currMediaInfo);
-            }
-            else
-            {
-                BackgroundWorker.ReportProgress(45, "Failed");
-            }
+                status = null;
 
-            if (BackgroundWorker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
+                UpdateGlobalStatus("Step 1 of 3");
 
-            BackgroundWorker.ReportProgress(50, "Verifying latest remote library version...");
-            string newVerMediaInfo = GetLatestMediaInfoVersion();
-
-            if (!string.IsNullOrEmpty(newVerMediaInfo))
-            {
-                BackgroundWorker.ReportProgress(95, "Found version: " + newVerMediaInfo);
-            }
-            else
-            {
-                BackgroundWorker.ReportProgress(95, "Failed");
-            }
-
-            BackgroundWorker.ReportProgress(100);
-
-            if (!currMediaInfo.Contains(newVerMediaInfo))
-            {
-                SevenZipExtractor.SetLibraryPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7z.dll"));
-
-                string tempDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tmp");
-
-                string url = mediainfoBaseUrl + (Environment.Is64BitProcess ? 
-                    newVerMediaInfo + "/MediaInfo_DLL_" + newVerMediaInfo + "_Windows_x64_WithoutInstaller.7z" :
-                    newVerMediaInfo + "/MediaInfo_DLL_" + newVerMediaInfo + "_Windows_i386_WithoutInstaller.7z");
-
-                string fileName = url.Substring(url.LastIndexOf("/") + 1, url.Length - url.LastIndexOf("/") - 1);
-                string fileToExtract = "MediaInfo.dll";
-
-                string newfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileToExtract);
-                string downloadpath = Path.Combine(tempDir, fileName);
-
-                if (!Directory.Exists(tempDir))
+                UpdateProgress(5, "Verifying local library version...");
+                string currMediaInfo = GetLocalMediaInfoVersion();
+                if (!string.IsNullOrEmpty(currMediaInfo))
                 {
-                    Directory.CreateDirectory(tempDir);
+                    UpdateProgress(45, $"Found version: {currMediaInfo}");
+                }
+                else
+                {
+                    UpdateProgress(45, "The local library is missing.");
                 }
 
-                if (BackgroundWorker.CancellationPending)
+                UpdateProgress(50, "Verifying latest remote library version...");
+                string newVerMediaInfo = GetLatestMediaInfoVersion();
+                if (!string.IsNullOrEmpty(newVerMediaInfo))
                 {
-                    e.Cancel = true;
-                    return;
+                    UpdateProgress(95, $"Found version: {newVerMediaInfo}");
+                }
+                else
+                {
+                    UpdateProgress(95, "Unable to get latest version.");
                 }
 
-                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 2 of 3"; }));
+                UpdateProgress(100);
 
-                //download
-                BackgroundWorker.ReportProgress(1, "Downloading latest version of the library...");
+                checkCancellation();
 
-                using (WebClient webClient = new WebClient())
+                if (!currMediaInfo.Contains(newVerMediaInfo))
                 {
-                    webClient.DownloadProgressChanged += Client_DownloadProgressChanged;
-                    webClient.DownloadFileCompleted += Client_DownloadFileCompleted;
+                    var tempDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tmp");
 
-                    try
+                    var sourceFileName = $"MediaInfo_DLL_{newVerMediaInfo}_Windows_{(Environment.Is64BitProcess ? "x64" : "i386")}_WithoutInstaller.zip";
+                    var downloadUrl = $"{Constants.MediainfoBaseDownloadUrl}{newVerMediaInfo}/{sourceFileName}";
+                    var downloadPath = Path.Combine(tempDir, sourceFileName);
+
+                    var fileToExtract = "MediaInfo.dll";
+                    var extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileToExtract);
+
+                    if (!Directory.Exists(tempDir))
                     {
-                        webClient.DownloadFileAsync(new Uri(url), downloadpath);
-                        if (!semaphore.WaitOne(TimeSpan.FromSeconds(10)))
-                        {
-                            throw new TimeoutException("Download failed due to timeout.");
-                        }
+                        Directory.CreateDirectory(tempDir);
                     }
-                    catch (Exception ex)
+
+                    //removing previous files
+                    if (File.Exists(extractPath))
                     {
-                        throw new Exception("Download failed. Error message: " + ex.Message);
-                    }
-                }
+                        UpdateProgress(-1, "Deleting previous file...");
 
-                if (BackgroundWorker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
-                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 3 of 3"; }));
-
-                //extract
-                using (SevenZipExtractor extractor = new SevenZipExtractor(downloadpath))
-                {
-                    extractor.Extracting += Archive_Extracting;
-                    extractor.ExtractionFinished += Archive_ExtractionFinished;
-
-                    BackgroundWorker.ReportProgress(5, "Deleting old files...");
-
-                    if (File.Exists(newfilepath))
-                    {
                         try
                         {
-                            File.Delete(newfilepath);
-                            BackgroundWorker.ReportProgress(100, "Old file has been successfully removed");
+                            File.Delete(extractPath);
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception("Cannot remove old files. Error message: " + ex.Message);
+                            throw new Exception($"Unable to remove previous file: { ex.Message}", ex);
                         }
                     }
 
-                    FileStream fileStream = File.Create(newfilepath);
+                    checkCancellation();
 
-                    BackgroundWorker.ReportProgress(5, "Start extraction of the downloaded archive...");
-                  
-                    foreach (string file in extractor.ArchiveFileNames)
-                    {
-                        if (file.Contains(fileToExtract))
-                        {
-                            fileToExtract = file;
-                            break;
-                        }
-                    }
-                   
-                    try
-                    {
-                        extractor.ExtractFile(fileToExtract, fileStream);
-                        if (!semaphore.WaitOne(TimeSpan.FromSeconds(10)))
-                        {
-                            throw new TimeoutException("Extraction failed due to timeout.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {              
-                        throw new Exception("Extraction failed. Error message: " + ex.Message);
-                    }
-                    finally
-                    {
-                        fileStream.Dispose();
-                    }
+                    //downloading
+                    UpdateGlobalStatus("Step 2 of 3");
+                    UpdateProgress(-1, "Downloading...");
+                    await DownloadFile(downloadUrl, downloadPath);
+                    UpdateProgress(100, "Download completed.");
+
+                    checkCancellation();
+
+                    //extracting
+                    UpdateGlobalStatus("Step 3 of 3");
+                    UpdateProgress(-1, "Extracting...");
+                    await ExtractArchiveFiles(downloadPath, AppDomain.CurrentDomain.BaseDirectory, fileToExtract);
+                    UpdateProgress(100, "Extraction completed.");
+
+                    checkCancellation();
+
+                    UpdateCompleted(Status.Success);
                 }
-            }
-            else
-            {
-                Dispatcher.Invoke(new Action(delegate { simpleStatus.Content = "Step 3 of 3"; }));
+                else
+                {
+                    UpdateGlobalStatus("Step 3 of 3");
 
-                BackgroundWorker.ReportProgress(100, "MediaInfo is already at the latest version. No need to update.");
-                e.Result = Status.NotNeeded;
+                    UpdateProgress(100, "MediaInfo is already at the latest version. No need to update.");
+                    UpdateCompleted(Status.NotNeeded);
+                }
+            }, tokenSource.Token)
+            .ContinueWith((task) =>
+            {
+                if (task.IsFaulted)
+                {
+                    UpdateCompleted(Status.Error, task.Exception);
+                }
+                else if (task.IsCanceled)
+                {
+                    UpdateCompleted(Status.ed);
+                }
+            }, TaskContinuationOptions.NotOnRanToCompletion);
+        }
+
+        /// <summary>
+        /// Downloads a file.
+        /// </summary>
+        /// <param name="url">The url</param>
+        /// <param name="outputPath">The output path</param>
+        /// <returns>The task that represents the asynchronous operations</returns>
+        private async Task DownloadFile(string url, string outputPath)
+        {
+            using (var outputStream = new FileStream(outputPath, FileMode.Create))
+            using (var httpClient = new HttpClient())
+            using (var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url), tokenSource.Token))
+            {
+                 var inputStream = await response.Content.ReadAsStreamAsync();
+                 await inputStream.CopyToAsync(outputStream);
             }
         }
 
         /// <summary>
-        /// Handles the ProgressChanged event of the worker control.
+        /// Extracts specified files from a target zip archive.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ProgressChangedEventArgs"/> instance containing the event data.</param>
-        private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        /// <param name="archivePath">The archive path</param>
+        /// <param name="destionationFolder">The destination folder</param>
+        /// <param name="filesToExtract">The files to be extracted</param>
+        /// <returns>The task that represents the asynchronous operations</returns>
+        private Task ExtractArchiveFiles(string archivePath, string destionationFolder, params string[] filesToExtract)
         {
-            int progress = e.ProgressPercentage;
-            string status = (string)e.UserState;
-
-            if (progress > 0)
-            {
-                if (progress > 100)
+            return Task.Run(() => {
+                using (var srcArchive = ZipFile.OpenRead(archivePath))
                 {
-                    progress = 100;
+                    srcArchive.Entries
+                        .Where(entry => filesToExtract.Contains(entry.FullName))
+                        .ToList()
+                        .ForEach((entry) => entry.ExtractToFile(Path.Combine(destionationFolder, entry.FullName), true));
                 }
-
-                ProgressUpdate.Value = progress;
-                ProgressLabel.Content = progress + "%";
-            }
-
-            if (!string.IsNullOrEmpty(status))
-            {
-                Log.AppendText(status + Environment.NewLine);
-                Log.ScrollToEnd();
-            }
-
-            this.InvalidateVisual();
+            }, tokenSource.Token);  
         }
 
         /// <summary>
-        /// Handles the RunWorkerCompleted event of the worker control.
+        /// Updates the global status.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RunWorkerCompletedEventArgs"/> instance containing the event data.</param>
-        private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        /// <param name="status">The new status</param>
+        private void UpdateGlobalStatus(string status)
         {
-            CancelButton.IsEnabled = false;
-            ProgressUpdate.Value = 100;
-
-            if (e.Cancelled || )
-            {
-                Log.AppendText("Operation ed by the user!" + Environment.NewLine);
-                ProgressLabel.Content = "ed";
-                status = Status.ed;
-            }
-            else if (e.Error != null)
-            {
-                Log.AppendText("Exception generated! " + e.Error.Message + Environment.NewLine);
-                ProgressLabel.Content = "Error";
-                status = Status.Error;
-            }
-            else if (e.Result != null && e.Result.Equals(Status.NotNeeded))
-            {
-                Log.AppendText("Analysis completed: no need to update." + Environment.NewLine);
-                status = Status.NotNeeded;
-                Close();
-            } else {
-                Log.AppendText("All operations successfully completed!" + Environment.NewLine);
-                status = Status.Success;
-                Close();
-            }
+            Task.Factory.StartNew(() => {
+                simpleStatus.Content = status;
+            }, tokenSource.Token, TaskCreationOptions.None, uiScheduler);
         }
 
         /// <summary>
-        /// Handles the DownloadProgressChanged event of the Client control.
+        /// Updates the progress.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DownloadProgressChangedEventArgs"/> instance containing the event data.</param>
-        private void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        /// <param name="progress">The new progress</param>
+        /// <param name="status">The new status</param>
+        private void UpdateProgress(int progress, string status = "")
         {
-            if ()
+            Task.Factory.StartNew(() =>
             {
-                ((WebClient)sender).CancelAsync();
-                return;
-            }
-
-            int progress = e.ProgressPercentage;
-            string bytesloaded = ((e.TotalBytesToReceive / 1024f) / 1024f).ToString("0.00");
-
-            if (progress > 0)
-            {
-                if (progress > 100)
+                if (progress > 0)
                 {
-                    progress = 100;
-                }
+                    ProgressUpdate.IsIndeterminate = false;
 
-                Dispatcher.Invoke(new MethodInvoker(delegate
-                {
+                    if (progress > 100)
+                    {
+                        progress = 100;
+                    }
+
                     ProgressUpdate.Value = progress;
-                    ProgressLabel.Content = progress + "%";
-                }));
-            }
-        }
-
-        /// <summary>
-        /// Handles the DownloadFileCompleted event of the Client control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AsyncCompletedEventArgs"/> instance containing the event data.</param>
-        private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            if (!e.Cancelled && e.Error == null) {
-                Dispatcher.Invoke(new MethodInvoker(delegate
+                    ProgressLabel.Content = $"{progress}%";
+                }
+                else
                 {
-                    Log.AppendText("Download completed!" + Environment.NewLine);
-                    Log.ScrollToEnd();
-                    ProgressUpdate.Value = 100;
-                    ProgressLabel.Content = "100%";
-                }));
-            }
-            semaphore.Release();
-        }
-
-        /// <summary>
-        /// Handles the Extracting event of the Archive control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ProgressEventArgs"/> instance containing the event data.</param>
-        private void Archive_Extracting(object sender, ProgressEventArgs e)
-        {
-            if ()
-            {
-                e.Cancel = true;
-            }
-
-            int progress = e.PercentDone;
-
-            if (progress > 0)
-            {
-                if (progress > 100)
-                {
-                    progress = 100;
+                    ProgressUpdate.IsIndeterminate = true;
+                    ProgressLabel.Content = "";
                 }
 
-                Dispatcher.Invoke(new MethodInvoker(delegate { ProgressUpdate.Value = progress; }));
-            }
+                if (!string.IsNullOrEmpty(status))
+                {
+                    Log.AppendText($"{status}{Environment.NewLine}");
+                    Log.ScrollToEnd();
+                }
+            }, tokenSource.Token, TaskCreationOptions.None, uiScheduler);
         }
 
         /// <summary>
-        /// Handles the ExtractionFinished event of the Archive control.
+        /// Handles the completion of the operations
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Archive_ExtractionFinished(object sender, EventArgs e)
+        /// <param name="status">The status</param>
+        /// <param name="ex">The exception</param>
+        private void UpdateCompleted(Status status, Exception ex = null)
         {
-            Dispatcher.Invoke(new MethodInvoker(delegate
-            {
-                Log.AppendText("Extraction completed!" + Environment.NewLine);
-                Log.ScrollToEnd();
-                ProgressUpdate.Value = 100;
-                ProgressLabel.Content = "100%";
-            }));
+            this.status = status;
 
-            semaphore.Release();
+            Task.Factory.StartNew(() =>
+            {
+                CancelButton.IsEnabled = false;
+                UpdateProgress(100);
+
+                switch (status)
+                {
+                    case Status.NotNeeded:
+                        Log.AppendText($"Analysis completed: no need to update." + Environment.NewLine);
+                        Close();
+                        break;
+                    case Status.Success:
+                        Log.AppendText($"All operations successfully completed!" + Environment.NewLine);
+                        Close();
+                        break;
+                    case Status.ed:
+                        Log.AppendText($"Operation ed by the user!{Environment.NewLine}");
+                        ProgressLabel.Content = "ed";
+                        break;
+                    case Status.Error:
+                        Log.AppendText($"Error occurred: {ex.Message}{Environment.NewLine}");
+                        ProgressLabel.Content = "Error";
+                        break;
+                }
+            }, tokenSource.Token, TaskCreationOptions.None, uiScheduler);
         }
         #endregion
     }

@@ -8,6 +8,7 @@
         Topmost="True" 
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" 
+        Loaded="Window_Loaded"
         Closing="Window_Closing"
         Width="394" 
         Height="170"
@@ -17,19 +18,22 @@
         Style="{DynamicResource WindowStyle}">
     <Grid Margin="0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="90"/>
-            <RowDefinition x:FieldModifier="private" x:Name="ExpanderGrid" Height="51"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Button x:FieldModifier="private" x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Margin="0,4,0,0" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="60" Padding="0" Grid.Row="1" VerticalAlignment="Top" Height="23" Panel.ZIndex="10"/>
-        <ProgressBar x:FieldModifier="private" x:Name="ProgressUpdate" RenderTransformOrigin="0.063,-4.233" Margin="10,46,10,16" VerticalAlignment="Center" Height="28"/>
-        <Label x:FieldModifier="private" x:Name="ProgressLabel" HorizontalContentAlignment="Center" Margin="10,42,10,18" VerticalAlignment="Center" Height="30" Content="Idle" Padding="0,3,0,0" VerticalContentAlignment="Center"/>
-        <Expander x:FieldModifier="private" x:Name="Expander" Header="Details" Margin="10,4,10,0" VerticalAlignment="Top" Grid.Row="1" Height="23" Collapsed="Expander_Collapsed" Expanded="Expander_Expanded" IsExpanded="True">
-            <TextBox x:FieldModifier="private" x:Name="Log" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0"/>
+
+        <Label x:FieldModifier="private" x:Name="simpleStatus" Grid.Row="0" Content="Step 0 of 3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        
+        <ProgressBar x:FieldModifier="private" x:Name="ProgressUpdate" Grid.Row="1" VerticalAlignment="Center" Height="28" Margin="5,2"/>
+        <Label x:FieldModifier="private" x:Name="ProgressLabel" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Idle"/>
+        
+        <Button x:FieldModifier="private" x:Name="CancelButton" Grid.Row="2" Content="Cancel" Click="CancelButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,2"/>
+
+        <Expander x:FieldModifier="private" x:Name="Expander" Grid.Row="3" Header="Less details" VerticalAlignment="Stretch" Margin="4,0" IsExpanded="True" Collapsed="Expander_Collapsed" Expanded="Expander_Expanded">
+            <TextBox x:FieldModifier="private" x:Name="Log" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,4"/>
         </Expander>
-        <Label x:FieldModifier="private" x:Name="simpleStatus" Content="Step 0 of 3" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
 
