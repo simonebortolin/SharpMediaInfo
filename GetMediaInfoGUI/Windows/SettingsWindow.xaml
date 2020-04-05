@@ -60,8 +60,8 @@
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="UpdateButton" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="UpdateButton_Click" Margin="4" Content="Check for updates"/>
-                <TextBlock Grid.Column="1" x:Name="UpdaterProgress" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextAlignment="Center" Margin="4" />
+                <Button Grid.Column="0" x:Name="CheckUpdatesButton" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="CheckUpdatesButton_Click" Margin="4" Content="Check for updates"/>
+                <TextBlock Grid.Column="1" x:Name="CheckUpdatesProgress" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextAlignment="Center" Margin="4" />
             </Grid>
         </GroupBox>
 

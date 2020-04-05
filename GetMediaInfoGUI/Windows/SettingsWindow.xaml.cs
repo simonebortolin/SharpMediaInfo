@@ -9,7 +9,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -55,8 +56,8 @@ namespace GetMediaInfoGUI
             StatusFrontend.Foreground = Brushes.Green;
             
             //Check versions
-            VerifyMediaInfoVersion();
-            VerifyGetMediaInfoVersion();
+            RetrieveLocalMediaInfoVersion();
+            RetrieveGetMediaInfoVersion();
 
             //Global
             AutoSaveReport.IsChecked = ConfigHelper.GetConfig().AutoSaveReport;
@@ -279,15 +280,39 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the UpdateButton control: starts components Updater.
+        /// Handles the Click event of the CheckUpdatesButton control: starts components Updater.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        private async void CheckUpdatesButton_Click(object sender, RoutedEventArgs e)
         {
             if (initialization) { return; }
 
-            StartUpdater();
+            if (sender is Button updateButton)
+            {
+                updateButton.IsEnabled = false;
+
+                CheckUpdatesProgress.Text = "Checking...";
+
+                var latest = await GetLatestMediainfoVersion();
+                if (!string.IsNullOrEmpty(latest))
+                {
+                    if (!StatusMediaInfo.Text.StartsWith(latest))
+                    {
+                        CheckUpdatesProgress.Text = "A new Mediainfo library version is available (" + latest + ").";
+                    }
+                    else
+                    {
+                        CheckUpdatesProgress.Text = "The Mediainfo library is already at its latest version.";
+                    }
+                }
+                else
+                {
+                    CheckUpdatesProgress.Text = "Unable to check the latest Mediainfo library version.";
+                }
+
+                updateButton.IsEnabled = true;
+            }     
         }
 
         /// <summary>
@@ -372,9 +397,9 @@ namespace GetMediaInfoGUI
         #region Interface Helpers
 
         /// <summary>
-        /// Verifies the MediaInfo library version. 
+        /// Retrieves the local MediaInfo library version.
         /// </summary>
-        private void VerifyMediaInfoVersion()
+        private void RetrieveLocalMediaInfoVersion()
         {
             var fileVersionInfo = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("MediaInfo.dll"));
             if (!string.IsNullOrWhiteSpace(fileVersionInfo))
@@ -390,9 +415,9 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Verifies the GetMediaInfo library version. 
+        /// Retrieves the local GetMediaInfo library version. 
         /// </summary>
-        private void VerifyGetMediaInfoVersion()
+        private void RetrieveGetMediaInfoVersion()
         {
             var fileVersionInfo = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("GetMediaInfo.dll"));
             if (!string.IsNullOrWhiteSpace(fileVersionInfo))
@@ -408,35 +433,33 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Starts the Components Updater.
+        /// Retrieves the latest MediaInfo library version.
         /// </summary>
-        private void StartUpdater()
+        private async Task<string> GetLatestMediainfoVersion()
         {
             try
             {
-                WebRequest request = WebRequest.Create(Constants.MediainfoRssUrl);
-                request.Timeout = 5000;
-
-                using (var response = request.GetResponse())
-                using (var reader = XmlReader.Create(response.GetResponseStream()))
+                using (var client = new HttpClient()
                 {
-                    reader.ReadToFollowing("title");
-                    reader.ReadToFollowing("title");
-                    string latest = reader.ReadElementContentAsString();
-                    latest = latest.Replace("MediaInfo ", "");
-
-                    if (!StatusMediaInfo.Text.StartsWith(latest))
+                    Timeout = TimeSpan.FromSeconds(5000)
+                })
+                {
+                    var content = await client.GetStringAsync(Constants.MediainfoRssUrl);
+                    using (var reader = XmlReader.Create(new StringReader(content)))
                     {
-                        UpdaterProgress.Text = "A new Mediainfo library version is available (" + latest + ").";
-                    } else {
-                        UpdaterProgress.Text = "The Mediainfo library is already at its latest version.";
-                    }  
+                        reader.ReadToFollowing("title");
+                        reader.ReadToFollowing("title");
+
+                        var latest = reader.ReadElementContentAsString();
+                        return latest.Replace("MediaInfo ", "");
+                    }
                 }
             } catch (Exception ex)
             {
-                MessageBoxHelper.ShowError(this, $"Unable to retrieve the latest version of Mediainfo library: {ex.Message}");
                 Logger.Instance.Error(ex);
-            }                 
+            }
+
+            return string.Empty;
         }
         #endregion
     }

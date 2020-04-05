@@ -194,7 +194,7 @@ namespace GetMediaInfoGUI
         /// <returns>String as the latest available MediaInfo version</returns>
         private string GetLatestMediaInfoVersion()
         {
-            XmlReader XmlReader = XmlReader.Create("https://mediaarea.net/rss/mediainfo_updates.xml");
+            XmlReader XmlReader = XmlReader.Create(Constants.MediainfoRssUrl);
             XmlReader.ReadToFollowing("title");
             XmlReader.ReadToFollowing("title");
             string latest = XmlReader.ReadElementContentAsString();

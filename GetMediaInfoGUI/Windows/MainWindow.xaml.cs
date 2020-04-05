@@ -1048,7 +1048,6 @@ namespace GetMediaInfoGUI
         /// Starts the Updater.
         /// </summary>
         /// <param name="centerScreen">Force the updater to position at the center of the screen.</param>
-        /// <param name="previousArgs"></param>
         /// <returns>Status of update.</returns>
         private bool StartUpdater(bool centerScreen = false)
         {
