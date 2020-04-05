@@ -1,6 +1,6 @@
 using System;
 
-namespace GetMediaInfos
+namespace GetMediaInfo
 {
     /// <summary>
     /// Contains properties for a VideoTrack

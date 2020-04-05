@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GetMediaInfos
+namespace GetMediaInfo
 {
     /// <summary>
     /// Contains properties for a MenuTrack
