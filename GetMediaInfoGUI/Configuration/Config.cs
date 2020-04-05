@@ -51,7 +51,7 @@ namespace GetMediaInfoGUI.Configuration
         /// <summary>
         /// Gets or sets the theme.
         /// </summary>
-        public AppTheme Theme { get; set; }
+        public AppTheme Theme { get; set; } = AppTheme.Auto;
 
         /// <summary>
         /// Gets or sets a value indicating whether the report text needs to be bold.

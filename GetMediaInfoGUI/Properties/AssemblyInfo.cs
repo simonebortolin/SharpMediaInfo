@@ -10,8 +10,8 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GetMediaInfoGUI")]
 [assembly: AssemblyProduct("GetMediaInfoGUI")]
-[assembly: AssemblyCopyright("Copyright © GetMediaInfoGUI 2019")]
-[assembly: AssemblyTrademark("Copyright © GetMediaInfoGUI 2019")]
+[assembly: AssemblyCopyright("Copyright © GetMediaInfoGUI 2020")]
+[assembly: AssemblyTrademark("Copyright © GetMediaInfoGUI 2020")]
 [assembly: AssemblyCulture("")]
 
 // Se si imposta ComVisible su false, i tipi in questo assembly non saranno visibili 
@@ -49,5 +49,5 @@ using System.Windows;
 // È possibile specificare tutti i valori oppure impostare valori predefiniti per i numeri relativi alla revisione e alla build 
 // usando l'asterisco '*' come illustrato di seguito:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.3.7.0")]
-[assembly: AssemblyFileVersion("3.3.7.0")]
+[assembly: AssemblyVersion("3.3.8.0")]
+[assembly: AssemblyFileVersion("3.3.8.0")]

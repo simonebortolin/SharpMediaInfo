@@ -10,14 +10,14 @@ namespace GetMediaInfoGUI.Interop
         /// <summary>
         /// The default timout in seconds
         /// </summary>
-        private static int DefaultTimoutInSeconds = 5;
+        private static int DefaultTimeoutInSeconds = 5;
         /// <summary>
         /// Creates the cross process lock.
         /// </summary>
         /// <returns></returns>
         public static IDisposable CreateCrossProcessLock()
         {
-            return new ProcessLock(TimeSpan.FromSeconds(DefaultTimoutInSeconds));
+            return new ProcessLock(TimeSpan.FromSeconds(DefaultTimeoutInSeconds));
         }
 
         /// <summary>

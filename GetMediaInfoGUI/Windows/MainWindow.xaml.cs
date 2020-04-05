@@ -55,37 +55,47 @@ namespace GetMediaInfoGUI
         /// </summary>
         public MainWindow()
         {
+
+#if DEBUG
+            Logger.Instance.SetLogLevel(LogLevel.DEBUG);
+#endif
             try
             {
                 using (CrossProcessLockFactory.CreateCrossProcessLock())
                 {
-                    var args = Environment.GetCommandLineArgs().Where(i => !i.Equals(Assembly.GetExecutingAssembly().Location)).ToArray();
-                    var outsideDropMode = args.Length > 3 && args.Contains(Constants.OutsideTabDropMode);
+                    var args = GetArguments();
 
+                    var outsideDropMode = args.Length > 3 && args.Contains(Constants.OutsideTabDropMode);
                     if (outsideDropMode)
                     {
                         CheckDropMode(args);
-                    } else if (CheckForOtherInstances(args)) {
+                    }
+                    else if (CheckForOtherInstances(args))
+                    {
                         return;
                     }
 
                     InitializeComponent();
                     this.Title = GetWindowTitle();
 
-                    ClearAll();
+                    RestoreConfig();
+                    RestoreHistory();
 
                     if (args.Contains(Constants.ForceUpdateMode))
                     {
                         this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                         StartUpdater(true);
-                    } else {
+                    }
+                    else
+                    {
                         StatusLab.Content = "Ready.";
-                    }                  
+                    }
                 }
             } catch (Exception ex)
             {
                 MessageBoxHelper.ShowError(this, $"Unable to create main window: {ex.Message}");
-                Logger.Error(ex);
+                Logger.Instance.Error(ex);
+                Environment.Exit(-1);
             }
         }
         #endregion
@@ -102,19 +112,21 @@ namespace GetMediaInfoGUI
         {
             try
             {
-                RestoreConfig();
-                RestoreHistory();
+                using (CrossProcessLockFactory.CreateCrossProcessLock())
+                {
+                    VerifyMediaInfo();
+                    VerifyGetMediaInfo();
 
-                VerifyMediaInfo();
-                VerifyGetMediaInfo();
-
-                CheckLastUpdateDate();
-                AnalyzeFiles(Environment.GetCommandLineArgs().Where(i => !i.Equals(Assembly.GetExecutingAssembly().Location)).ToArray());
+                    CheckLastUpdateDate();
+                }
+              
+                AnalyzeFiles(GetArguments(true));
             }
             catch (Exception ex)
             {
                 MessageBoxHelper.ShowError(this, $"Unable to correctly load main window: {ex.Message}");
-                Logger.Error(ex);
+                Logger.Instance.Error(ex);
+                Environment.Exit(-1);
             }
         }
 
@@ -127,8 +139,7 @@ namespace GetMediaInfoGUI
         {
             if (!_killThisInstance)
             {
-                SaveConfig();
-                SaveHistory();
+                SaveResources();
             }
         }
 
@@ -230,8 +241,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
         {
-            SaveConfig();
-            SaveHistory();
+            SaveResources();
             Environment.Exit(0);
         }
         
@@ -742,6 +752,22 @@ namespace GetMediaInfoGUI
         #endregion
 
         #region Arguments Management
+
+        /// <summary>
+        /// Retrieves the command line arguments properly filtered.
+        /// </summary>
+        /// <param name="filterFilesOnly">Whether to filter out any non-path argument or not.</param>
+        /// <returns>The list of valid arguments.</returns>
+        private string[] GetArguments(bool filterFilesOnly = false)
+        {
+            var args = Environment.GetCommandLineArgs().Where(i => !i.Equals(Assembly.GetExecutingAssembly().Location)).ToArray();
+            if (filterFilesOnly)
+            {
+                args = args.Where(i => !i.Equals(Constants.ForceUpdateMode) && !i.Equals(Constants.OutsideTabDropMode)).ToArray();
+            }        
+            return args;
+        }
+
         /// <summary>
         /// Checks for outside drop mode.
         /// </summary>
@@ -860,8 +886,7 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.ShowError(this, $"Unable to save user settings: {ex.Message}");
-                Logger.Error(ex);
+                Logger.Instance.Error("Unable to save user settings", ex);
             }
         }
 
@@ -876,8 +901,7 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.ShowError(this, $"Unable to load user settings: {ex.Message}");
-                Logger.Error(ex);
+                Logger.Instance.Error("Unable to load user settings", ex);
             }
 
             ThemeHelper.SetTheme(ConfigHelper.GetConfig().Theme);
@@ -897,7 +921,7 @@ namespace GetMediaInfoGUI
             catch (Exception ex)
             {
                 MessageBoxHelper.ShowError(this, $"Unable to save recent file history: {ex.Message}");
-                Logger.Error(ex);
+                Logger.Instance.Error(ex);
             }
         }
 
@@ -911,7 +935,7 @@ namespace GetMediaInfoGUI
                 HistoryHelper.LoadHistory();
                 UpdateHistoryMenuItem();
             } catch (Exception ex) {
-                Logger.Error(ex);
+                Logger.Instance.Error(ex);
             }         
         }
 
@@ -977,7 +1001,7 @@ namespace GetMediaInfoGUI
                     else
                     {
                         MessageBoxHelper.ShowError(this, $"Unable to download the latest version of Mediainfo library");
-                        Logger.Error("Unable to download the latest version of Mediainfo library");
+                        Logger.Instance.Error("Unable to download the latest version of Mediainfo library");
                         Application.Current.Shutdown();
                     }
                 }
@@ -993,7 +1017,7 @@ namespace GetMediaInfoGUI
             {
                 GeneralGrid.IsEnabled = false;
                 MessageBoxHelper.ShowError(this, $"GetMediaInfo.dll library not found");
-                Logger.Error("GetMediaInfo.dll library not found");
+                Logger.Instance.Error("GetMediaInfo.dll library not found");
                 Application.Current.Shutdown();
             }
         }
@@ -1004,7 +1028,10 @@ namespace GetMediaInfoGUI
         private void CheckLastUpdateDate()
         {
             var lastCheckDate = ConfigHelper.GetConfig().LastUpdateCheck;
-            if (DateTime.Now.Date.Subtract(lastCheckDate).Days > 7)
+            if (lastCheckDate == DateTime.MinValue)
+            {
+                StartUpdater();
+            } else if (DateTime.Now.Date.Subtract(lastCheckDate).Days > 7)
             {
                 var result = MessageBoxHelper.Show(this,
                     $"The latest Mediainfo library version was checked at {lastCheckDate.ToString("g")}. Do you want to check again?",
@@ -1021,6 +1048,7 @@ namespace GetMediaInfoGUI
         /// Starts the Updater.
         /// </summary>
         /// <param name="centerScreen">Force the updater to position at the center of the screen.</param>
+        /// <param name="previousArgs"></param>
         /// <returns>Status of update.</returns>
         private bool StartUpdater(bool centerScreen = false)
         {
@@ -1036,7 +1064,7 @@ namespace GetMediaInfoGUI
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = Process.GetCurrentProcess().MainModule.FileName,
-                    Arguments = Constants.ForceUpdateMode
+                    Arguments = $"{Constants.ForceUpdateMode} {string.Join(" ", GetOpenedFiles())}"
                 });
 
                 Application.Current.Shutdown();
@@ -1073,7 +1101,7 @@ namespace GetMediaInfoGUI
         /// <summary>
         /// Restore interface to his default state and flush all main variables.
         /// </summary>
-        private void ClearAll()
+        private void RestoreInterface()
         {
             StatusLab.Content = "Cleaning all...";
             StatusLab.InvalidateVisual();
@@ -1081,6 +1109,18 @@ namespace GetMediaInfoGUI
             FileTabControl.Items.Clear();
             StatusLab.Content = "Ready.";
             StatusLab.InvalidateVisual();
+        }
+
+        /// <summary>
+        /// Saves all resources.
+        /// </summary>
+        private void SaveResources()
+        {
+            using (CrossProcessLockFactory.CreateCrossProcessLock())
+            {
+                SaveConfig();
+                SaveHistory();
+            }
         }
 
         /// <summary>
@@ -1156,8 +1196,7 @@ namespace GetMediaInfoGUI
                 }
                 catch (Exception ex)
                 {
-                    MessageBoxHelper.ShowError(this, $"Unable to process system window message: {ex.Message}");
-                    Logger.Error(ex);
+                    Logger.Instance.Error(ex);
                 }
             };
         }

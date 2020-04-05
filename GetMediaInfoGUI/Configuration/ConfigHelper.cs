@@ -1,4 +1,5 @@
-﻿using GetMediaInfoGUI.Utils;
+﻿using GetMediaInfoGUI.Logging;
+using GetMediaInfoGUI.Utils;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -29,16 +30,14 @@ namespace GetMediaInfoGUI.Configuration
             var path = Path.Combine(FolderUtils.GetAppDataFolder(), Constants.ConfigurationFileName);
             if (File.Exists(path))
             {
-                // Create an instance of the XmlSerializer.
                 var serializer = new XmlSerializer(typeof(Config));
-
                 using (Stream reader = new FileStream(path, FileMode.Open))
                 {
                     configuration = serializer.Deserialize(reader) as Config;
                 }
             } else
             {
-                throw new FileNotFoundException("File not found");
+                Logger.Instance.Error(new FileNotFoundException("Configuration file not found"));
             }
         }
 
@@ -49,7 +48,6 @@ namespace GetMediaInfoGUI.Configuration
         {
             var path = Path.Combine(FolderUtils.GetAppDataFolder(), Constants.ConfigurationFileName);
 
-            // Create an instance of the XmlSerializer.
             var serializer = new XmlSerializer(typeof(Config));
 
             using (Stream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write))

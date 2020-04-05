@@ -358,8 +358,8 @@ namespace GetMediaInfoGUI
                         catch (Exception ex)
                         {
                             MessageBoxHelper.ShowError(this, $"Unable to change theme. Reboot cancelled.");
-                            Logger.Error(ex);
-                        } 
+                            Logger.Instance.Error(ex);
+                        }
                     }
                 }
             } else
@@ -435,7 +435,7 @@ namespace GetMediaInfoGUI
             } catch (Exception ex)
             {
                 MessageBoxHelper.ShowError(this, $"Unable to retrieve the latest version of Mediainfo library: {ex.Message}");
-                Logger.Error(ex);
+                Logger.Instance.Error(ex);
             }                 
         }
         #endregion
