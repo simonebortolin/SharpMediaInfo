@@ -13,7 +13,7 @@
         KeyDown="Window_KeyDown"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
-        Title="GetMediaInfo"
+        Title="GetMediaInfo GUI"
         Height="584" 
         Width="522"
         MinWidth="522" 

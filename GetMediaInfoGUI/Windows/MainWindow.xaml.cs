@@ -17,6 +17,7 @@ using GetMediaInfoGUI.Configuration;
 using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Windows;
+using System.Reflection;
 
 namespace GetMediaInfoGUI
 {
@@ -77,6 +78,8 @@ namespace GetMediaInfoGUI
                     } else {
                         StatusLab.Content = "Ready.";
                     }
+
+                    this.Title = string.Format("GetMediaInfo GUI v{0}", Assembly.GetExecutingAssembly().GetName().Version);
                 }
             } catch (Exception ex)
             {
@@ -104,22 +107,8 @@ namespace GetMediaInfoGUI
                 VerifyMediaInfo();
                 VerifyGetMediaInfo();
 
-                var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
-                ProcessArgs(args);
-
-                //if the last update check is over 7 days ago, ask user whether to check for a new update
-                var lastCheckDate = ConfigHelper.GetConfig().LastUpdateCheck;
-                if (DateTime.Now.Date.Subtract(lastCheckDate).Days > 7)
-                {
-                    var result = MessageBoxHelper.Show(this, 
-                        $"The latest Mediainfo library version was checked at {lastCheckDate.ToString("g")}. Do you want to check again?", 
-                        "Mediainfo update check", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        StartUpdater();
-                    }
-                }
+                CheckLastUpdateDate();
+                AnalyzeFiles(Environment.GetCommandLineArgs().Where(i => !i.Equals(Assembly.GetExecutingAssembly().Location)).ToArray());
             }
             catch (Exception ex)
             {
@@ -154,11 +143,11 @@ namespace GetMediaInfoGUI
             if (data.ContainsFileDropList())
             {
                 string[] listOfPaths = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-                AddTabItems(listOfPaths);
+                CreateFileTabs(listOfPaths);
             } else if (data.ContainsText())
             {
                 var input = e.Data.GetData(DataFormats.Text, false) as string;
-                AddTabItems(input);
+                CreateFileTabs(input);
             }
         }
 
@@ -322,7 +311,7 @@ namespace GetMediaInfoGUI
             if (file.ShowDialog().GetValueOrDefault())
             {
 
-                AddTabItems(file.FileNames);
+                CreateFileTabs(file.FileNames);
             }
         }
 
@@ -422,7 +411,7 @@ namespace GetMediaInfoGUI
             {
                 if (Directory.Exists(folder.SelectedPath))
                 {
-                    AddTabItems(Directory.GetFiles(folder.SelectedPath));
+                    CreateFileTabs(Directory.GetFiles(folder.SelectedPath));
                 }
             }
         }
@@ -451,7 +440,7 @@ namespace GetMediaInfoGUI
         {
             if (sender is MenuItem menuItem)
             {
-                AddTabItems(menuItem.Tag as string);
+                CreateFileTabs(menuItem.Tag as string);
             }           
         }
 
@@ -784,27 +773,27 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Process arguments passed to the application.
+        /// Launches the analysis of all files in the program arguments.
         /// </summary>
-        private void ProcessArgs(params string[] args)
+        private void AnalyzeFiles(params string[] args)
         {
             var paths = args.Where(i => File.Exists(i));
-            AddTabItems(paths.ToArray());
+            CreateFileTabs(paths.ToArray());
         }
 
         /// <summary>
-        /// For each valid path in the input list creates a new FileTab and add it to the interface.
+        /// Creates a new FileTab for each path in the input list and adds it to the interface.
         /// </summary>
-        /// <param name="inputpaths">The list of input paths.</param>
-        private void AddTabItems(params string[] inputpaths)
+        /// <param name="paths">The list of input paths.</param>
+        private void CreateFileTabs(params string[] paths)
         {
             List<string> formatToIgnore = new List<string>() { ".lnk", ".db" , ".exe", ".dll", ".bat",
                 ".cmd", ".ini", ".xml", ".cfg", ".json", ".iso", ".bin", ".rar", ".zip", ".7z", ".inf",
                 ".nfo", ".pdf", ".pptx", ".ppt", ".docx", ".doc", ".xls", ".xlsx" };
 
-            if (inputpaths.Length > 10)
+            if (paths.Length > 10)
             {
-                var result = MessageBoxHelper.Show(this, $"Are you sure do you want to open {inputpaths.Length} files?",
+                var result = MessageBoxHelper.Show(this, $"Are you sure do you want to open {paths.Length} files?",
                     "Multiple files opening confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.No)
@@ -815,7 +804,7 @@ namespace GetMediaInfoGUI
 
             int currCount = FileTabControl.SelectedIndex >= 0 ? FileTabControl.SelectedIndex : 0;
 
-            foreach (string path in inputpaths)
+            foreach (string path in paths)
             {
                 if (File.Exists(path) && !formatToIgnore.Any(f => path.EndsWith(f)))
                 {
@@ -827,7 +816,7 @@ namespace GetMediaInfoGUI
                 }
             }
 
-            if (inputpaths.Length > 0)
+            if (paths.Length > 0)
             {
                 Task.Run(() => {
                     InitializeTabs();
@@ -1011,6 +1000,25 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
+        /// Checks the last update date, if more than a week ago, ask the user if he wats to check again. If the user confirms the updater is launched.
+        /// </summary>
+        private void CheckLastUpdateDate()
+        {
+            var lastCheckDate = ConfigHelper.GetConfig().LastUpdateCheck;
+            if (DateTime.Now.Date.Subtract(lastCheckDate).Days > 7)
+            {
+                var result = MessageBoxHelper.Show(this,
+                    $"The latest Mediainfo library version was checked at {lastCheckDate.ToString("g")}. Do you want to check again?",
+                    "Mediainfo update check", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    StartUpdater();
+                }
+            }
+        }
+
+        /// <summary>
         /// Starts the Updater.
         /// </summary>
         /// <param name="centerScreen">Force the updater to position at the center of the screen.</param>
@@ -1121,7 +1129,7 @@ namespace GetMediaInfoGUI
                     }
                     this.Activate();
 
-                    ProcessArgs(args.ToArray());
+                    AnalyzeFiles(args.ToArray());
                 }
                 catch (Exception ex)
                 {
