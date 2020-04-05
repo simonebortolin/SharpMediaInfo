@@ -82,6 +82,9 @@ namespace GetMediaInfoGUI
         {
             try
             {
+                RestoreConfig();
+                RestoreHistory();
+
                 VerifyMediaInfo();
                 VerifyGetMediaInfo();
 
@@ -89,8 +92,6 @@ namespace GetMediaInfoGUI
                 CheckDropMode(args);
                 ProcessArgs(args);
 
-                RestoreConfig();
-                RestoreHistory();
                 StatusLab.Content = "Ready.";
                 StatusLab.InvalidateVisual();              
             }
