@@ -29,6 +29,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
     <DocumentationFile>bin\Debug\GetMediaInfo.xml</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -51,6 +52,10 @@
     <Compile Include="Enums\InfoOptions.cs" />
     <Compile Include="Enums\InfoKind.cs" />
     <Compile Include="Enums\StreamKind.cs" />
+    <Compile Include="Exceptions\MediaInfoAnalysisException.cs" />
+    <Compile Include="Exceptions\MediainfoFinalizeException.cs" />
+    <Compile Include="Exceptions\MediainfoOpenException.cs" />
+    <Compile Include="Interops\MediaInfoLib.cs" />
     <Compile Include="Models\AudioTrack.cs" />
     <Compile Include="Models\ChapterTrack.cs" />
     <Compile Include="Models\ImageTrack.cs" />

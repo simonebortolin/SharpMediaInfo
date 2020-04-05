@@ -10,9 +10,9 @@
         /// </summary>
         ShowInInform,
         /// <summary>
-        /// Support
+        /// Reserved (do not use)
         /// </summary>
-        Support,
+        Reserved,
         /// <summary>
         /// Show in supported
         /// </summary>
@@ -20,6 +20,10 @@
         /// <summary>
         /// Type of value
         /// </summary>
-        TypeOfValue
+        TypeOfValue,
+        /// <summary>
+        /// Show in Xml
+        /// </summary>
+        ShowInXml
     }
 }

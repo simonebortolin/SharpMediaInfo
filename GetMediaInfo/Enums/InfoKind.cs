@@ -36,6 +36,10 @@
         /// <summary>
         /// How To
         /// </summary>
-        HowTo
+        HowTo,
+        /// <summary>
+        /// Domain
+        /// </summary>
+        Domain
     }
 }
