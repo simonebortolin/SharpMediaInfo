@@ -18,7 +18,9 @@
         Width="522"
         MinWidth="522" 
         MinHeight="584"        
-        Icon="../icon.ico">
+        Icon="../icon.ico"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType">
     <!-- Resources -->
     <Window.Resources>
         <ControlTemplate x:Key="closeButton" TargetType="{x:Type Button}">

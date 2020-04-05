@@ -6,13 +6,14 @@
         mc:Ignorable="d"
         Title="Components Updater" 
         Topmost="True" 
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" 
         Closing="Window_Closing"
         Width="394" 
-        Height="170" 
-        VerticalContentAlignment="Bottom"
-        Icon="../icon.ico">
+        Height="170"
+        Icon="../icon.ico"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="90"/>
