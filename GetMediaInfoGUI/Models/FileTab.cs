@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using GetMediaInfoGUI.Extensions;
 using GetMediaInfoGUI.Utils;
+using GetMediaInfoGUI.Configuration;
 
 namespace GetMediaInfoGUI
 {
@@ -53,8 +54,16 @@ namespace GetMediaInfoGUI
             if (!File.Exists(FilePath)) { throw new ArgumentException("The Tab cannot be initializated with a file that does not exists."); }
 
             this.LoadingIconVisibility = Visibility.Collapsed;
-            this.FontFamily = GlobalSettings.ReportFontFamily;
-            this.FontSize = GlobalSettings.ReportFontSize;
+            try
+            {
+                this.FontFamily = new FontFamily(ConfigHelper.GetConfig().ReportFontFamily);
+            } catch (Exception)
+            {
+                this.FontFamily = new FontFamily(Constants.DefaultFontFamily);
+                ConfigHelper.GetConfig().ReportFontFamily = Constants.DefaultFontFamily;
+            }
+            
+            this.FontSize = ConfigHelper.GetConfig().ReportFontSize;
 
             this.FilePath = FilePath;
             this.HeaderText = Path.GetFileName(FilePath);
@@ -706,7 +715,7 @@ namespace GetMediaInfoGUI
             Stopwatch sw = new Stopwatch();
             sw.Start();
 #endif
-            MediaInfo = new MediaInfo(FilePath, parseCoverData: GlobalSettings.ShowCover, parseReports: true);
+            MediaInfo = new MediaInfo(FilePath, parseCoverData: ConfigHelper.GetConfig().ShowCover, parseReports: true);
 #if DEBUG
             sw.Stop();
             Debug.WriteLine("File: " + FilePath + " - Analysis time: " + sw.ElapsedMilliseconds + "ms");
@@ -730,10 +739,19 @@ namespace GetMediaInfoGUI
             IsReady = false;
             LoadingIconVisibility = Visibility.Visible;
 
-            FontFamily = GlobalSettings.ReportFontFamily;
-            FontSize = GlobalSettings.ReportFontSize;
-            FontWeight = GlobalSettings.Bold ? FontWeights.Bold : FontWeights.Normal;
-            FontStyle = GlobalSettings.Italic ? FontStyles.Italic : FontStyles.Normal;
+            try
+            {
+                this.FontFamily = new FontFamily(ConfigHelper.GetConfig().ReportFontFamily);
+            }
+            catch (Exception)
+            {
+                this.FontFamily = new FontFamily(Constants.DefaultFontFamily);
+                ConfigHelper.GetConfig().ReportFontFamily = Constants.DefaultFontFamily;
+            }
+
+            FontSize = ConfigHelper.GetConfig().ReportFontSize;
+            FontWeight = ConfigHelper.GetConfig().Bold ? FontWeights.Bold : FontWeights.Normal;
+            FontStyle = ConfigHelper.GetConfig().Italic ? FontStyles.Italic : FontStyles.Normal;
 
             GetMediaInfoReports();
             CreateSimpleReport();
@@ -786,7 +804,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void AutoSaveReportToDisk()
         {
-            if (GlobalSettings.AutoSaveReport)
+            if (ConfigHelper.GetConfig().AutoSaveReport)
             {
                 string ReportName = Path.ChangeExtension(MediaInfo.General[0].CompleteName, ".txt");
                 Task.Factory.StartNew(() => {
@@ -802,7 +820,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void CreateSimpleReport()
         {
-            if (MediaInfo != null && !GlobalSettings.DisableSimpleReport)
+            if (MediaInfo != null && !ConfigHelper.GetConfig().DisableSimpleReport)
             {
                 StringBuilder stringBuilder = new StringBuilder();
 
@@ -1375,7 +1393,7 @@ namespace GetMediaInfoGUI
                 #endregion
 
                 //Cover
-                if (GlobalSettings.ShowCover)
+                if (ConfigHelper.GetConfig().ShowCover)
                 {
                     SimpleReportCover = GetCoverData();
                     if (SimpleReportCover != null)
@@ -1403,7 +1421,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void CreateTreeReport()
         {
-            if (MediaInfo != null && !GlobalSettings.DisableTreeReport)
+            if (MediaInfo != null && !ConfigHelper.GetConfig().DisableTreeReport)
             {
                 List<TreeViewItem> treeReport = new List<TreeViewItem>();
                 int currIndex = 0;
@@ -1830,7 +1848,7 @@ namespace GetMediaInfoGUI
         {
             if (MediaInfo != null)
             {
-                if (GlobalSettings.RemoveJustification)
+                if (ConfigHelper.GetConfig().RemoveJustification)
                 {
                     StandardReport = MediaInfo.InfoStandard.Replace("  ", "").Replace(" : ", ": ");
                     CompleteReport = MediaInfo.InfoComplete.Replace("  ", "").Replace(" : ", ": ");
@@ -1864,11 +1882,11 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void UpdateReportsVisibility()
         {
-            SimpleReportVisibility = GlobalSettings.DisableSimpleReport ? Visibility.Collapsed : Visibility.Visible;
-            CompleteReportVisibility = GlobalSettings.DisableCompleteReport ? Visibility.Collapsed : Visibility.Visible;
-            TreeReportVisibility = GlobalSettings.DisableTreeReport ? Visibility.Collapsed : Visibility.Visible;
+            SimpleReportVisibility = ConfigHelper.GetConfig().DisableSimpleReport ? Visibility.Collapsed : Visibility.Visible;
+            CompleteReportVisibility = ConfigHelper.GetConfig().DisableCompleteReport ? Visibility.Collapsed : Visibility.Visible;
+            TreeReportVisibility = ConfigHelper.GetConfig().DisableTreeReport ? Visibility.Collapsed : Visibility.Visible;
 
-            SelectedTabIndex = GlobalSettings.DisableSimpleReport ? 1 : 0;
+            SelectedTabIndex = ConfigHelper.GetConfig().DisableSimpleReport ? 1 : 0;
         }
 
         /// <summary>
@@ -1878,7 +1896,7 @@ namespace GetMediaInfoGUI
         /// <returns>the timecode with/without milliseconds.</returns>
         private string ShowHideMilliseconds(string time)
         {
-            return GlobalSettings.ShowMilliseconds ? time : time.Split('.')[0];
+            return ConfigHelper.GetConfig().ShowMilliseconds ? time : time.Split('.')[0];
         }
 
         /// <summary>
@@ -1967,7 +1985,6 @@ namespace GetMediaInfoGUI
             MediaInfo?.Dispose();
             MediaInfo = null;
         }
-
         #endregion
 
         #region INotifyPropertyChanged

@@ -1,4 +1,6 @@
-﻿using GetMediaInfoGUI.Extensions;
+﻿using GetMediaInfoGUI.Configuration;
+using GetMediaInfoGUI.Extensions;
+using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Utils;
 using System;
 using System.Diagnostics;
@@ -27,7 +29,7 @@ namespace GetMediaInfoGUI
         #region Constructor 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GlobalSettings"/> class.
+        /// Initializes a new instance of the <see cref="ConfigHelper.GetConfig()"/> class.
         /// </summary>
         public SettingsWindow()
         {
@@ -54,22 +56,22 @@ namespace GetMediaInfoGUI
             VerifyGetMediaInfoVersion();
 
             //Global
-            AutoSaveReport.IsChecked = GlobalSettings.AutoSaveReport;
-            DisableSimple.IsChecked = GlobalSettings.DisableSimpleReport;
-            DisableComplete.IsChecked = GlobalSettings.DisableCompleteReport;
-            DisableTree.IsChecked = GlobalSettings.DisableTreeReport;
-            EnableMilliseconds.IsChecked = GlobalSettings.ShowMilliseconds;
-            RemoveSpace.IsChecked = GlobalSettings.RemoveJustification;
-            ShowCover.IsChecked = GlobalSettings.ShowCover;
+            AutoSaveReport.IsChecked = ConfigHelper.GetConfig().AutoSaveReport;
+            DisableSimple.IsChecked = ConfigHelper.GetConfig().DisableSimpleReport;
+            DisableComplete.IsChecked = ConfigHelper.GetConfig().DisableCompleteReport;
+            DisableTree.IsChecked = ConfigHelper.GetConfig().DisableTreeReport;
+            EnableMilliseconds.IsChecked = ConfigHelper.GetConfig().ShowMilliseconds;
+            RemoveSpace.IsChecked = ConfigHelper.GetConfig().RemoveJustification;
+            ShowCover.IsChecked = ConfigHelper.GetConfig().ShowCover;
 
             //Appearence
-            ComboBoxFontSize.SelectedValue = GlobalSettings.ReportFontSize;
-            ComboBoxFontFamily.SelectedIndex = ComboBoxFontFamily.Items.Cast<FontFamily>().FindIndex(s => s.Equals(GlobalSettings.ReportFontFamily));
-            BoldControl.SetChecked(GlobalSettings.Bold);    
-            ItalicControl.SetChecked(GlobalSettings.Italic);
+            ComboBoxFontSize.SelectedValue = ConfigHelper.GetConfig().ReportFontSize;
+            ComboBoxFontFamily.SelectedIndex = ComboBoxFontFamily.Items.Cast<FontFamily>().FindIndex(i => i.Source.Equals(ConfigHelper.GetConfig().ReportFontFamily));
+            BoldControl.SetChecked(ConfigHelper.GetConfig().Bold);    
+            ItalicControl.SetChecked(ConfigHelper.GetConfig().Italic);
 
             //History
-            HistorySize.Value = GlobalSettings.History.MaxSize;
+            HistorySize.Value = HistoryHelper.GetHistory().MaxSize;
 
             initialization = false;
         }
@@ -143,7 +145,7 @@ namespace GetMediaInfoGUI
         private void DisableSimple_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.DisableSimpleReport = DisableSimple.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().DisableSimpleReport = DisableSimple.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -154,7 +156,7 @@ namespace GetMediaInfoGUI
         private void DisableComplete_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.DisableCompleteReport = DisableComplete.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().DisableCompleteReport = DisableComplete.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -165,7 +167,7 @@ namespace GetMediaInfoGUI
         private void DisableTree_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.DisableTreeReport = DisableTree.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().DisableTreeReport = DisableTree.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -176,7 +178,7 @@ namespace GetMediaInfoGUI
         private void EnableMilliseconds_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.ShowMilliseconds = EnableMilliseconds.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().ShowMilliseconds = EnableMilliseconds.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -187,7 +189,7 @@ namespace GetMediaInfoGUI
         private void AutoSaveReport_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.AutoSaveReport = AutoSaveReport.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().AutoSaveReport = AutoSaveReport.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -198,7 +200,7 @@ namespace GetMediaInfoGUI
         private void RemoveSpace_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.RemoveJustification = RemoveSpace.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().RemoveJustification = RemoveSpace.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -209,7 +211,7 @@ namespace GetMediaInfoGUI
         private void ShowCover_CheckedUnchecked(object sender, RoutedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.ShowCover = ShowCover.IsChecked.GetValueOrDefault();
+                ConfigHelper.GetConfig().ShowCover = ShowCover.IsChecked.GetValueOrDefault();
         }
 
         /// <summary>
@@ -221,8 +223,8 @@ namespace GetMediaInfoGUI
         {
             if (!initialization)
             {
-                GlobalSettings.Bold = !GlobalSettings.Bold;
-                BoldControl.SetChecked(GlobalSettings.Bold);
+                ConfigHelper.GetConfig().Bold = !ConfigHelper.GetConfig().Bold;
+                BoldControl.SetChecked(ConfigHelper.GetConfig().Bold);
             }
         }
 
@@ -235,8 +237,8 @@ namespace GetMediaInfoGUI
         {
             if (!initialization)
             {
-                GlobalSettings.Italic = !GlobalSettings.Italic;
-                ItalicControl.SetChecked(GlobalSettings.Italic);
+                ConfigHelper.GetConfig().Italic = !ConfigHelper.GetConfig().Italic;
+                ItalicControl.SetChecked(ConfigHelper.GetConfig().Italic);
             }
         }
 
@@ -248,7 +250,9 @@ namespace GetMediaInfoGUI
         private void ComboBoxFont_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.ReportFontFamily = (FontFamily)(ComboBoxFontFamily?.SelectedValue ?? GlobalSettings.ReportFontFamily);
+            {
+                ConfigHelper.GetConfig().ReportFontFamily = ComboBoxFontFamily?.SelectedValue as string ?? ConfigHelper.GetConfig().ReportFontFamily;
+            }               
         }
 
         /// <summary>
@@ -259,7 +263,9 @@ namespace GetMediaInfoGUI
         private void ComboBoxSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!initialization)
-                GlobalSettings.ReportFontSize = (double)(ComboBoxFontSize?.SelectedValue ?? GlobalSettings.ReportFontSize);
+            {
+                ConfigHelper.GetConfig().ReportFontSize = (double)(ComboBoxFontSize?.SelectedValue ?? ConfigHelper.GetConfig().ReportFontSize);
+            }            
         }
 
         /// <summary>
@@ -277,20 +283,13 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void HistorySize_ValueChanged(object sender, EventArgs e)
+        private void HistorySize_ValueChanged(object sender, RoutedEventArgs e)
         {
             if (!initialization)
             {
-                GlobalSettings.HistorySize = (int)HistorySize.Value;          
-                FixedSizedQueue<string> oldHistory = GlobalSettings.History;
-
-                GlobalSettings.History.Clear();
-                GlobalSettings.History.MaxSize = GlobalSettings.HistorySize;
-
-                for (int i = 0; i < GlobalSettings.HistorySize && oldHistory.Count > 0; i++)
-                {
-                    GlobalSettings.History.Enqueue(oldHistory.Dequeue());
-                }
+                var historySize = (int)HistorySize.Value;
+                ConfigHelper.GetConfig().HistorySize = historySize;
+                HistoryHelper.GetHistory().ChangeMaximumSize(historySize);
             }          
         }
 
@@ -301,7 +300,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ClearRecentFileList_Click(object sender, RoutedEventArgs e)
         {
-            GlobalSettings.History.Clear();
+            HistoryHelper.GetHistory().Clear();
         }
         #endregion
 

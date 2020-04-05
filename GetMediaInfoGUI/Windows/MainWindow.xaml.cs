@@ -7,13 +7,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Win32;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using GetMediaInfoGUI.Utils;
 using GetMediaInfoGUI.Interop;
+using GetMediaInfoGUI.Configuration;
+using GetMediaInfoGUI.History;
 
 namespace GetMediaInfoGUI
 {
@@ -101,7 +102,6 @@ namespace GetMediaInfoGUI
                 VerifyGetMediaInfo();
 
                 var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
-                //CheckDropMode(args);
                 ProcessArgs(args);              
             }
             catch (Exception ex)
@@ -212,7 +212,6 @@ namespace GetMediaInfoGUI
                 FileTabControl.SelectedIndex = FileTabControl.SelectedIndex + 1 % FileTabControl.Items.Count;
             }
         }
-
         #endregion
 
         #region Menu
@@ -224,8 +223,8 @@ namespace GetMediaInfoGUI
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
         {
             SaveConfig();
+            SaveHistory();
             Environment.Exit(0);
-
         }
         
         /// <summary>
@@ -432,9 +431,21 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItemOpenRecentFiles_Click(object sender, RoutedEventArgs e)
         {
-            MenuItem menuItem = sender as MenuItem;
-            string path = GlobalSettings.History.First(s => s.Contains((menuItem.Header as string).Substring(3)));
-            AddTabItems(path);
+            if (sender is MenuItem menuItem)
+            {
+                AddTabItems(menuItem.Tag as string);
+            }           
+        }
+
+        /// <summary>
+        /// Clears the recent files history.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MenuItemClearRecentFiles_Click(object sender, RoutedEventArgs e)
+        {
+            HistoryMenuItem.Items.Clear();
+            HistoryHelper.GetHistory().Clear();
         }
         #endregion
 
@@ -450,7 +461,7 @@ namespace GetMediaInfoGUI
             {
                 if (tabControl.SelectedIndex == -1)
                 {
-                    tabControl.SelectedIndex = GlobalSettings.DisableSimpleReport ? 1 : 0;
+                    tabControl.SelectedIndex = ConfigHelper.GetConfig().DisableSimpleReport ? 1 : 0;
                 }
             }           
         }
@@ -821,184 +832,34 @@ namespace GetMediaInfoGUI
         /// Saves user settings into a configuration file.
         /// </summary>
         private void SaveConfig()
+        {
+            try
             {
-                try
-                {
-                    string path = Path.Combine(GetAppDataFolder(), "userconfig.xml");
-
-                    if (File.Exists(path))
-                    {
-                        File.Delete(path);
-                    }
-
-                    XmlWriter XmlWriter = XmlWriter.Create(path, new XmlWriterSettings() { Indent = true });
-
-                    XmlWriter.WriteStartDocument();
-                    XmlWriter.WriteComment("GetMediaInfo GUI - User Configuration");
-                    XmlWriter.WriteStartElement("database");
-
-                    #region configs
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "AutoSaveReport");
-                    XmlWriter.WriteValue(GlobalSettings.AutoSaveReport);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "DisableSimple");
-                    XmlWriter.WriteValue(GlobalSettings.DisableSimpleReport);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "DisableComplete");
-                    XmlWriter.WriteValue(GlobalSettings.DisableCompleteReport);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "DisableTree");
-                    XmlWriter.WriteValue(GlobalSettings.DisableTreeReport);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "ShowMilliseconds");
-                    XmlWriter.WriteValue(GlobalSettings.ShowMilliseconds);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "RemoveSpace");
-                    XmlWriter.WriteValue(GlobalSettings.RemoveJustification);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "ShowCover");
-                    XmlWriter.WriteValue(GlobalSettings.ShowCover);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "Bold");
-                    XmlWriter.WriteValue(GlobalSettings.Bold);
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "Italic");
-                    XmlWriter.WriteValue(GlobalSettings.Italic);
-                    XmlWriter.WriteEndElement();
-                    #endregion
-
-                    #region fonts
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "FontSize");
-                    XmlWriter.WriteValue(GlobalSettings.ReportFontSize.GetValueOrDefault());
-                    XmlWriter.WriteEndElement();
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "FontFamily");
-                    XmlWriter.WriteValue(GlobalSettings.ReportFontFamily.ToString());
-                    XmlWriter.WriteEndElement();
-                    #endregion
-
-                    #region other
-
-                    XmlWriter.WriteStartElement("config");
-                    XmlWriter.WriteAttributeString("tag", "HistorySize");
-                    XmlWriter.WriteValue(GlobalSettings.HistorySize);
-                    XmlWriter.WriteEndElement();
-                    #endregion
-
-                    XmlWriter.WriteEndElement();
-                    XmlWriter.WriteEndDocument();
-                    XmlWriter.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Unable to save user configuration. (" + ex.Message + ").");
-                }
+                ConfigHelper.SaveConfig();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to save user settings: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Restores user settings from a configuration file.
         /// </summary>
         private void RestoreConfig()
         {
-            string path = Path.Combine(GetAppDataFolder(), "userconfig.xml");
-
-            if (File.Exists(path))
+            try
             {
-                try
-                {
-                    XDocument XDocument = XDocument.Load(path);
-                    List<XElement> settings = XDocument.Element("database").Elements("config").ToList();
-
-                    #region configs
-                    foreach (XElement config in settings)
-                    {
-                        string value = config.Value;
-
-                        switch (config.Attribute("tag").Value)
-                        {
-                            case "AutoSaveReport":
-                                GlobalSettings.AutoSaveReport = bool.Parse(value);
-                                break;
-                            case "DisableSimple":
-                                GlobalSettings.DisableSimpleReport = bool.Parse(value);
-                                break;
-                            case "DisableComplete":
-                                GlobalSettings.DisableCompleteReport = bool.Parse(value);
-                                break;
-                            case "DisableTree":
-                                GlobalSettings.DisableTreeReport = bool.Parse(value);
-                                break;
-                            case "ShowMilliseconds":
-                                GlobalSettings.ShowMilliseconds = bool.Parse(value);
-                                break;
-                            case "RemoveSpace":
-                                GlobalSettings.RemoveJustification = bool.Parse(value);
-                                break;
-                            case "ShowCover":
-                                GlobalSettings.ShowCover = bool.Parse(value);
-                                break;
-                            case "Italic":
-                                GlobalSettings.Italic = bool.Parse(value);
-                                break;
-                            case "Bold":
-                                GlobalSettings.Bold = bool.Parse(value);
-                                break;
-                            case "FontSize":
-                                GlobalSettings.ReportFontSize = double.Parse(value);
-                                break;
-                            case "FontFamily":
-                                GlobalSettings.ReportFontFamily = new System.Windows.Media.FontFamily(value);
-                                break;
-                            case "HistorySize":
-                                GlobalSettings.History.MaxSize = int.Parse(value);
-                                break;
-                        }
-                    }
-                    #endregion
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Unable to restore user settings. Configuration file is corrupted! (" + ex.Message + ").");
-                }
+                ConfigHelper.LoadConfig();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Unable to restore user settings. Configuration file is missing!");
+                MessageBox.Show($"Unable to load user settings: {ex.Message}");
             }
         }
         #endregion
 
         #region History Management
-        /// <summary>
-        /// Clears the recent files history.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ClearHistory(object sender, RoutedEventArgs e)
-        {
-            HistoryMenuItem.Items.Clear();
-            GlobalSettings.History.Clear();
-        }
-
         /// <summary>
         /// Saves recent file list into a file.
         /// </summary>
@@ -1006,28 +867,11 @@ namespace GetMediaInfoGUI
         {
             try
             {
-                string path = Path.Combine(GetAppDataFolder(), "history.xml");
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-
-                XmlWriter xmlWriter = XmlWriter.Create(path, new XmlWriterSettings() { Indent = true });
-
-                xmlWriter.WriteStartDocument();
-                xmlWriter.WriteComment("GetMediaInfo GUI - Recent Files List");
-                xmlWriter.WriteStartElement("history");
-                while (GlobalSettings.History.Count > 0)
-                {
-                    xmlWriter.WriteElementString("file", GlobalSettings.History.Dequeue());
-                }
-                xmlWriter.WriteEndElement();
-                xmlWriter.WriteEndDocument();
-                xmlWriter.Close();
+                HistoryHelper.SaveHistory();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to save user configuration. (" + ex.Message + ").");
+                MessageBox.Show(this, $"Unable to save recent file history: {ex.Message}");
             }
         }
 
@@ -1036,22 +880,10 @@ namespace GetMediaInfoGUI
         /// </summary>
         private void RestoreHistory()
         {
-            string path = Path.Combine(GetAppDataFolder(), "history.xml");
-            if (File.Exists(path))
+            try
             {
-                try
-                {
-                    XDocument xDocument = XDocument.Load(path);
-                    GlobalSettings.History = new FixedSizedQueue<string>(GlobalSettings.History.MaxSize, 
-                        xDocument.Element("history").Elements("file").Select(s => s.Value).ToList());
-
-                    UpdateHistoryMenuItem();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Unable to restore user settings. (" + ex.Message + ").");
-                }
-            }
+                HistoryHelper.LoadHistory();
+            } catch (Exception) { }         
         }
 
         /// <summary>
@@ -1060,13 +892,11 @@ namespace GetMediaInfoGUI
         /// <param name="path">The path of the file.</param>
         private void AddFileToHistory(string path)
         {
-            if (GlobalSettings.History.Contains(path))
+            if (HistoryHelper.GetHistory().Any(i => i.Path.Equals(path)))
             {
-                List<string> list = GlobalSettings.History.ToList();
-                list.Remove(path);
-                GlobalSettings.History = new FixedSizedQueue<string>(GlobalSettings.History.MaxSize, list);
+                HistoryHelper.GetHistory().Remove(i => i.Path.Equals(path));
             }
-            GlobalSettings.History.Enqueue(path);
+            HistoryHelper.GetHistory().Enqueue(new HistoryItem(path));
             UpdateHistoryMenuItem();
         }
 
@@ -1076,26 +906,23 @@ namespace GetMediaInfoGUI
         private void UpdateHistoryMenuItem()
         {
             HistoryMenuItem.Items.Clear();
-            if (GlobalSettings.History.Count > 0)
+
+            var clearItem = new MenuItem()
             {
-                int i = 0;
-                foreach (string recentFile in GlobalSettings.History.Reverse())
-                {
-                    i++;
-                    MenuItem menuItem = new MenuItem();
-                    menuItem.Click += MenuItemOpenRecentFiles_Click;
-                    menuItem.Header = i + " " + recentFile;
-                    HistoryMenuItem.Items.Add(menuItem);
-                }
-                HistoryMenuItem.Items.Add(new Separator());
+                Header = "Clear all"
+            };
+            clearItem.Click += MenuItemClearRecentFiles_Click;
+            HistoryMenuItem.Items.Add(clearItem);
 
-                MenuItem clearItem = new MenuItem()
-                {
-                    Header = "Clear history"
-                };
-                clearItem.Click += ClearHistory;
+            HistoryMenuItem.Items.Add(new Separator());
 
-                HistoryMenuItem.Items.Add(clearItem);
+            foreach (var item in HistoryHelper.GetHistory().Reverse())
+            {
+                var menuItem = new MenuItem();
+                menuItem.Click += MenuItemOpenRecentFiles_Click;
+                menuItem.Header = item.Path;
+                menuItem.Tag = item.Path;
+                HistoryMenuItem.Items.Add(menuItem);
             }
         }
         #endregion
@@ -1185,19 +1012,7 @@ namespace GetMediaInfoGUI
         #endregion
 
         #region Helper Methods
-        /// <summary>
-        /// Gets the app data folder where to save the config files, creates it if it does not exists.
-        /// </summary>
-        /// <returns>The path to the appdata folder.</returns>
-        private string GetAppDataFolder()
-        {
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            folder = Path.Combine(folder, "GetMediaInfo");
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
 
-            return folder;
-        }
         #endregion
 
         #region Inter Process Communication

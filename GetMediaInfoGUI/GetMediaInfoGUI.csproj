@@ -93,14 +93,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigHelper.cs" />
+    <Compile Include="Controls\Converters\ButtonHeightConverter.cs" />
+    <Compile Include="Controls\Converters\ButtonShowGridConverter.cs" />
+    <Compile Include="Controls\Converters\ButtonVisibilityConverter.cs" />
+    <Compile Include="Controls\Converters\DecimationConverter.cs" />
+    <Compile Include="Controls\NumericUpDown.xaml.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AnimatedImage.cs" />
+    <Compile Include="History\HistoryHelper.cs" />
+    <Compile Include="History\HistoryItem.cs" />
+    <Compile Include="History\HistoryItemList.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Interop\CrossProcessLockFactory.cs" />
     <Compile Include="Models\FileTab.cs" />
-    <Compile Include="Utils\FixedSizedQueue.cs" />
-    <Compile Include="Controls\GifImage.cs" />
+    <Compile Include="History\FixedSizeQueue.cs" />
     <Compile Include="Extensions\ButtonExtensions.cs" />
     <Compile Include="Interop\InterProcComm.cs" />
-    <Compile Include="Utils\GlobalSetting.cs" />
+    <Compile Include="Utils\FolderUtils.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utils\StringUtils.cs" />
@@ -112,6 +124,10 @@
     <Compile Include="Windows\UpdaterWindow.xaml.cs">
       <DependentUpon>UpdaterWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\NumericUpDown.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

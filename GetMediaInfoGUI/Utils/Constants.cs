@@ -17,5 +17,17 @@
         /// The mediainfo rss official url.
         /// </summary>
         public const string MediainfoRssUrl = "https://mediaarea.net/rss/mediainfo_updates.xml";
+        /// <summary>
+        /// The name of the configuration file.
+        /// </summary>
+        public const string ConfigurationFileName = "settings.xml";
+        /// <summary>
+        /// The name of the history file.
+        /// </summary>
+        public const string HistoryFileName = "history.xml";
+        /// <summary>
+        /// The default font family.
+        /// </summary>
+        public const string DefaultFontFamily = "Sagoe UI";
     }
 }
