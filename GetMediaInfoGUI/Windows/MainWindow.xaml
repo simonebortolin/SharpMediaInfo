@@ -8,16 +8,16 @@
         x:Class="GetMediaInfoGUI.MainWindow"
         mc:Ignorable="d"
         AllowDrop="True"
-        Drop="Windows_Drop"
-        DragEnter="Windows_DragEnter"
+        Drop="Window_Drop"
+        DragEnter="Window_DragEnter"
+        KeyDown="Window_KeyDown"
         Loaded="Window_Loaded"
-        Closing="Windows_Closing"
+        Closing="Window_Closing"
         Title="GetMediaInfo"
         Height="584" 
         Width="522"
         MinWidth="522" 
-        MinHeight="584" 
-        KeyDown="Window_KeyDown"
+        MinHeight="584"        
         Icon="../icon.ico">
     <!-- Resources -->
     <Window.Resources>
@@ -61,28 +61,34 @@
             </Menu>
         </DockPanel>
         <!-- TabControl -->
-        <TabControl x:FieldModifier="private" x:Name="FileTabControl" Margin="7.5,20,7.5,40" ItemsSource="{Binding FileTab}" MouseDown="TabControl_MouseDown" 
-                    PreviewMouseLeftButtonDown="TabControl_PreviewMouseLeftButtonDown" MouseMove="TabControl_MouseMove">
+        <TabControl x:Name="FileTabControl" Margin="7.5,20,7.5,40" ItemsSource="{Binding FileTab}">
             <!-- Tab Header -->
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <extra:GifImage GifSource="/GetMediaInfoGUI;component/Resources/loading.gif" Visibility="{Binding LoadingIconVisibility}"/>
                         <TextBlock Text="{Binding HeaderText}" Margin="0,0,10,0" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
-                        <Button Click="CloseTabButton_Click" Template="{StaticResource ResourceKey=closeButton}" HorizontalAlignment="Right"/>
+                        <Button Click="TabItem_CloseButton_Click" Template="{StaticResource ResourceKey=closeButton}" HorizontalAlignment="Right"/>
+                        
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="{x:Type TabItem}">
+                    <EventSetter Event="Drop" Handler="TabItem_Drop"/>
+                    <EventSetter Event="MouseMove" Handler="TabItem_MouseMove"/>
+                    <EventSetter Event="MouseDown" Handler="TabItem_MouseDown"/>
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="TabItem_PreviewMouseLeftButtonDown"/>
+                </Style>
+            </TabControl.ItemContainerStyle>
             <!-- Tab Body -->
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <TabControl Margin="7.5" VerticalContentAlignment="Stretch" Drop="Windows_Drop" DragEnter="Windows_DragEnter" 
-                                SelectedIndex="{Binding SelectedTabIndex}" SelectedItem="{Binding SelectedTab}" SelectionChanged="TabControl_SelectionChanged">
+                    <TabControl Margin="7.5" VerticalContentAlignment="Stretch" SelectedIndex="{Binding SelectedTabIndex}" SelectedItem="{Binding SelectedTab}" SelectionChanged="TabControl_SelectionChanged">
                         <TabControl.Resources>
                             <Style TargetType="{x:Type TabItem}">
-                                <!--<Setter Property="AllowDrop" Value="True"/>-->
-                                <EventSetter Event="UIElement.PreviewMouseMove" Handler="TabItem_PreviewMouseMove"/>
-                                <EventSetter Event="UIElement.Drop" Handler="TabItem_Drop"/>
+                                <EventSetter Event="Drop" Handler="TabItem_Drop"/>
+                                <EventSetter Event="PreviewMouseMove" Handler="TabItem_PreviewMouseMove"/>
                             </Style>
                         </TabControl.Resources>
                         <!-- Simple Report -->
@@ -139,8 +145,7 @@
                             <Grid>
                                 <TextBox Margin="5" TextWrapping="Wrap" Text="{Binding StandardReport}" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
                                          FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" 
-                                         FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" Drop="Windows_Drop" DragEnter="Windows_DragEnter"
-                                         PreviewDragOver="TextBoxReport_PreviewDragOver">
+                                         FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}">
                                     <!--AllowDrop="True"-->
                                     <TextBox.ContextMenu>
                                         <ContextMenu>
@@ -158,8 +163,7 @@
                             <Grid>
                                 <TextBox Margin="5" TextWrapping="Wrap" Text="{Binding CompleteReport}" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
                                          FontSize="{Binding FontSize}" FontFamily="{Binding FontFamily}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" 
-                                         FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}"
-                                         Drop="Windows_Drop" DragEnter="Windows_DragEnter" PreviewDragOver="TextBoxReport_PreviewDragOver">
+                                         FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}">
                                     <!--AllowDrop="True"-->
                                     <TextBox.ContextMenu>
                                         <ContextMenu>

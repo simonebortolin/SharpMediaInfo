@@ -104,13 +104,13 @@
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="Windows\Settings.xaml.cs">
-      <DependentUpon>Settings.xaml</DependentUpon>
+    <Compile Include="Windows\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interop\ProcessLock.cs" />
     <Compile Include="Models\TreeViewItem.cs" />
-    <Compile Include="Windows\Updater.xaml.cs">
-      <DependentUpon>Updater.xaml</DependentUpon>
+    <Compile Include="Windows\UpdaterWindow.xaml.cs">
+      <DependentUpon>UpdaterWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -124,11 +124,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Windows\Settings.xaml">
+    <Page Include="Windows\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Updater.xaml">
+    <Page Include="Windows\UpdaterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

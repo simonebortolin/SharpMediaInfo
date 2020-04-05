@@ -105,7 +105,7 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Windows_Closing(object sender, EventArgs e)
+        private void Window_Closing(object sender, EventArgs e)
         {
             if (!_killThisInstance)
             {
@@ -119,10 +119,8 @@ namespace GetMediaInfoGUI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        private void Windows_Drop(object sender, DragEventArgs e)
+        private void Window_Drop(object sender, DragEventArgs e)
         {
-            Console.WriteLine("Windows_Drop");
-
             DataObject data = e.Data as DataObject;
 
             if (data.ContainsFileDropList())
@@ -140,8 +138,8 @@ namespace GetMediaInfoGUI
         /// Handles the DragEnter event: set cursor with the drag enter icon.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
-        private void Windows_DragEnter(object sender, DragEventArgs e)
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void Window_DragEnter(object sender, DragEventArgs e)
         {
             e.Effects = DragDropEffects.Copy;
         }
@@ -170,6 +168,7 @@ namespace GetMediaInfoGUI
                     MenuItemOpenFiles_Click(null, null);
                 }
             }
+
             // Save 
             if (e.Key == Key.S && ctrlPressed && shiftPressed)
             {
@@ -184,16 +183,19 @@ namespace GetMediaInfoGUI
                     MenuItemSaveStandardReport_Click(null, null);
                 }
             }
+
             // Ctrl+X : close all tabs
             if (e.Key == Key.X && ctrlPressed)
             {
                 MenuItemCloseFiles_Click(null, null);
             }
+
             // Ctrl+E : exit
             if (e.Key == Key.E && ctrlPressed)
             {
                 MenuItemExit_Click(null, null);
             }
+
             // Tab : move the next file tab
             if (e.Key == Key.Tab && FileTabControl.Items.Count > 0)
             {
@@ -367,7 +369,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
-            Settings options = new Settings()
+            SettingsWindow options = new SettingsWindow()
             {
                 Owner = Window.GetWindow(this)
             };
@@ -434,18 +436,84 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (((TabControl)sender).SelectedIndex == -1)
+            if (sender is TabControl tabControl)
             {
-                ((TabControl)sender).SelectedIndex = GlobalSettings.DisableSimpleReport ? 1 : 0;
+                if (tabControl.SelectedIndex == -1)
+                {
+                    tabControl.SelectedIndex = GlobalSettings.DisableSimpleReport ? 1 : 0;
+                }
+            }           
+        }
+
+        #region TabItem
+        /// <summary>
+        /// Handles the Click event of the TabItem CloseButton control: closes the related TabItem.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void TabItem_CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                if (button.DataContext is FileTab fileTab)
+                {
+                    fileTab.Dispose();
+                    FileTabControl.Items.Remove(fileTab);
+                }
             }
         }
 
         /// <summary>
-        /// Handles the MouseDown event of the TabControl control. Open a Openfiledialog if user click the emmpty FileTabControl.
+        /// Handles the Drop event of the TabItem control: enables the user to drop a tab into a new position.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void TabItem_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(typeof(TabItem)) is TabItem source && e.Source is TabItem target)
+            {
+                TabControl parent = target.Parent as TabControl;
+                var targetPresent = FileTabControl.Items.Contains(target);
+                var sourcePresent = FileTabControl.Items.Contains(source);
+
+                // outer tabcontrol
+                if (parent == null && source.Content is FileTab sourceContent && target.Content is FileTab targetContent)
+                {
+                    if (!targetContent.Equals(sourceContent))
+                    {
+                        int sourceIndex = FileTabControl.Items.IndexOf(sourceContent);
+                        int targetIndex = FileTabControl.Items.IndexOf(targetContent);
+
+                        FileTabControl.Items.Remove(sourceContent);
+                        FileTabControl.Items.Insert(targetIndex, sourceContent);
+
+                        FileTabControl.Items.Remove(targetContent);
+                        FileTabControl.Items.Insert(sourceIndex, targetContent);
+                    }
+                }
+                else //inner tabcontrol
+                {
+                    if (!target.Equals(source))
+                    {
+                        int sourceIndex = parent.Items.IndexOf(source);
+                        int targetIndex = parent.Items.IndexOf(target);
+
+                        parent.Items.Remove(source);
+                        parent.Items.Insert(targetIndex, source);
+
+                        parent.Items.Remove(target);
+                        parent.Items.Insert(sourceIndex, target);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseDown event of the TabControl control. Open a Openfiledialog if user left click the empty FileTabControl or closes the hovered tab if the middle button is pressed.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void TabControl_MouseDown(object sender, MouseButtonEventArgs e)
+        private void TabItem_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -453,21 +521,19 @@ namespace GetMediaInfoGUI
                 {
                     MenuItemOpenFiles_Click(null, null);
                 }
-            } else if (e.MiddleButton == MouseButtonState.Pressed)
+            }
+            else if (e.MiddleButton == MouseButtonState.Pressed)
             {
-                var mousePos = e.GetPosition(FileTabControl);
-
-
-                if (FileTabControl.SelectedItem is FileTab fileTab)
+                if (e.Source is TabItem item && item.Content is FileTab fileTab)
                 {
                     fileTab.Dispose();
                     FileTabControl.Items.Remove(fileTab);
-                }               
+                }
             }
         }
 
         /// <summary>
-        /// Handles the PreviewMouseMove event of the TabItem control: generate drag n' drop event of the selected tab if the left mouse button is pressed.
+        /// Handles the PreviewMouseMove event of the TabItem control: generate drag n' drop event if a tab is moved to let user to reorder the TabControl items.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
@@ -475,67 +541,158 @@ namespace GetMediaInfoGUI
         {
             if (e.Source is TabItem item)
             {
-                if (Mouse.PrimaryDevice.LeftButton == MouseButtonState.Pressed)
+                if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    DragDrop.DoDragDrop(item, item, DragDropEffects.All);
+                    DragDrop.DoDragDrop(item, item, DragDropEffects.Move);
                 }
-            }           
+            }
         }
 
+        #endregion
+
+        #region Drag & Drop Management
         /// <summary>
-        /// Handles the Drop event of the TabItem control: moves a tab into a new position.
+        /// Handles the MouseMove event of the TabItem control: enables the drag outside the main window and the spawn of a new application instance if the drop is
+        /// outside the window or the move of a tab if the drop is done inside the window of another instance.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TabItem_Drop(object sender, DragEventArgs e)
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event arguments</param>
+        private void TabItem_MouseMove(object sender, MouseEventArgs e)
         {
-            TabItem Source = e.Data.GetData(typeof(TabItem)) as TabItem;
+            Point mpos = e.GetPosition(null);
+            Vector diff = this._startDragPosition - mpos;
 
-            if (e.Source is TabItem Target && Source != null)
+            if (e.Source is TabItem item && item.Content is FileTab fileTab)
             {
-                TabControl Parent = Target.Parent as TabControl;
-
-                if (!Target.Equals(Source) && Parent != null)
+                //create drag event if the cursor goes outside the main window
+                if (e.LeftButton == MouseButtonState.Pressed &&
+                 Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
+                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
                 {
-                    int sourceIndex = Parent.Items.IndexOf(Source);
-                    int targetIndex = Parent.Items.IndexOf(Target);
+                    //mock drag event to let file explorer to change cursor
+                    string dataFormat = DataFormats.FileDrop;
+                    DataObject dataObject = new DataObject(dataFormat, new string[] { "" });
 
-                    Parent.Items.Remove(Source);
-                    Parent.Items.Insert(targetIndex, Source);
+                    DragDrop.AddQueryContinueDragHandler(this, QueryContinueDragHandler);
+                    DragDrop.DoDragDrop(FileTabControl, dataObject, DragDropEffects.Copy);
 
-                    Parent.Items.Remove(Target);
-                    Parent.Items.Insert(sourceIndex, Target);
+                    _wasDragging = true;
+                }
+
+                //handle ouside drop
+                if (_wasDragging && e.LeftButton == MouseButtonState.Released)
+                {
+                    DragDrop.RemoveQueryContinueDragHandler(this, QueryContinueDragHandler);
+
+                    if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
+                        Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+                    {
+                        //Compute drop screen point
+                        var mousePos = System.Windows.Forms.Cursor.Position;
+                        var dropPos = new System.Drawing.Point(mousePos.X, mousePos.Y);
+
+                        //Detect collision with other instances window
+                        var dropInsideAnotherInstance = false;
+                        var instances = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+                        foreach (var instance in instances)
+                        {
+                            IntPtr windowHandle = instance.MainWindowHandle;
+                            var rect = InterComm.GetWindowRectangle(windowHandle);
+                            if (rect.HasValue && rect.Value.Contains(dropPos.X, dropPos.Y))
+                            {
+                                //if the drop is in the same instance do nothing
+                                if (Process.GetCurrentProcess().MainWindowHandle.Equals(windowHandle))
+                                {
+                                    _wasDragging = false;
+                                    return;
+                                }
+
+                                dropInsideAnotherInstance = true;
+                                break;
+                            }
+                        }
+
+                        //if no collision is found, create a new instance
+                        if (!dropInsideAnotherInstance)
+                        {
+                            using (var p = new Process()
+                            {
+                                StartInfo = new ProcessStartInfo
+                                {
+                                    FileName = System.Reflection.Assembly.GetExecutingAssembly().Location,
+                                    Arguments = string.Format("{0} {1} {2} \"{3}\"", Constants.OutsideTabDropMode, dropPos.X, dropPos.Y, fileTab.FilePath)
+                                }
+                            })
+                            {
+                                p.Start();
+                            }
+                        }
+                        else
+                        {
+                            string dataFormat = DataFormats.FileDrop;
+                            DataObject dataObject = new DataObject(dataFormat, new string[] { fileTab.FilePath });
+                            DragDrop.DoDragDrop(FileTabControl, dataObject, DragDropEffects.Copy);
+                        }
+                    }
+
+                    //remove the dropped item
+                    fileTab.Dispose();
+                    FileTabControl.Items.Remove(fileTab);
+
+                    if (FileTabControl.Items.Count == 0)
+                    {
+                        Application.Current.Shutdown();
+                        _killThisInstance = true;
+                    }
+
+                    _wasDragging = false;
                 }
             }
         }
 
         /// <summary>
-        /// Handles the Click event of the CloseTabButton control: close the parent tab of the sender button.
+        /// Handles the PreviewMouseLeftButtonDown event of the TabItem control: keeps track of the drag starting position.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void CloseTabButton_Click(object sender, RoutedEventArgs e)
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event arguments</param>
+        private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            foreach (FileTab tab in FileTabControl.Items)
-            {
-                string text = ((TextBlock)((StackPanel)((Button)e.Source).Parent).Children[1]).Text;
-                if (tab.HeaderText.Equals(text))
-                {
-                    FileTabControl.Items.Remove(tab);
-                    return;
-                }
-            }
+            _startDragPosition = e.GetPosition(null);
         }
 
         /// <summary>
-        /// Handles for enable Drag/Drop on report TextBox
+        /// Handles the QueryContinueDrag event of the TabItem control: enables the program to cancel or continue the dragging.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void TextBoxReport_PreviewDragOver(object sender, DragEventArgs e)
+        /// <param name="source">The source of the event</param>
+        /// <param name="e">The event arguments</param>
+        private void QueryContinueDragHandler(object source, QueryContinueDragEventArgs e)
         {
             e.Handled = true;
+
+            if (e.EscapePressed)
+            {
+                e.Action = DragAction.Cancel;
+                return;
+            }
+
+            if (e.KeyStates.HasFlag(DragDropKeyStates.LeftMouseButton))
+            {
+                e.Action = DragAction.Continue;
+            }
+            else
+            {
+                e.Action = DragAction.Cancel;
+                return;
+            }
+
+            if (e.KeyStates.HasFlag(DragDropKeyStates.MiddleMouseButton))
+            {
+                e.Action = DragAction.Continue;
+            }
         }
+
+        #endregion
+
         #endregion
 
         #endregion
@@ -648,151 +805,6 @@ namespace GetMediaInfoGUI
             //blocking method (useless to parallelize I/O bound operations)
             fileTabs.Where(i => !i.IsReady).ToList().ForEach(i => i.Refresh());
         }
-        #endregion
-
-        #region Drag & Drop Management
-        /// <summary>
-        /// Handles the preview mouse left button down event of the TabControl.
-        /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">The event arguments</param>
-        private void TabControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            _startDragPosition = e.GetPosition(null);
-        }
-
-        /// <summary>
-        /// Handles the mouse move event in the TabControl.
-        /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">The event arguments</param>
-        private void TabControl_MouseMove(object sender, MouseEventArgs e)
-        {
-            TabControl tabControl = sender as TabControl;
-            Point mpos = e.GetPosition(null);
-            Vector diff = this._startDragPosition - mpos;
-
-            if (tabControl.SelectedItem is FileTab fileTab)
-            {
-                //create drag event if the cursor goes outside the main window
-                if (e.LeftButton == MouseButtonState.Pressed &&
-                 Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
-                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
-                {
-                   
-                    //mock drag event to let file explorer to change cursor
-                    string dataFormat = DataFormats.FileDrop;
-                    DataObject dataObject = new DataObject(dataFormat, new string[] { "" });
-
-                    DragDrop.AddQueryContinueDragHandler(this, QueryContinueDragHandler);
-                    DragDrop.DoDragDrop(tabControl, dataObject, DragDropEffects.Copy);
-                                  
-                    _wasDragging = true;
-                }
-
-                //handle ouside drop
-                if (_wasDragging && e.LeftButton == MouseButtonState.Released)
-                {
-                    DragDrop.RemoveQueryContinueDragHandler(this, QueryContinueDragHandler);
-
-                    if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
-                        Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
-                    {
-                        //Compute drop screen point
-                        var mousePos = System.Windows.Forms.Cursor.Position;
-                        var dropPos = new System.Drawing.Point(mousePos.X, mousePos.Y);
-
-                        //Detect collision with other instances window
-                        var dropInsideAnotherInstance = false;                       
-                        var instances = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
-                        foreach (var instance in instances)
-                        {
-                            IntPtr windowHandle = instance.MainWindowHandle;
-                            var rect = InterComm.GetWindowRectangle(windowHandle);
-                            if (rect.HasValue && rect.Value.Contains(dropPos.X, dropPos.Y))
-                            {
-                                //if the drop is in the same instance do nothing
-                                if (Process.GetCurrentProcess().MainWindowHandle.Equals(windowHandle))
-                                {
-                                    _wasDragging = false;
-                                    return;
-                                }
-
-                                dropInsideAnotherInstance = true;
-                                break;
-                            }
-                        }
-
-                        //if no collision is found, create a new instance
-                        if (!dropInsideAnotherInstance)
-                        {
-                            using (var p = new Process()
-                            {
-                                StartInfo = new ProcessStartInfo
-                                {
-                                    FileName = System.Reflection.Assembly.GetExecutingAssembly().Location,
-                                    Arguments = string.Format("{0} {1} {2} \"{3}\"", Constants.OutsideTabDropMode, dropPos.X, dropPos.Y, fileTab.FilePath)
-                                }
-                            })
-                            {
-                                p.Start();
-                            }
-                        } else
-                        {
-                            Console.WriteLine("TabControl_MouseMove: generating valid dragdrop");
-
-                            string dataFormat = DataFormats.FileDrop;
-                            DataObject dataObject = new DataObject(dataFormat, new string[] { fileTab.FilePath });
-                            DragDrop.DoDragDrop(tabControl, dataObject, DragDropEffects.Copy);
-                        }                 
-                    }
-
-                    //remove the dropped item
-                    fileTab.Dispose();
-                    tabControl.Items.Remove(fileTab);
-
-                    if (tabControl.Items.Count == 0)
-                    {
-                        Application.Current.Shutdown();
-                        _killThisInstance = true;
-                    }
-
-                    _wasDragging = false;
-                }
-            }   
-        }
-
-        /// <summary>
-        /// Handles the drag event's queries for continuation.
-        /// </summary>
-        /// <param name="source">The source of the event</param>
-        /// <param name="e">The event arguments</param>
-        private void QueryContinueDragHandler(object source, QueryContinueDragEventArgs e)
-        {
-            e.Handled = true;
-
-            if (e.EscapePressed)
-            {
-                e.Action = DragAction.Cancel;
-                return;
-            }
-
-            if (e.KeyStates.HasFlag(DragDropKeyStates.LeftMouseButton))
-            {
-                e.Action = DragAction.Continue;
-            }
-            else
-            {
-                e.Action = DragAction.Cancel;
-                return;
-            }
-
-            if (e.KeyStates.HasFlag(DragDropKeyStates.MiddleMouseButton))
-            {
-                e.Action = DragAction.Continue;
-            }
-        }
-
         #endregion
 
         #region Settings Management
@@ -1132,14 +1144,14 @@ namespace GetMediaInfoGUI
             }
 
             ClearAll();
-            Updater updater = new Updater()
+            UpdaterWindow updater = new UpdaterWindow()
             {
                 Owner = Window.GetWindow(this)
             };
             updater.ShowDialog();
             VerifyMediaInfo(true);
             StatusLab.Content = updater.GetMessageStatus();
-            return (updater.GetStatus() == Updater.Status.Success);
+            return (updater.GetStatus() == UpdaterWindow.Status.Success);
         }
         #endregion
 
