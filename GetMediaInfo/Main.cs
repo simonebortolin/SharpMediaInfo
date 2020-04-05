@@ -166,74 +166,14 @@ namespace GetMediaInfo
                 sw.Stop();
                 wct_parsing = sw.ElapsedMilliseconds;
 
-                System.Diagnostics.Debug.WriteLine(string.Format("WCET Open: {0} ms", wct_open));
-                System.Diagnostics.Debug.WriteLine(string.Format("WCET Parsing: {0} ms", wct_parsing));
+                System.Diagnostics.Debug.WriteLine(string.Format("Mediainfo handle opened in: {0} ms", wct_open));
+                System.Diagnostics.Debug.WriteLine(string.Format("mediainfo data parsed in: {0} ms", wct_parsing));
 #endif     
             }
             finally //ensure MediaInfo_Close is called even if something goes wrong 
             {
                 MediaInfo.MediaInfo_Close(this.Handle);
             }
-        }
-#endregion
-
-        #region Disposable Pattern
-        private bool disposed;
-
-        #pragma warning disable 1591
-        ~MediaInfo()
-        {
-            Dispose(false);
-        }
-
-        protected bool IsDisposed
-        {
-            get { return disposed; }
-        }
-
-        protected void CheckDisposed()
-        {
-            if (disposed)
-            {
-                throw new ObjectDisposedException(this.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Call this one to kill the wrapper, and close his handle to the MediaInfo.dll, you should never need it anyway 
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose methods
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    DisposeManagedResources();
-                }
-                DisposeUnmanagedResources();
-            }
-            this.disposed = true;
-        }
-
-        protected virtual void DisposeManagedResources()
-        {
-
-        }
-
-        protected virtual void DisposeUnmanagedResources()
-        {
-            MediaInfo.MediaInfo_Close(this.Handle);
-            MediaInfo.MediaInfo_Delete(this.Handle);
         }
         #endregion
 
@@ -2489,6 +2429,74 @@ namespace GetMediaInfo
             }
 
             return list;
+        }
+        #endregion
+
+        #region IDisposable Support
+        /// <summary>
+        /// Flags to detect multiple dispose calls.
+        /// </summary>
+        private bool disposedValue = false;
+
+        /// <summary>
+        /// Dispose all managed and unmanaged resources of this instance.
+        /// </summary>
+        /// <param name="disposing">Whether to dispose managed objects or not.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    //dispose managed resources
+                }
+
+                DisposeUnmanagedResources();
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Default deconstructor
+        /// </summary>
+        ~MediaInfo()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
+        /// Dispose all managed and unmanaged resources of this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes unmanaged resources.
+        /// </summary>
+        protected virtual void DisposeUnmanagedResources()
+        {
+            MediaInfo.MediaInfo_Close(this.Handle);
+            MediaInfo.MediaInfo_Delete(this.Handle);
+
+            this.Handle = IntPtr.Zero;
+
+            this._Video.Clear();
+            this._General.Clear();
+            this._Audio.Clear();
+            this._Text.Clear();
+            this._Image.Clear();
+            this._Menu.Clear();
+
+            this._Video = null;
+            this._General = null;
+            this._Audio = null;
+            this._Text = null;
+            this._Image = null;
+            this._Menu = null;
         }
         #endregion
     }
