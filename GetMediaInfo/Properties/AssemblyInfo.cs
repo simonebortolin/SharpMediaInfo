@@ -2,35 +2,34 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// Le informazioni generali relative a un assembly sono controllate dal seguente 
-// set di attributi. Modificare i valori di questi attributi per modificare le informazioni
-// associate a un assembly.
+// Les informations générales relatives à un assembly dépendent de 
+// l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
+// associées à un assembly.
 [assembly: AssemblyTitle("GetMediaInfo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Simple Mediainfo Wrapper")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("GetMediaInfo")]
 [assembly: AssemblyProduct("GetMediaInfo")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © GetMediaInfo 2018")]
+[assembly: AssemblyTrademark("Copyright © GetMediaInfo 2018")]
 [assembly: AssemblyCulture("")]
 
-// Se si imposta ComVisible su false, i tipi in questo assembly non saranno visibili
-// ai componenti COM. Se è necessario accedere a un tipo in questo assembly da
-// COM, impostare su true l'attributo ComVisible per tale tipo.
+// L'affectation de la valeur false à ComVisible rend les types invisibles dans cet assembly 
+// aux composants COM. Si vous devez accéder à un type dans cet assembly à partir de 
+// COM, affectez la valeur true à l'attribut ComVisible sur ce type.
 [assembly: ComVisible(false)]
 
-// Se il progetto viene esposto a COM, il GUID seguente verrà utilizzato come ID della libreria dei tipi
-[assembly: Guid("f1b9e5c5-a2bf-4180-b7f8-2d02f494821d")]
+// Le GUID suivant est pour l'ID de la typelib si ce projet est exposé à COM
+[assembly: Guid("c43aa229-84b8-46bb-a20b-11671b48e9ae")]
 
-// Le informazioni sulla versione di un assembly sono costituite dai seguenti quattro valori:
+// Les informations de version pour un assembly se composent des quatre valeurs suivantes :
 //
-//      Versione principale
-//      Versione secondaria
-//      Numero di build
-//      Revisione
+//      Version principale
+//      Version secondaire 
+//      Numéro de build
+//      Révision
 //
-// È possibile specificare tutti i valori oppure impostare valori predefiniti per i numeri relativi alla revisione e alla build
-// usando l'asterisco '*' come illustrato di seguito:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+// Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de révision et de build par défaut 
+// en utilisant '*', comme indiqué ci-dessous :
+[assembly: AssemblyVersion("0.0.9.4")]
+[assembly: AssemblyFileVersion("0.0.9.4")]

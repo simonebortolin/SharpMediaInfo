@@ -32,6 +32,10 @@
         /// <summary>
         /// Menu Stream Kind
         /// </summary>
-        Menu
+        Menu,
+        /// <summary>
+        /// Control Number
+        /// </summary>
+        Max
     }
 }

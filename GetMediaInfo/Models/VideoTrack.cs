@@ -127,40 +127,30 @@ namespace GetMediaInfo
         public string MultiViewLayout { get; set; } //MultiView_Layout
 
         /// <summary>
-        /// The HDR format.
+        /// Dolby Vision info.
         /// </summary>
-        public string HDRFormat { get; set; } //HDR_Format
+        public string DolbyVision { get; set; } //DolbyVision/String
 
         /// <summary>
-        /// The HDR format used + version + profile + level + layers + settings + compatibility.
+        /// Dolby Vision version.
         /// </summary>
-        public string HDRFormatComplete { get; set; } //HDR_Format/String
+        public string DolbyVisionVersion { get; set; } //DolbyVision_Version
 
         /// <summary>
-        /// The commercial name used by vendor for the HDR settings or HDR Format field if there is no difference.
+        /// Dolby Vision profile.
         /// </summary>
-        public string HDRFormatCommercial { get; set; } //HDR_Format_Commercial
+        public string DolbyVisionProfile { get; set; } //DolbyVision_Profile 
 
         /// <summary>
-        /// The HDR format version.
+        /// Dolby Vision level.
         /// </summary>
-        public string HDRFormatVersion { get; set; } //HDR_Format_Version
+        public string DolbyVisionLevel { get; set; } //DolbyVision_Level         
 
         /// <summary>
-        /// The HDR format level.
+        /// Dolby Vision layers.
         /// </summary>
-        public string HDRFormatLevel { get; set; } //HDR_Format_Level
+        public string DolbyVisionLayers { get; set; } //DolbyVision_Layers
 
-        /// <summary>
-        /// The HDR format settings.
-        /// </summary>
-        public string HDRFormatSettings { get; set; } //HDR_Format_Settings
-
-        /// <summary>
-        /// The HDR format compatibility with some commercial namings.
-        /// </summary>
-        public string HDRFormatCompatibility { get; set; } //HDR_Format_Compatibility
-        
         /// <summary>
         /// Settings needed for decoder used, summary.
         /// </summary>
@@ -1162,43 +1152,14 @@ namespace GetMediaInfo
         public string BufferSize { get; set; } //BufferSize
 
         /// <summary>
-        /// Presence of colour description.
-        /// </summary>
-        public string ColourDescriptionPresent { get; set; } //colour_description_present
-
-        /// <summary>
-        /// Presence of colour description (source).
-        /// </summary>
-        public string ColourDescriptionPresentSource { get; set; } //colour_description_present_Source
-
-        /// <summary>
-        /// Presence of colour description (if incoherencies).
-        /// </summary>
-        public string ColourDescriptionPresentOriginal { get; set; } //colour_description_present_Original
-
-        /// <summary>
-        /// Presence of colour description (source if incoherencies).
-        /// </summary>
-        public string ColourDescriptionPresentOriginalSource { get; set; } //colour_description_present_Original_Source
-
-        /// <summary>
         /// Colour range for YUV colour space.
         /// </summary>
         public string ColourRange { get; set; } //colour_range
 
         /// <summary>
-        /// Colour range for YUV colour space (source).
+        /// Presence of colour description.
         /// </summary>
-        public string ColourRangeSource { get; set; } //colour_range_Source
-
-        /// <summary>
-        /// Colour range for YUV colour space(if incoherencies).
-        /// </summary>
-        public string ColourRangeOriginal { get; set; } //colour_range_Original
-        /// <summary>
-        /// Colour range for YUV colour space(source if incoherencies).
-        /// </summary>
-        public string ColourRangeOriginalSource { get; set; } //colour_range_Original_Source
+        public string ColourDescriptionPresent { get; set; } //colour_description_present
 
         /// <summary>
         /// Chromaticity coordinates of the source primaries.
@@ -1206,39 +1167,9 @@ namespace GetMediaInfo
         public string ColourPrimaries { get; set; } //colour_primaries
 
         /// <summary>
-        /// Chromaticity coordinates of the source primaries (source).
-        /// </summary>
-        public string ColourPrimariesSource { get; set; } //colour_primaries_Source
-
-        /// <summary>
-        /// Chromaticity coordinates of the source primaries (if incoherencies).
-        /// </summary>
-        public string ColourPrimariesOriginal { get; set; } //colour_primaries_Original
-
-        /// <summary>
-        /// Chromaticity coordinates of the source primaries (source if incoherencies).
-        /// </summary>
-        public string ColourPrimariesOriginalSource { get; set; } //colour_primaries_Original_Source
-
-        /// <summary>
         /// Opto-electronic transfer characteristic of the source picture.
         /// </summary>
         public string TransferCharacteristics { get; set; } //transfer_characteristics
-
-        /// <summary>
-        /// Opto-electronic transfer characteristic of the source picture (source).
-        /// </summary>
-        public string TransferCharacteristicsSource { get; set; } //transfer_characteristics_Source
-
-        /// <summary>
-        /// Opto-electronic transfer characteristic of the source picture (if incoherencies).
-        /// </summary>
-        public string TransferCharacteristicsOriginal { get; set; } //transfer_characteristics_Original
-
-        /// <summary>
-        /// Opto-electronic transfer characteristic of the source picture (source if incoherencies).
-        /// </summary>
-        public string TransferCharacteristicsOriginalSource { get; set; } //transfer_characteristics_Original_Source
 
         /// <summary>
         /// Matrix coefficients used in deriving luma and chroma signals from the green, blue, and red primaries.
@@ -1246,99 +1177,44 @@ namespace GetMediaInfo
         public string MatrixCoefficients { get; set; } //matrix_coefficients
 
         /// <summary>
-        /// Matrix coefficients used in deriving luma and chroma signals from the green, blue, and red primaries (source).
+        /// Presence of colour description.
         /// </summary>
-        public string MatrixCoefficientsSource { get; set; } //matrix_coefficients_Source
+        public string ColourDescriptionPresentOriginal { get; set; } //colour_description_present_Original
 
         /// <summary>
-        /// Matrix coefficients used in deriving luma and chroma signals from the green, blue, and red primaries (if incoherencies).
+        /// Chromaticity coordinates of the source primaries.
+        /// </summary>
+        public string ColourPrimariesOriginal { get; set; } //colour_primaries_Original
+
+        /// <summary>
+        /// Opto-electronic transfer characteristic of the source picture.
+        /// </summary>
+        public string TransferCharacteristicsOriginal { get; set; } //transfer_characteristics_Original
+
+        /// <summary>
+        /// Matrix coefficients used in deriving luma and chroma signals from the green, blue, and red primaries.
         /// </summary>
         public string MatrixCoefficientsOriginal { get; set; } //matrix_coefficients_Original
 
         /// <summary>
-        /// Matrix coefficients used in deriving luma and chroma signals from the green, blue, and red primaries (source if incoherencies).
-        /// </summary>
-        public string MatrixCoefficientsOriginalSource { get; set; } //matrix_coefficients_Original_Source
-
-        /// <summary>
-        /// Chromaticity coordinates of the source primaries of the mastering display.
+        /// Mastering display color primaries.
         /// </summary>
         public string MasteringDisplayColorPrimaries { get; set; } //MasteringDisplay_ColorPrimaries
 
         /// <summary>
-        /// Chromaticity coordinates of the source primaries of the mastering display (source).
-        /// </summary>
-        public string MasteringDisplayColorPrimariesSource { get; set; } //MasteringDisplay_ColorPrimaries_Source
-
-        /// <summary>
-        /// Chromaticity coordinates of the source primaries of the mastering display (if incoherencies).
-        /// </summary>
-        public string MasteringDisplayColorPrimariesOriginal { get; set; } //MasteringDisplay_ColorPrimaries_Original
-
-        /// <summary>
-        /// Chromaticity coordinates of the source primaries of the mastering display (source if incoherencies).
-        /// </summary>
-        public string MasteringDisplayColorPrimariesOriginalSource { get; set; } //MasteringDisplay_ColorPrimaries_Original_Source
-
-        /// <summary>
-        /// Luminance of the mastering display.
+        /// Mastering display luminance.
         /// </summary>
         public string MasteringDisplayLuminance { get; set; } //MasteringDisplay_Luminance
 
         /// <summary>
-        /// Luminance of the mastering display (source).
-        /// </summary>
-        public string MasteringDisplayLuminanceSource { get; set; } //MasteringDisplay_Luminance_Source
-
-        /// <summary>
-        /// Luminance of the mastering display (if incoherencies).
-        /// </summary>
-        public string MasteringDisplayLuminanceOriginal { get; set; } //MasteringDisplay_Luminance_Original
-
-        /// <summary>
-        /// Luminance of the mastering display (source if incoherencies).
-        /// </summary>
-        public string MasteringDisplayLuminanceOriginalSource { get; set; } //MasteringDisplay_Luminance_Original_Source
-
-        /// <summary>
-        /// Maximum content light level.
+        /// Maximum Content Light Level, the brightest pixel in the entire stream (in nits).
         /// </summary>
         public string MaximumContentLightLevel { get; set; } //MaxCLL
 
         /// <summary>
-        /// Maximum content light level (source).
-        /// </summary>
-        public string MaximumContentLightLevelSource { get; set; } //MaxCLL_Source
-
-        /// <summary>
-        /// Maximum content light level (if incoherencies).
-        /// </summary>
-        public string MaximumContentLightLevelOriginal { get; set; } //MaxCLL_Original
-
-        /// <summary>
-        /// Maximum content light level (source if incoherencies).
-        /// </summary>
-        public string MaximumContentLightLevelOriginalSource { get; set; } //MaxCLL_Original_Source
-
-        /// <summary>
-        /// Maximum frame average light level.
+        /// Maximum Frame Average Light Level, the highest frame average brightness per frame in the entire stream (in nits).
         /// </summary>
         public string MaximumFrameAverageLightLevel { get; set; } //MaxFALL
-
-        /// <summary>
-        /// Maximum frame average light level (source).
-        /// </summary>
-        public string MaximumFrameAverageLightLevelSource { get; set; } //MaxFALL_Source
-
-        /// <summary>
-        /// Maximum frame average light level (if incoherencies).
-        /// </summary>
-        public string MaximumFrameAverageLightLevelOriginal { get; set; } //MaxFALL_Original
-
-        /// <summary>
-        /// Maximum frame average light level (source if incoherencies).
-        /// </summary>
-        public string MaximumFrameAverageLightLevelOriginalSource { get; set; } //MaxFALL_Original_Source
         #endregion
     }
 }
