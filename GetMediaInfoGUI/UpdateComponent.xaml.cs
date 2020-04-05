@@ -1,13 +1,4 @@
-﻿using SevenZip;
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Net;
-using System.Windows;
-using System.Windows.Forms;
-using System.Xml;
-
-namespace GetMediaInfoGUI
+﻿namespace GetMediaInfoGUI
 {
     /// <summary>
     /// Interaction logic for UpdateComponent.xaml
@@ -520,3 +511,4 @@ namespace GetMediaInfoGUI
         #endregion
     }
 }
+

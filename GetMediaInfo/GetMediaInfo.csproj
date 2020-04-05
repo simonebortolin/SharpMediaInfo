@@ -44,15 +44,34 @@
   <ItemGroup>
     <Compile Include="AudioTrack.cs" />
     <Compile Include="ChapterTrack.cs" />
+    <Compile Include="Enums\InfoKind.cs" />
+    <Compile Include="Enums\InfoOptions.cs" />
+    <Compile Include="Enums\StreamKind.cs" />
+    <Compile Include="Exceptions\MediaInfoAnalysisException.cs" />
+    <Compile Include="Exceptions\MediainfoFinalizeException.cs" />
+    <Compile Include="Exceptions\MediainfoOpenException.cs" />
     <Compile Include="GeneralTrack.cs" />
+    <Compile Include="ImageTrack.cs" />
+    <Compile Include="InfoKind.cs" />
+    <Compile Include="InfoOptions.cs" />
+    <Compile Include="Interops\MediaInfoLib.cs" />
+    <Compile Include="Mediainfo.cs" />
     <Compile Include="MediaInfoMain.cs" />
     <Compile Include="MenuTrack.cs" />
+    <Compile Include="Models\AudioTrack.cs" />
+    <Compile Include="Models\ChapterTrack.cs" />
+    <Compile Include="Models\GeneralTrack.cs" />
+    <Compile Include="Models\ImageTrack.cs" />
+    <Compile Include="Models\MenuTrack.cs" />
+    <Compile Include="Models\TextTrack.cs" />
+    <Compile Include="Models\VideoTrack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamKind.cs" />
     <Compile Include="TextTrack.cs" />
     <Compile Include="VideoTrack.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GetMediaInfos.csproj" />
+    <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
