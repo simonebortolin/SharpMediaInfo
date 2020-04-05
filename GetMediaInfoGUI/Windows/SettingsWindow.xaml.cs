@@ -2,6 +2,8 @@
 using GetMediaInfoGUI.Extensions;
 using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
+using GetMediaInfoGUI.Theme;
+using GetMediaInfoGUI.Themes;
 using GetMediaInfoGUI.Utils;
 using System;
 using System.Diagnostics;
@@ -68,12 +70,15 @@ namespace GetMediaInfoGUI
             //Appearence
             ComboBoxFontSize.SelectedValue = ConfigHelper.GetConfig().ReportFontSize;
             ComboBoxFontFamily.SelectedIndex = ComboBoxFontFamily.Items.Cast<FontFamily>().FindIndex(i => i.Source.Equals(ConfigHelper.GetConfig().ReportFontFamily));
-            BoldControl.SetChecked(ConfigHelper.GetConfig().ReportBoldStyle);    
-            ItalicControl.SetChecked(ConfigHelper.GetConfig().ReportItalicStyle);
+            BoldControl.IsChecked = ConfigHelper.GetConfig().ReportBoldStyle;    
+            ItalicControl.IsChecked = ConfigHelper.GetConfig().ReportItalicStyle;
 
             //History
             HistorySize.Value = HistoryHelper.GetHistory().MaxSize;
 
+            //Theme
+            ThemeSelector.SelectedValue = ConfigHelper.GetConfig().Theme;
+            
             initialization = false;
         }
 
@@ -232,7 +237,7 @@ namespace GetMediaInfoGUI
             if (initialization) { return; }
             
             ConfigHelper.GetConfig().ReportBoldStyle = !ConfigHelper.GetConfig().ReportBoldStyle;
-            BoldControl.SetChecked(ConfigHelper.GetConfig().ReportBoldStyle);         
+            BoldControl.IsChecked = ConfigHelper.GetConfig().ReportBoldStyle;         
         }
 
         /// <summary>
@@ -245,7 +250,7 @@ namespace GetMediaInfoGUI
             if (initialization) { return; }
 
             ConfigHelper.GetConfig().ReportItalicStyle = !ConfigHelper.GetConfig().ReportItalicStyle;
-            ItalicControl.SetChecked(ConfigHelper.GetConfig().ReportItalicStyle);      
+            ItalicControl.IsChecked = ConfigHelper.GetConfig().ReportItalicStyle;      
         }
 
         /// <summary>
@@ -309,6 +314,58 @@ namespace GetMediaInfoGUI
             if (initialization) { return; }
 
             HistoryHelper.GetHistory().Clear();
+        }
+
+        /// <summary>
+        /// Handles the SelectionChanged event of the ThemeSelector control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
+        private void ThemeSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (initialization) { return; }
+
+            var previousTheme = ConfigHelper.GetConfig().Theme;
+            var selectedTheme = ThemeHelper.ParseAppTheme(ThemeSelector.SelectedValue as string);
+
+            if (selectedTheme == AppTheme.Auto)
+            {
+                selectedTheme = WindowsThemeDetector.GetCurrentTheme();
+            }
+
+            if (previousTheme != selectedTheme)
+            {
+                var owner = this.Owner as MainWindow;
+
+                var openedFiles = owner.GetOpenedFiles();
+                if (openedFiles.Count() > 0)
+                {
+                    var result = MessageBoxHelper.Show(this,
+                        $"In order to change the theme the application needs to be restarted. Do you want to continue?",
+                        "Theme change confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        ConfigHelper.GetConfig().Theme = selectedTheme;
+
+                        try
+                        {
+                            ConfigHelper.SaveConfig();
+
+                            Process.Start(Process.GetCurrentProcess().MainModule.FileName, string.Join(" ", openedFiles));
+                            Application.Current.Shutdown();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBoxHelper.ShowError(this, $"Unable to change theme. Reboot cancelled.");
+                            Logger.Error(ex);
+                        } 
+                    }
+                }
+            } else
+            {
+                ThemeHelper.SetTheme(selectedTheme);
+            }
         }
         #endregion
 

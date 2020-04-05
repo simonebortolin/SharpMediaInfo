@@ -10,19 +10,20 @@
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Title="Advanced Settings" 
-        Height="560"
+        Height="580"
         Width="480"
         ResizeMode="NoResize"
         Icon="../icon.ico"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        Style="{DynamicResource WindowStyle}">
     <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="90"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="170"/>
-            <RowDefinition Height="70"/>
+            <RowDefinition Height="90"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
@@ -39,7 +40,7 @@
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="20"/>
                 </Grid.RowDefinitions>
-                
+
                 <!-- Frontend Version -->
                 <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Text="Frontend Version:"/>
                 <TextBlock Grid.Row="0" x:Name="StatusFrontend" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Text="" FontWeight="Bold"/>
@@ -66,70 +67,104 @@
 
         <!-- General settings -->
         <GroupBox Grid.Row="2" Header="General" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-            <StackPanel Margin="4">
-                <CheckBox x:Name="AutoSaveReport" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2" Checked="AutoSaveReport_CheckedUnchecked"  Unchecked="AutoSaveReport_CheckedUnchecked" Content="Auto save standard report to disk"/>
-                <CheckBox x:Name="DisableSimple" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="2" Checked="DisableSimple_CheckedUnchecked" Unchecked="DisableSimple_CheckedUnchecked" Content="Disable simple report"/>
-                <CheckBox x:Name="DisableComplete" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2" Checked="DisableComplete_CheckedUnchecked" Unchecked="DisableComplete_CheckedUnchecked" Content="Disable complete report"/>
-                <CheckBox x:Name="DisableTree" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2" Checked="DisableTree_CheckedUnchecked" Unchecked="DisableTree_CheckedUnchecked" Content="Disable tree report"/>
-                <CheckBox x:Name="EnableMilliseconds" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2" Checked="EnableMilliseconds_CheckedUnchecked" Unchecked="EnableMilliseconds_CheckedUnchecked" Content="Show milliseconds in tracks duration"/>
-                <CheckBox x:Name="RemoveSpace" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2" Checked="RemoveSpace_CheckedUnchecked" Unchecked="RemoveSpace_CheckedUnchecked" Content="Remove justification from standard and complete reports"/>
-                <CheckBox x:Name="ShowCover" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2" Checked="ShowCover_CheckedUnchecked" Unchecked="ShowCover_CheckedUnchecked" Content="Show cover if present"/>
-            </StackPanel>
-        </GroupBox>
-        
-        <!-- Appearence settings -->
-        <GroupBox Grid.Row="3" Header="Report appearance" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <Grid Margin="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Column="0" x:Name="ComboBoxFontFamily" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemTemplate="{DynamicResource FontTemplate}" Margin="4" SelectionChanged="ComboBoxFont_SelectionChanged">
-                    <ComboBox.Resources>
-                        <CollectionViewSource x:Key="myFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}">
-                            <CollectionViewSource.SortDescriptions>
-                                <ComponentModel:SortDescription PropertyName="Source" />
-                            </CollectionViewSource.SortDescriptions>
-                        </CollectionViewSource>
-                        <Style x:Key="FontStyle">
-                            <Setter Property="Control.FontFamily" Value="{Binding Source}" />
-                            <Setter Property="Control.FontSize" Value="14" />
-                        </Style>
-                        <DataTemplate x:Key="FontTemplate">
-                            <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
-                                <TextBlock Style="{StaticResource FontStyle}" Text="{Binding Source}" ToolTip="{Binding Source}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.Resources>
-                    <ComboBox.ItemsSource>
-                        <Binding Source="{StaticResource myFonts}" />
-                    </ComboBox.ItemsSource>
-                </ComboBox>
-
-                <ComboBox Grid.Column="1" x:Name="ComboBoxFontSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4" SelectedItem="2" SelectionChanged="ComboBoxSize_SelectionChanged">
-                    <ComboBox.ItemsSource>
-                        <x:Array Type="{x:Type System:Double}">
-                            <System:Double>10</System:Double>
-                            <System:Double>11</System:Double>
-                            <System:Double>12</System:Double>
-                            <System:Double>14</System:Double>
-                            <System:Double>16</System:Double>
-                            <System:Double>18</System:Double>
-                            <System:Double>21</System:Double>
-                            <System:Double>24</System:Double>
-                            <System:Double>27</System:Double>
-                        </x:Array>
-                    </ComboBox.ItemsSource>
-                </ComboBox>
-
-                <Button Grid.Column="2" x:Name="BoldControl"  Content="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BoldControl_Click" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14" FontWeight="Bold"/>
-                <Button Grid.Column="3" x:Name="ItalicControl"  Content="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ItalicControl_Click" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="14" FontStyle="Italic"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <CheckBox x:Name="AutoSaveReport" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Checked="AutoSaveReport_CheckedUnchecked"  Unchecked="AutoSaveReport_CheckedUnchecked" Content="Auto save standard report to disk"/>
+                <CheckBox x:Name="DisableSimple" Grid.Row="1" HorizontalAlignment="Left"  VerticalAlignment="Center" Checked="DisableSimple_CheckedUnchecked" Unchecked="DisableSimple_CheckedUnchecked" Content="Disable simple report"/>
+                <CheckBox x:Name="DisableComplete" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Checked="DisableComplete_CheckedUnchecked" Unchecked="DisableComplete_CheckedUnchecked" Content="Disable complete report"/>
+                <CheckBox x:Name="DisableTree" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Checked="DisableTree_CheckedUnchecked" Unchecked="DisableTree_CheckedUnchecked" Content="Disable tree report"/>
+                <CheckBox x:Name="EnableMilliseconds" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Checked="EnableMilliseconds_CheckedUnchecked" Unchecked="EnableMilliseconds_CheckedUnchecked" Content="Show milliseconds in tracks duration"/>
+                <CheckBox x:Name="RemoveSpace" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Checked="RemoveSpace_CheckedUnchecked" Unchecked="RemoveSpace_CheckedUnchecked" Content="Remove justification from reports"/>
+                <CheckBox x:Name="ShowCover" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Checked="ShowCover_CheckedUnchecked" Unchecked="ShowCover_CheckedUnchecked" Content="Show cover if present"/>
             </Grid>
         </GroupBox>
 
+        <!-- Appearence settings -->
+        <GroupBox Grid.Row="3" Header="Appearance" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="150"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Text="Theme:"/>
+                    <ComboBox x:Name="ThemeSelector" Grid.Column="1" Margin="4" SelectionChanged="ThemeSelector_SelectionChanged" SelectedValuePath="Content">
+                        <ComboBoxItem IsSelected="True">Auto</ComboBoxItem>
+                        <ComboBoxItem>Light</ComboBoxItem>
+                        <ComboBoxItem>Dark</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Text="Report:"/>
+
+                    <ComboBox Grid.Column="1" x:Name="ComboBoxFontFamily" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemTemplate="{DynamicResource FontTemplate}" Margin="4" SelectionChanged="ComboBoxFont_SelectionChanged">
+                        <ComboBox.Resources>
+                            <CollectionViewSource x:Key="myFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}">
+                                <CollectionViewSource.SortDescriptions>
+                                    <ComponentModel:SortDescription PropertyName="Source" />
+                                </CollectionViewSource.SortDescriptions>
+                            </CollectionViewSource>
+                            <Style x:Key="FontStyle">
+                                <Setter Property="Control.FontFamily" Value="{Binding Source}" />
+                            </Style>
+                            <DataTemplate x:Key="FontTemplate">
+                                <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
+                                    <TextBlock Style="{StaticResource FontStyle}" Text="{Binding Source}" ToolTip="{Binding Source}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                        <ComboBox.ItemsSource>
+                            <Binding Source="{StaticResource myFonts}" />
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
+
+                    <ComboBox Grid.Column="2" x:Name="ComboBoxFontSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,10,4" SelectedItem="2" SelectionChanged="ComboBoxSize_SelectionChanged">
+                        <ComboBox.ItemsSource>
+                            <x:Array Type="{x:Type System:Double}">
+                                <System:Double>10</System:Double>
+                                <System:Double>11</System:Double>
+                                <System:Double>12</System:Double>
+                                <System:Double>14</System:Double>
+                                <System:Double>16</System:Double>
+                                <System:Double>18</System:Double>
+                                <System:Double>21</System:Double>
+                                <System:Double>24</System:Double>
+                                <System:Double>27</System:Double>
+                            </x:Array>
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
+
+                    <CheckBox Grid.Column="3" x:Name="BoldControl"  Content="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BoldControl_Click"  FontSize="14" FontWeight="Bold"/>
+                    <CheckBox Grid.Column="4" x:Name="ItalicControl"  Content="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ItalicControl_Click"  FontSize="14" FontStyle="Italic"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+        
         <!-- Context menu settings -->
         <GroupBox Grid.Row="4" Header="Context menu" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <Grid Margin="4">
@@ -144,7 +179,7 @@
                 <TextBlock Grid.Column="2" x:Name="AssociationStatus" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextAlignment="Center" Margin="4"/>
             </Grid>
         </GroupBox>
-        
+
         <!-- History settings -->
         <GroupBox Grid.Row="5" Header="Recent files history" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <Grid Margin="4">
@@ -153,7 +188,7 @@
                     <ColumnDefinition Width="130"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-         
+
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="4" Text="History size:"/>
                 <ctx:NumericUpDown x:Name="HistorySize" Grid.Column="1" Width="130" Height="22" MinValue="0" MaxValue="20" ShowButtons="True" ValueChanged="HistorySize_ValueChanged"></ctx:NumericUpDown>
                 <Button Grid.Column="2" x:Name="ClearRecentFileList" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="4" Width="90" Content="Clear history" Click="ClearRecentFileList_Click"/>

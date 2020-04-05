@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GetMediaInfoGUI.Windows"
         mc:Ignorable="d"
-        Title="About" Height="450" Width="600">
+        Title="About" 
+        Height="450" 
+        Width="600" 
+        Style="{DynamicResource WindowStyle}">
     
     <Window.Resources>
         <Style TargetType="TextBlock">
@@ -43,21 +46,21 @@
              
         <TabControl Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Known codecs">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
                     <ScrollViewer>
                         <TextBlock Text="{Binding KnownCodecs}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Parameters list">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
                     <ScrollViewer>
                         <TextBlock Text="{Binding ParametersList}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Capacities">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
                     <ScrollViewer>
                         <TextBlock Text="{Binding Capacities}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </ScrollViewer>

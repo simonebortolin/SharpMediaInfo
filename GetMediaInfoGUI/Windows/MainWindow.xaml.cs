@@ -18,6 +18,7 @@ using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Windows;
 using System.Reflection;
+using GetMediaInfoGUI.Themes;
 
 namespace GetMediaInfoGUI
 {
@@ -771,6 +772,7 @@ namespace GetMediaInfoGUI
         /// Creates a new FileTab for each path in the input list and adds it to the interface.
         /// </summary>
         /// <param name="paths">The list of input paths.</param>
+        /// <param name="skipWarning">Whether to skip the warning about the number of files to open</param>
         private void CreateFileTabs(params string[] paths)
         {
             List<string> formatToIgnore = new List<string>() { ".lnk", ".db" , ".exe", ".dll", ".bat",
@@ -811,6 +813,15 @@ namespace GetMediaInfoGUI
                 FileTabControl.SelectedIndex = currCount;
                 _libraryAlreadyLoaded = true;
             }
+        }
+
+        /// <summary>
+        /// Gets the list of opened files.
+        /// </summary>
+        /// <returns>The list of opened file paths</returns>
+        public List<string> GetOpenedFiles()
+        {
+            return FileTabControl.Items.Cast<FileTab>().Select(i => i.FilePath).ToList();
         }
         #endregion
 
@@ -861,13 +872,15 @@ namespace GetMediaInfoGUI
         {
             try
             {
-                ConfigHelper.LoadConfig();
+                ConfigHelper.LoadConfig();            
             }
             catch (Exception ex)
             {
                 MessageBoxHelper.ShowError(this, $"Unable to load user settings: {ex.Message}");
                 Logger.Error(ex);
             }
+
+            ThemeHelper.SetTheme(ConfigHelper.GetConfig().Theme);
         }
         #endregion
 

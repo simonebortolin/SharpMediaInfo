@@ -20,7 +20,8 @@
         MinHeight="584"        
         Icon="../icon.ico"
         TextOptions.TextFormattingMode="Display"
-        TextOptions.TextRenderingMode="ClearType">
+        TextOptions.TextRenderingMode="ClearType"
+        Style="{DynamicResource WindowStyle}">
     <!-- Resources -->
     <Window.Resources>
         <ControlTemplate x:Key="closeButton" TargetType="{x:Type Button}">
@@ -77,20 +78,20 @@
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
-            <TabControl.ItemContainerStyle>
-                <Style TargetType="{x:Type TabItem}">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
                     <EventSetter Event="Drop" Handler="TabItem_Drop"/>
                     <EventSetter Event="MouseMove" Handler="TabItem_MouseMove"/>
                     <EventSetter Event="MouseDown" Handler="TabItem_MouseDown"/>
                     <EventSetter Event="PreviewMouseLeftButtonDown" Handler="TabItem_PreviewMouseLeftButtonDown"/>
                 </Style>
-            </TabControl.ItemContainerStyle>
+            </TabControl.Resources>
             <!-- Tab Body -->
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <TabControl Margin="7.5" VerticalContentAlignment="Stretch" SelectedIndex="{Binding SelectedTabIndex}" SelectedItem="{Binding SelectedTab}" SelectionChanged="TabControl_SelectionChanged">
                         <TabControl.Resources>
-                            <Style TargetType="{x:Type TabItem}">
+                            <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
                                 <EventSetter Event="Drop" Handler="TabItem_Drop"/>
                                 <EventSetter Event="PreviewMouseMove" Handler="TabItem_PreviewMouseMove"/>
                             </Style>

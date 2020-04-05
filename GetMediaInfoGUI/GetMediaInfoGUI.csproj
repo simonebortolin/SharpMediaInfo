@@ -66,6 +66,7 @@
     <Reference Include="GetMediaInfo">
       <HintPath>..\..\getmediainfo\GetMediaInfo\bin\Debug\GetMediaInfo.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="SevenZipSharp, Version=0.64.3890.29348, Culture=neutral, PublicKeyToken=20de82c62b055c88, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\SharedLibraries\SevenZipSharp.dll</HintPath>
@@ -108,6 +109,8 @@
     <Compile Include="History\HistoryItemList.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Themes\AppTheme.cs" />
+    <Compile Include="Themes\ThemeHelper.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Interop\CrossProcessLockFactory.cs" />
     <Compile Include="Models\FileTab.cs" />
@@ -120,6 +123,7 @@
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utils\MessageBoxHelper.cs" />
     <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="Themes\WindowsThemeDetector.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -132,6 +136,18 @@
       <DependentUpon>UpdaterWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\NumericUpDown.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Resources\Dark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Resources\HighContrast.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Resources\Light.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

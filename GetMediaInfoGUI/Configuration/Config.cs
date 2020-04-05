@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GetMediaInfoGUI.Theme;
+using System;
 using System.Xml.Serialization;
 
 namespace GetMediaInfoGUI.Configuration
@@ -46,7 +47,12 @@ namespace GetMediaInfoGUI.Configuration
         public bool ShowCover { get; set; } = false;
         #endregion
 
-        #region Appearence        
+        #region Appearence
+        /// <summary>
+        /// Gets or sets the theme.
+        /// </summary>
+        public AppTheme Theme { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the report text needs to be bold.
         /// </summary>

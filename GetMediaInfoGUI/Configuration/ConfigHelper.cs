@@ -39,7 +39,7 @@ namespace GetMediaInfoGUI.Configuration
             } else
             {
                 throw new FileNotFoundException("File not found");
-            } 
+            }
         }
 
         /// <summary>

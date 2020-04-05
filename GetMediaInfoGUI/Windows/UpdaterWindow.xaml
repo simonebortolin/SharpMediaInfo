@@ -13,7 +13,8 @@
         Height="170"
         Icon="../icon.ico"
         TextOptions.TextFormattingMode="Display"
-        TextOptions.TextRenderingMode="ClearType">
+        TextOptions.TextRenderingMode="ClearType"
+        Style="{DynamicResource WindowStyle}">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="90"/>
