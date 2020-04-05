@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -12,8 +10,8 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GetMediaInfoGUI")]
 [assembly: AssemblyProduct("GetMediaInfoGUI")]
-[assembly: AssemblyCopyright("Copyright © GetMediaInfoGUI 2018")]
-[assembly: AssemblyTrademark("Copyright © GetMediaInfoGUI 2018")]
+[assembly: AssemblyCopyright("Copyright © GetMediaInfoGUI 2019")]
+[assembly: AssemblyTrademark("Copyright © GetMediaInfoGUI 2019")]
 [assembly: AssemblyCulture("")]
 
 // Se si imposta ComVisible su false, i tipi in questo assembly non saranno visibili 

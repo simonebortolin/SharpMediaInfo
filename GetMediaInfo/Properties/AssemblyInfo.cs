@@ -10,8 +10,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GetMediaInfo")]
 [assembly: AssemblyProduct("GetMediaInfo")]
-[assembly: AssemblyCopyright("Copyright © GetMediaInfo 2018")]
-[assembly: AssemblyTrademark("Copyright © GetMediaInfo 2018")]
+[assembly: AssemblyCopyright("Copyright © GetMediaInfo 2019")]
+[assembly: AssemblyTrademark("Copyright © GetMediaInfo 2019")]
 [assembly: AssemblyCulture("")]
 
 // L'affectation de la valeur false à ComVisible rend les types invisibles dans cet assembly 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de révision et de build par défaut 
 // en utilisant '*', comme indiqué ci-dessous :
-[assembly: AssemblyVersion("0.0.9.4")]
-[assembly: AssemblyFileVersion("0.0.9.4")]
+[assembly: AssemblyVersion("0.0.9.5")]
+[assembly: AssemblyFileVersion("0.0.9.5")]

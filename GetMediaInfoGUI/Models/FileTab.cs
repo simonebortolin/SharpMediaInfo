@@ -965,46 +965,28 @@ namespace GetMediaInfoGUI
                         stringBuilder.AppendLine(" > HDR metadata:");
 
                         if (!string.IsNullOrWhiteSpace(Video.ColourRange))
-                            stringBuilder.AppendLine("     Color range: " + Video.ColourRange);
+                            stringBuilder.AppendLine("   Color range: " + Video.ColourRange);
 
-                        if (!string.IsNullOrWhiteSpace(Video.ChromaSubsampling))
-                            stringBuilder.AppendLine("     Chroma subsampling: " + Video.ChromaSubsampling);
+                        if (!string.IsNullOrWhiteSpace(Video.ColourPrimaries))
+                            stringBuilder.AppendLine("   Color primaries: " + Video.ColourPrimaries);
 
                         if (!string.IsNullOrWhiteSpace(Video.TransferCharacteristics))
-                            stringBuilder.AppendLine("     Transfer characteristics: " + Video.TransferCharacteristics);
+                            stringBuilder.AppendLine("   Transfer characteristics: " + Video.TransferCharacteristics);
 
                         if (!string.IsNullOrWhiteSpace(Video.MatrixCoefficients))
-                            stringBuilder.AppendLine("     Matrix coefficients: " + Video.MatrixCoefficients);
+                            stringBuilder.AppendLine("   Matrix coefficients: " + Video.MatrixCoefficients);
 
                         if (!string.IsNullOrWhiteSpace(Video.MasteringDisplayColorPrimaries))
-                        {
-                            string subtitle = "     Mastering display color primaries:";
-                            stringBuilder.AppendLine(subtitle);
-
-                            foreach (string s in Video.MasteringDisplayColorPrimaries.Split(
-                                new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                stringBuilder.AppendLine("     " + s.Replace("White point", "WP").Trim());
-                            }
-                        }
+                            stringBuilder.AppendLine("   Mastering display color primaries: " + Video.MasteringDisplayColorPrimaries);
 
                         if (!string.IsNullOrWhiteSpace(Video.MasteringDisplayLuminance))
-                        {
-                            string subtitle = "     Mastering display luminance:";
-                            stringBuilder.AppendLine(subtitle);
-
-                            foreach (string s in Video.MasteringDisplayLuminance.Split(
-                                new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                stringBuilder.AppendLine("     " + s.Trim());
-                            }
-                        }
+                            stringBuilder.AppendLine("   Mastering display luminance: " + Video.MasteringDisplayLuminance);
 
                         if (!string.IsNullOrWhiteSpace(Video.MaximumContentLightLevel))
-                            stringBuilder.AppendLine("     Maximum content light level (MCLL): " + Video.MaximumContentLightLevel);
+                            stringBuilder.AppendLine("   Maximum content light level: " + Video.MaximumContentLightLevel);
 
                         if (!string.IsNullOrWhiteSpace(Video.MaximumFrameAverageLightLevel))
-                            stringBuilder.AppendLine("     Maximum frame-average light level (FALL): " + Video.MaximumFrameAverageLightLevel);
+                            stringBuilder.AppendLine("   Maximum frame-average light level: " + Video.MaximumFrameAverageLightLevel);
                     }
                 }
                 stringBuilder.TrimEnd(Environment.NewLine.ToCharArray());

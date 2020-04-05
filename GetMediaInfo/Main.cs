@@ -1240,20 +1240,51 @@ namespace GetMediaInfo
                         TaggedDate = GetSpecificInfo(StreamKind.Video, index, "Tagged_Date"),
                         Encryption = GetSpecificInfo(StreamKind.Video, index, "Encryption"),
                         BufferSize = GetSpecificInfo(StreamKind.Video, index, "BufferSize"),
-                        ColourRange = GetSpecificInfo(StreamKind.Video, index, "colour_range"),
+
                         ColourDescriptionPresent = GetSpecificInfo(StreamKind.Video, index, "colour_description_present"),
-                        ColourPrimaries = GetSpecificInfo(StreamKind.Video, index, "colour_primaries"),
-                        TransferCharacteristics = GetSpecificInfo(StreamKind.Video, index, "transfer_characteristics"),
-                        MatrixCoefficients = GetSpecificInfo(StreamKind.Video, index, "matrix_coefficients"),
+                        ColourDescriptionPresentSource = GetSpecificInfo(StreamKind.Video, index, "colour_description_present_Source"),
                         ColourDescriptionPresentOriginal = GetSpecificInfo(StreamKind.Video, index, "colour_description_present_Original"),
+                        ColourDescriptionPresentOriginalSource = GetSpecificInfo(StreamKind.Video, index, "colour_description_present_Original_Source"),
+
+                        ColourRange = GetSpecificInfo(StreamKind.Video, index, "colour_range"),
+                        ColourRangeSource = GetSpecificInfo(StreamKind.Video, index, "colour_range_Source"),
+                        ColourRangeOriginal = GetSpecificInfo(StreamKind.Video, index, "colour_range_Original"),
+                        ColourRangeOriginalSource = GetSpecificInfo(StreamKind.Video, index, "colour_range_Original_Source"),
+
+                        ColourPrimaries = GetSpecificInfo(StreamKind.Video, index, "colour_primaries"),
+                        ColourPrimariesSource = GetSpecificInfo(StreamKind.Video, index, "colour_primaries_Source"),
                         ColourPrimariesOriginal = GetSpecificInfo(StreamKind.Video, index, "colour_primaries_Original"),
+                        ColourPrimariesOriginalSource = GetSpecificInfo(StreamKind.Video, index, "colour_primaries_Original_Source"),
+
+                        TransferCharacteristics = GetSpecificInfo(StreamKind.Video, index, "transfer_characteristics"),
+                        TransferCharacteristicsSource = GetSpecificInfo(StreamKind.Video, index, "transfer_characteristics_Source"),
                         TransferCharacteristicsOriginal = GetSpecificInfo(StreamKind.Video, index, "transfer_characteristics_Original"),
+                        TransferCharacteristicsOriginalSource = GetSpecificInfo(StreamKind.Video, index, "transfer_characteristics_Original_Source"),
+
+                        MatrixCoefficients = GetSpecificInfo(StreamKind.Video, index, "matrix_coefficients"),
+                        MatrixCoefficientsSource = GetSpecificInfo(StreamKind.Video, index, "matrix_coefficients_Source"),
                         MatrixCoefficientsOriginal = GetSpecificInfo(StreamKind.Video, index, "matrix_coefficients_Original"),
+                        MatrixCoefficientsOriginalSource = GetSpecificInfo(StreamKind.Video, index, "matrix_coefficients_Original_Source"),
 
                         MasteringDisplayColorPrimaries = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_ColorPrimaries"),
+                        MasteringDisplayColorPrimariesSource = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_ColorPrimaries_Source"),
+                        MasteringDisplayColorPrimariesOriginal = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_ColorPrimaries_Original"),
+                        MasteringDisplayColorPrimariesOriginalSource = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_ColorPrimaries_Original_Source"),
+
                         MasteringDisplayLuminance = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_Luminance"),
+                        MasteringDisplayLuminanceSource = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_Luminance_Source"),
+                        MasteringDisplayLuminanceOriginal = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_Luminance_Original"),
+                        MasteringDisplayLuminanceOriginalSource = GetSpecificInfo(StreamKind.Video, index, "MasteringDisplay_Luminance_Original_Source"),
+
                         MaximumContentLightLevel = GetSpecificInfo(StreamKind.Video, index, "MaxCLL"),
-                        MaximumFrameAverageLightLevel = GetSpecificInfo(StreamKind.Video, index, "MaxFALL")
+                        MaximumContentLightLevelSource = GetSpecificInfo(StreamKind.Video, index, "MaxCLL_Source"),
+                        MaximumContentLightLevelOriginal = GetSpecificInfo(StreamKind.Video, index, "MaxCLL_Original"),
+                        MaximumContentLightLevelOriginalSource = GetSpecificInfo(StreamKind.Video, index, "MaxCLL_Original_Source"),
+
+                        MaximumFrameAverageLightLevel = GetSpecificInfo(StreamKind.Video, index, "MaxFALL"),
+                        MaximumFrameAverageLightLevelSource = GetSpecificInfo(StreamKind.Video, index, "MaxFALL_Source"),
+                        MaximumFrameAverageLightLevelOriginal = GetSpecificInfo(StreamKind.Video, index, "MaxFALL_Original"),
+                        MaximumFrameAverageLightLevelOriginalSource = GetSpecificInfo(StreamKind.Video, index, "MaxFALL_Original_Source"),
                     };
 
                     //get duration in milliseconds if mediainfo return 0
