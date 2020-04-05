@@ -61,10 +61,6 @@
     <StartupObject>GetMediaInfoGUI.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GetMediaInfos, Version=0.0.3.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Projects\GetMediaInfosDLL\GetMediaInfos\bin\Debug\GetMediaInfos.dll</HintPath>
-    </Reference>
     <Reference Include="SevenZipSharp">
       <HintPath>Resources\SevenZipSharp.dll</HintPath>
     </Reference>
@@ -155,6 +151,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GetMediaInfo\GetMediaInfo.csproj">
+      <Project>{ab0e4816-51ae-46b1-b9d9-af3b2cb96d27}</Project>
+      <Name>GetMediaInfo</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
