@@ -950,15 +950,15 @@ namespace GetMediaInfoGUI
                     if (!string.IsNullOrWhiteSpace(Video.DisplayAspectRatioFormatted))
                         stringBuilder.Append(Video.DisplayAspectRatioFormatted + ", ");
 
-                    //color space
+                    // track color space
                     if (!string.IsNullOrWhiteSpace(Video.ColorSpace))
                         stringBuilder.Append(Video.ColorSpace + ", ");
 
-                    //chroma subsampling
+                    // track chroma subsampling
                     if (!string.IsNullOrWhiteSpace(Video.ChromaSubsampling))
                         stringBuilder.Append(Video.ChromaSubsampling + ", ");
 
-                    //color primaries
+                    // track color primaries
                     if (!string.IsNullOrWhiteSpace(Video.ColourPrimaries))
                         stringBuilder.Append(Video.ColourPrimaries + ", ");
 
@@ -979,7 +979,7 @@ namespace GetMediaInfoGUI
                     stringBuilder.TrimEnd(',', ' ', '-');
                     stringBuilder.AppendLine();
 
-                    //display additional infos if file is hdr
+                    // display additional infos if file is hdr
                     if (IsHDR(Video))
                     {
                         var colourRange = Video.ColourRange;
@@ -1392,7 +1392,7 @@ namespace GetMediaInfoGUI
 
                 #endregion
 
-                //Cover
+                // Cover
                 if (ConfigHelper.GetConfig().ShowCover)
                 {
                     SimpleReportCover = GetCoverData();
@@ -1406,7 +1406,7 @@ namespace GetMediaInfoGUI
                     }
                 }
 
-                //Collapsed if no track available
+                // Collapsed if no track available
                 SimpleReportGeneralSectionVisibility = (MediaInfo.General.Count == 0) ? Visibility.Collapsed : Visibility.Visible;
                 SimpleReportVideoSectionVisibility = (MediaInfo.Video.Count == 0) ? Visibility.Collapsed : Visibility.Visible;
                 SimpleReportAudioSectionVisibility = (MediaInfo.Audio.Count == 0) ? Visibility.Collapsed : Visibility.Visible;
@@ -1458,10 +1458,11 @@ namespace GetMediaInfoGUI
                     if (!string.IsNullOrWhiteSpace(General.OverallBitRateFormatted))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Overal BitRate: " + General.OverallBitRateFormatted });
 
-                    // 3d mode
+                    // 3D mode
                     if (MediaInfo.Video.Count > 0)
                         if (!string.IsNullOrEmpty(MediaInfo.Video[0].MultiViewLayout))
                             treeReport[currIndex].Children.Add(new TreeViewItem { Header = "3D Mode: " + MediaInfo.Video[0].MultiViewLayout });
+                    
                     // title
                     if (!string.IsNullOrWhiteSpace(General.Title))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Title: " + General.Title });
@@ -1517,31 +1518,53 @@ namespace GetMediaInfoGUI
                         if (Video.Width > 0 && Video.Height > 0)
                             treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Resolution: " + Video.Width + "×" + Video.Height });
 
-                    // track aspect ratio
-                    if (!string.IsNullOrWhiteSpace(Video.DisplayAspectRatioFormatted))
-                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Aspect Ratio: " + Video.DisplayAspectRatioFormatted });
+                    // track codec
+                    if (!string.IsNullOrWhiteSpace(Video.FormatCommercial))
+                    {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        if (!string.IsNullOrEmpty(Video.Format) && !Video.FormatCommercial.Equals(Video.Format))
+                        {
+                            stringBuilder.Append(Video.Format + "/");
+                        }
+                        stringBuilder.Append(Video.FormatCommercial);
 
-                    // track framerate
-                    if (Video.FrameRate.HasValue)
-                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Framerate: " + Video.FrameRate.Value.ToString(CultureInfo.CreateSpecificCulture("en-US")) + " fps" });
+                        if (!string.IsNullOrWhiteSpace(Video.BitDepthFormatted))
+                        {
+                            stringBuilder.Append(" " + Video.BitDepthFormatted);
+                        }
+                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Codec: " + stringBuilder });
+
+                    }
+
+                    // track format profile
+                    if (!string.IsNullOrWhiteSpace(Video.FormatProfile))
+                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Format Profile: " + Video.FormatProfile });
+
+                    // track format setting
+                    if (!string.IsNullOrWhiteSpace(Video.FormatSettings))
+                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Format Setting: " + Video.FormatSettings });
 
                     // track bitrate
                     if (!string.IsNullOrWhiteSpace(Video.BitRateFormatted))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "BitRate: " + Video.BitRateFormatted });
 
-                    // track codec
-                    if (!string.IsNullOrWhiteSpace(Video.FormatCommercial))
-                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Codec Video: " + (Video.FormatCommercial + " (" + Video.FormatProfile.ToString() + ", " + Video.FormatSettings.ToString()).TrimEnd(',', ' ') + ")" });
+                    // track framerate
+                    if (Video.FrameRate.HasValue)
+                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Framerate: " + Video.FrameRate.Value.ToString(CultureInfo.CreateSpecificCulture("en-US")) + " fps" });
 
-                    //color space
+                    // track aspect ratio
+                    if (!string.IsNullOrWhiteSpace(Video.DisplayAspectRatioFormatted))
+                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Aspect Ratio: " + Video.DisplayAspectRatioFormatted });
+
+                    // track color space
                     if (!string.IsNullOrWhiteSpace(Video.ColorSpace))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Color Space: " + Video.ColorSpace });
 
-                    //chroma subsampling
+                    // track chroma subsampling
                     if (!string.IsNullOrWhiteSpace(Video.ChromaSubsampling))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Chroma Subsampling: " + Video.ChromaSubsampling });
 
-                    //color primaries
+                    // track color primaries
                     if (!string.IsNullOrWhiteSpace(Video.ColourPrimaries))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Color Primaries: " + Video.ColourPrimaries });
 
@@ -1557,6 +1580,75 @@ namespace GetMediaInfoGUI
                     if (!string.IsNullOrWhiteSpace(Video.ForcedString))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Forced: " + (Video.Forced.GetValueOrDefault() ? "Yes" : "No") });
 
+                    if (IsHDR(Video))
+                    {
+                        var hdrTreeItem = new TreeViewItem {Header = "HDR metadata"};
+
+                        var colourRange = Video.ColourRange;
+                        var primaries = Video.ColourPrimaries;
+                        var transferChar = Video.TransferCharacteristics;
+                        var matrixCoeff = Video.MatrixCoefficients;
+                        var masteringPrim = Video.MasteringDisplayColorPrimaries;
+                        var masteringLum = Video.MasteringDisplayLuminance;
+                        var mcll = Video.MaximumContentLightLevel;
+                        var mfall = Video.MaximumFrameAverageLightLevel;
+
+                        if (StringUtils.AnyNonEmpty(colourRange, primaries, transferChar, matrixCoeff, masteringPrim,
+                            masteringLum, mcll, mfall))
+                        {
+                            StringBuilder stringBuilder = new StringBuilder();
+
+                            if (!string.IsNullOrWhiteSpace(Video.HDRFormat))
+                            {
+                                stringBuilder.Append("Format: " + Video.HDRFormat);
+                                if (!string.IsNullOrWhiteSpace(Video.HDRFormatCommercial) &&
+                                    !Video.HDRFormat.Equals(Video.HDRFormatCommercial))
+                                {
+                                    stringBuilder.Append(" (" + Video.HDRFormatCommercial + ")");
+                                }
+                            }
+
+                            hdrTreeItem.Children.Add(new TreeViewItem {Header = stringBuilder.ToString()});
+
+                            if (!string.IsNullOrWhiteSpace(colourRange))
+                                hdrTreeItem.Children.Add(new TreeViewItem {Header = "Color range: " + Video.ColourRange});
+
+                            if (!string.IsNullOrWhiteSpace(primaries))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                    {Header = "Color primaries: " + Video.ColourPrimaries});
+
+                            if (!string.IsNullOrWhiteSpace(transferChar))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                    {Header = "Transfer characteristics: " + Video.TransferCharacteristics});
+
+                            if (!string.IsNullOrWhiteSpace(matrixCoeff))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                    {Header = "Matrix coefficients: " + Video.MatrixCoefficients});
+
+                            if (!string.IsNullOrWhiteSpace(masteringPrim))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                {
+                                    Header = "Mastering display color primaries: " +
+                                             Video.MasteringDisplayColorPrimaries
+                                });
+
+                            if (!string.IsNullOrWhiteSpace(masteringLum))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                    {Header = "Mastering display luminance: " + Video.MasteringDisplayLuminance});
+
+                            if (!string.IsNullOrWhiteSpace(mcll))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                    {Header = "Maximum content light level: " + Video.MaximumContentLightLevel});
+
+                            if (!string.IsNullOrWhiteSpace(mfall))
+                                hdrTreeItem.Children.Add(new TreeViewItem
+                                {
+                                    Header = "Maximum frame-average light level: " + Video.MaximumFrameAverageLightLevel
+                                });
+                            treeReport[currIndex].Children.Add(hdrTreeItem);
+                        }
+                    }
+
                     currIndex++;
                 }
                 #endregion
@@ -1565,6 +1657,62 @@ namespace GetMediaInfoGUI
                 currCategoryIndex = 0;
                 foreach (AudioTrack Audio in MediaInfo.Audio)
                 {
+                    //fix for E-AC3 or TrueHD + AC3 info
+                    if (Audio.Format.Contains("AC-3"))
+                    {
+                        if (Audio.FormatWithExtra.Equals("E-AC-3")) //E-AC3
+                        {
+                            Audio.Format = "EAC-3";
+                            Audio.FormatProfile = "";
+                        }
+                        else if (Audio.FormatAdditionalFeatures.Equals("MLP FBA 16-ch")) //Atmos + AC3
+                        {
+                            Audio.Format = "";
+                            Audio.FormatProfile = "TrueHD Atmos / AC-3";
+                            Audio.BitDepthFormatted = " / 16 bits";
+                            Audio.SamplingRateFormatted += " / " + Audio.SamplingRateFormatted;
+                            Audio.BitRateMode += " / CBR";
+                            Audio.BitRateFormatted = Audio.BitRateMaximumFormatted + " / " + Audio.BitRateFormatted;
+                            Audio.ChannelsFormatted += " (object-based) / 6 channels";
+                        }
+                    }
+                    //fix for TrueHD info
+                    if (Audio.Format.Contains("MLP FBA"))
+                    {
+                        if (!string.IsNullOrEmpty(Audio.FormatAdditionalFeatures)) //Atmos
+                        {
+                            Audio.Format = "TrueHD Atmos";
+                            Audio.FormatProfile = "";
+                            Audio.ChannelsFormatted += " (object-based)";
+                        }
+                        else //Core
+                        {
+                            Audio.Format = "TrueHD";
+                            Audio.FormatProfile = "";
+                        }
+                    }
+                    //fix for DTS info
+                    if (Audio.Format.Contains("DTS"))
+                    {
+                        if (Audio.FormatAdditionalFeatures.Contains("XLL X"))
+                        {
+                            Audio.Format = "DTS-X";
+                            Audio.ChannelsFormatted += " (object-based)";
+                        }
+                        else if (Audio.FormatAdditionalFeatures.Contains("XLL"))
+                        {
+                            Audio.Format = "DTS-HD MA";
+                        }
+                        else if (Audio.FormatAdditionalFeatures.Contains("XBR"))
+                        {
+                            Audio.Format = "DTS-HD HR";
+                        }
+                        else if (Audio.FormatAdditionalFeatures.Contains("ES"))
+                        {
+                            Audio.Format = "DTS-ES";
+                        }
+                    }
+
                     // track header
                     if (MediaInfo.Audio.Count == 1)
                         treeReport.Add(new TreeViewItem { Header = "Audio" });
@@ -1581,9 +1729,9 @@ namespace GetMediaInfoGUI
                     if (!string.IsNullOrWhiteSpace(Audio.Title))
                         treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Track Title: " + Audio.Title });
 
-                    // track format
-                    if (!string.IsNullOrWhiteSpace(Audio.Format))
-                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Format: " + Audio.Format.Trim(' ') });
+                    // track duration
+                    if (!string.IsNullOrWhiteSpace(Audio.DurationTimecode))
+                        treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Duration: " + ShowHideMilliseconds(Audio.DurationTimecode) });
 
                     // subtracks number
                     int NumberOfSubTracks = 0;
@@ -1644,6 +1792,10 @@ namespace GetMediaInfoGUI
                     }
                     else
                     {
+                        // track format
+                        if (!string.IsNullOrWhiteSpace(Audio.Format))
+                            treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Format: " + Audio.Format.Trim(' ') });
+
                         // track profile
                         if (!string.IsNullOrEmpty(Audio.FormatProfile))
                             treeReport[currIndex].Children.Add(new TreeViewItem { Header = "Profile: " + Audio.FormatProfile });
