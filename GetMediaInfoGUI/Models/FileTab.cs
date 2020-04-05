@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using GetMediaInfoGUI.Utils;
 
 namespace GetMediaInfoGUI
 {
@@ -962,31 +963,60 @@ namespace GetMediaInfoGUI
                     //display additional infos if file is hdr
                     if (IsHDR(Video))
                     {
-                        stringBuilder.AppendLine(" > HDR metadata:");
+                        if (!string.IsNullOrWhiteSpace(Video.DolbyVision))
+                        {
+                            stringBuilder.AppendLine(" > DolbyVision metadata:");
 
-                        if (!string.IsNullOrWhiteSpace(Video.ColourRange))
-                            stringBuilder.AppendLine("   Color range: " + Video.ColourRange);
+                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionLayers))
+                                stringBuilder.AppendLine("   Layers: " + Video.DolbyVisionLayers);
 
-                        if (!string.IsNullOrWhiteSpace(Video.ColourPrimaries))
-                            stringBuilder.AppendLine("   Color primaries: " + Video.ColourPrimaries);
+                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionLevel))
+                                stringBuilder.AppendLine("   Level: " + Video.DolbyVisionLevel);
 
-                        if (!string.IsNullOrWhiteSpace(Video.TransferCharacteristics))
-                            stringBuilder.AppendLine("   Transfer characteristics: " + Video.TransferCharacteristics);
+                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionProfile))
+                                stringBuilder.AppendLine("   Profile: " + Video.DolbyVisionProfile);
 
-                        if (!string.IsNullOrWhiteSpace(Video.MatrixCoefficients))
-                            stringBuilder.AppendLine("   Matrix coefficients: " + Video.MatrixCoefficients);
+                            if (!string.IsNullOrWhiteSpace(Video.DolbyVisionVersion))
+                                stringBuilder.AppendLine("   Version: " + Video.DolbyVisionVersion);
+                        }
 
-                        if (!string.IsNullOrWhiteSpace(Video.MasteringDisplayColorPrimaries))
-                            stringBuilder.AppendLine("   Mastering display color primaries: " + Video.MasteringDisplayColorPrimaries);
+                        var colourRange = Video.ColourRange;
+                        var primaries = Video.ColourPrimaries;
+                        var transferChar = Video.TransferCharacteristics;
+                        var matrixCoeff = Video.MatrixCoefficients;
+                        var masteringPrim = Video.MasteringDisplayColorPrimaries;
+                        var masteringLum = Video.MasteringDisplayLuminance;
+                        var mcll = Video.MaximumContentLightLevel;
+                        var mfall = Video.MaximumFrameAverageLightLevel;
 
-                        if (!string.IsNullOrWhiteSpace(Video.MasteringDisplayLuminance))
-                            stringBuilder.AppendLine("   Mastering display luminance: " + Video.MasteringDisplayLuminance);
+                        if (StringUtils.AnyNonEmpty(colourRange, primaries, transferChar, matrixCoeff, masteringPrim, masteringLum, mcll, mfall))
+                        {
+                            stringBuilder.AppendLine(" > HDR metadata:");
 
-                        if (!string.IsNullOrWhiteSpace(Video.MaximumContentLightLevel))
-                            stringBuilder.AppendLine("   Maximum content light level: " + Video.MaximumContentLightLevel);
+                            if (!string.IsNullOrWhiteSpace(colourRange))
+                                stringBuilder.AppendLine("   Color range: " + Video.ColourRange);
 
-                        if (!string.IsNullOrWhiteSpace(Video.MaximumFrameAverageLightLevel))
-                            stringBuilder.AppendLine("   Maximum frame-average light level: " + Video.MaximumFrameAverageLightLevel);
+                            if (!string.IsNullOrWhiteSpace(primaries))
+                                stringBuilder.AppendLine("   Color primaries: " + Video.ColourPrimaries);
+
+                            if (!string.IsNullOrWhiteSpace(transferChar))
+                                stringBuilder.AppendLine("   Transfer characteristics: " + Video.TransferCharacteristics);
+
+                            if (!string.IsNullOrWhiteSpace(matrixCoeff))
+                                stringBuilder.AppendLine("   Matrix coefficients: " + Video.MatrixCoefficients);
+
+                            if (!string.IsNullOrWhiteSpace(masteringPrim))
+                                stringBuilder.AppendLine("   Mastering display color primaries: " + Video.MasteringDisplayColorPrimaries);
+
+                            if (!string.IsNullOrWhiteSpace(masteringLum))
+                                stringBuilder.AppendLine("   Mastering display luminance: " + Video.MasteringDisplayLuminance);
+
+                            if (!string.IsNullOrWhiteSpace(mcll))
+                                stringBuilder.AppendLine("   Maximum content light level: " + Video.MaximumContentLightLevel);
+
+                            if (!string.IsNullOrWhiteSpace(mfall))
+                                stringBuilder.AppendLine("   Maximum frame-average light level: " + Video.MaximumFrameAverageLightLevel);
+                        }
                     }
                 }
                 stringBuilder.TrimEnd(Environment.NewLine.ToCharArray());
@@ -1920,7 +1950,8 @@ namespace GetMediaInfoGUI
                 if ((!string.IsNullOrEmpty(infos.FormatCommercial) && infos.FormatCommercial.Contains("HDR")) ||
                     (!string.IsNullOrEmpty(infos.Format) && infos.Format.Contains("HEVC")))
                 {
-                    if (!string.IsNullOrEmpty(infos.ColourPrimaries) && infos.ColourPrimaries.Contains("BT.2020"))
+                    if (!string.IsNullOrEmpty(infos.ColourPrimaries) && infos.ColourPrimaries.Contains("BT.2020") ||
+                        !string.IsNullOrEmpty(infos.DolbyVision))
                     {
                         return true;
                     }

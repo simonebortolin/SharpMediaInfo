@@ -100,6 +100,7 @@
     <Compile Include="Utils\InterfaceUtils.cs" />
     <Compile Include="Utils\InterProcComm.cs" />
     <Compile Include="Utils\GlobalSetting.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Windows\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
