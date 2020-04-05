@@ -58,7 +58,7 @@ namespace GetMediaInfoGUI
             {
                 using (CrossProcessLockFactory.CreateCrossProcessLock())
                 {
-                    var args = Environment.GetCommandLineArgs().Where(i => i != System.Reflection.Assembly.GetExecutingAssembly().Location).ToArray();
+                    var args = Environment.GetCommandLineArgs().Where(i => !i.Equals(Assembly.GetExecutingAssembly().Location)).ToArray();
                     var outsideDropMode = args.Length > 3 && args.Contains(Constants.OutsideTabDropMode);
 
                     if (outsideDropMode)
@@ -69,6 +69,8 @@ namespace GetMediaInfoGUI
                     }
 
                     InitializeComponent();
+                    this.Title = GetWindowTitle();
+
                     ClearAll();
 
                     if (args.Contains(Constants.ForceUpdateMode))
@@ -77,9 +79,7 @@ namespace GetMediaInfoGUI
                         StartUpdater(true);
                     } else {
                         StatusLab.Content = "Ready.";
-                    }
-
-                    this.Title = string.Format("GetMediaInfo GUI v{0}", Assembly.GetExecutingAssembly().GetName().Version);
+                    }                  
                 }
             } catch (Exception ex)
             {
@@ -740,21 +740,7 @@ namespace GetMediaInfoGUI
 
         #endregion
 
-        #region Process Inputs
-
-        /// <summary>
-        /// Restore interface to his default state and flush all main variables.
-        /// </summary>
-        private void ClearAll()
-        {
-            StatusLab.Content = "Cleaning all...";
-            StatusLab.InvalidateVisual();
-            FileTabControl.Items.Cast<FileTab>().ToList().ForEach(i => i.Dispose());
-            FileTabControl.Items.Clear();
-            StatusLab.Content = "Ready.";
-            StatusLab.InvalidateVisual();
-        }
-
+        #region Arguments Management
         /// <summary>
         /// Checks for outside drop mode.
         /// </summary>
@@ -1070,6 +1056,30 @@ namespace GetMediaInfoGUI
         }
         #endregion
 
+        #region Helpers     
+        /// <summary>
+        /// Restore interface to his default state and flush all main variables.
+        /// </summary>
+        private void ClearAll()
+        {
+            StatusLab.Content = "Cleaning all...";
+            StatusLab.InvalidateVisual();
+            FileTabControl.Items.Cast<FileTab>().ToList().ForEach(i => i.Dispose());
+            FileTabControl.Items.Clear();
+            StatusLab.Content = "Ready.";
+            StatusLab.InvalidateVisual();
+        }
+
+        /// <summary>
+        /// Gets the main window title.
+        /// </summary>
+        /// <returns>The main window title.</returns>
+        private string GetWindowTitle()
+        {
+            return string.Format("GetMediaInfo GUI v{0}", Assembly.GetExecutingAssembly().GetName().Version);
+        }
+        #endregion
+
         #region Inter Process Communication
         /// <summary>
         /// Checks for other instances of this application, if another instance 
@@ -1080,7 +1090,7 @@ namespace GetMediaInfoGUI
         {
             if (args.Length > 0)
             {
-                var hTargetWnd = InterComm.GetWindow(null, "GetMediaInfo");
+                var hTargetWnd = InterComm.GetWindow(null, GetWindowTitle());
 
                 if (hTargetWnd.HasValue)
                 {
