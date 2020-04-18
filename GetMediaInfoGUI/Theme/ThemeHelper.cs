@@ -1,18 +1,17 @@
 ﻿using GetMediaInfoGUI.Configuration;
-using GetMediaInfoGUI.Theme;
 using System;
 using System.Windows;
 
-namespace GetMediaInfoGUI.Themes
+namespace GetMediaInfoGUI.Theme
 {
     /// <summary>
     /// The theme helper.
     /// </summary>
     public class ThemeHelper
     {
-        private static readonly ResourceDictionary DarkTheme = new ResourceDictionary() { Source = new Uri(@"\Themes\Resources\Dark.xaml", UriKind.RelativeOrAbsolute) };
-        private static readonly ResourceDictionary LightTheme = new ResourceDictionary() { Source = new Uri(@"\Themes\Resources\Light.xaml", UriKind.RelativeOrAbsolute) };
-        private static readonly ResourceDictionary HighContrastTheme = new ResourceDictionary() { Source = new Uri(@"\Themes\Resources\HighContrast.xaml", UriKind.RelativeOrAbsolute) };
+        private static readonly ResourceDictionary DarkTheme = new ResourceDictionary() { Source = new Uri(@"\Theme\Resources\Dark.xaml", UriKind.RelativeOrAbsolute) };
+        private static readonly ResourceDictionary LightTheme = new ResourceDictionary() { Source = new Uri(@"\Theme\Resources\Light.xaml", UriKind.RelativeOrAbsolute) };
+        private static readonly ResourceDictionary HighContrastTheme = new ResourceDictionary() { Source = new Uri(@"\Theme\Resources\HighContrast.xaml", UriKind.RelativeOrAbsolute) };
 
         /// <summary>
         /// Gets the current theme.

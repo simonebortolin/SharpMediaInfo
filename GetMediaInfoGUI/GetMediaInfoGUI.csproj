@@ -70,7 +70,6 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -104,8 +103,11 @@
     <Compile Include="History\HistoryItemList.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
-    <Compile Include="Themes\AppTheme.cs" />
-    <Compile Include="Themes\ThemeHelper.cs" />
+    <Compile Include="Theme\AppTheme.cs" />
+    <Compile Include="Theme\Custom\MessageDialog.xaml.cs">
+      <DependentUpon>MessageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Theme\ThemeHelper.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Interop\CrossProcessLockFactory.cs" />
     <Compile Include="Models\FileTab.cs" />
@@ -116,9 +118,9 @@
     <Compile Include="Utils\FolderUtils.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Utils\MessageBoxHelper.cs" />
+    <Compile Include="Utils\MouseUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="Themes\WindowsThemeDetector.cs" />
+    <Compile Include="Theme\WindowsThemeDetector.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -134,15 +136,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\Resources\Dark.xaml">
+    <Page Include="Theme\Custom\MessageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\Resources\Dark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\Resources\HighContrast.xaml">
+    <Page Include="Theme\Resources\HighContrast.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\Resources\Light.xaml">
+    <Page Include="Theme\Resources\Light.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

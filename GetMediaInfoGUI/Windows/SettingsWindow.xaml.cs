@@ -4,12 +4,14 @@ using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Theme;
 using GetMediaInfoGUI.Themes;
+using GetMediaInfoGUI.Themes.Custom;
 using GetMediaInfoGUI.Utils;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,7 +54,7 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Window_Loaded(object sender, EventArgs e)
         {
-            StatusFrontend.Text = System.Windows.Forms.Application.ProductVersion;
+            StatusFrontend.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             StatusFrontend.Foreground = Brushes.Green;
             
             //Check versions
@@ -355,6 +357,7 @@ namespace GetMediaInfoGUI
 
             //save selected theme
             ConfigHelper.GetConfig().Theme = selectedTheme;
+            ConfigHelper.SaveConfig();
 
             //if auto, select the current system theme
             if (selectedTheme == AppTheme.Auto)
@@ -369,22 +372,20 @@ namespace GetMediaInfoGUI
                 var openedFiles = owner.GetOpenedFiles();
                 if (openedFiles.Count() > 0)
                 {
-                    var result = MessageBoxHelper.Show(this,
+                    var result = MessageDialog.Show(this,
                         $"In order to change the theme the application needs to be restarted. Do you want to continue?",
-                        "Theme change confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        "Theme change confirmation", MessageBoxButton.YesNo);
 
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            ConfigHelper.SaveConfig();
-
                             Process.Start(Process.GetCurrentProcess().MainModule.FileName, string.Join(" ", openedFiles));
                             Application.Current.Shutdown();
                         }
                         catch (Exception ex)
                         {
-                            MessageBoxHelper.ShowError(this, $"Unable to change theme. Reboot cancelled.");
+                            MessageDialog.Show(this, $"Unable to change theme. Reboot cancelled.", "Error detected");
                             Logger.Instance.Error(ex);
                         }
                     }

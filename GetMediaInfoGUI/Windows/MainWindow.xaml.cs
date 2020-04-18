@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
 using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-using Microsoft.Win32;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Microsoft.Win32;
 using GetMediaInfoGUI.Utils;
 using GetMediaInfoGUI.Interop;
 using GetMediaInfoGUI.Configuration;
 using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Windows;
-using System.Reflection;
-using GetMediaInfoGUI.Themes;
+using GetMediaInfoGUI.Theme;
+using GetMediaInfoGUI.Themes.Custom;
 
 namespace GetMediaInfoGUI
 {
@@ -93,7 +94,7 @@ namespace GetMediaInfoGUI
                 }
             } catch (Exception ex)
             {
-                MessageBoxHelper.ShowError(this, $"Unable to create main window: {ex.Message}");
+                MessageDialog.Show(this, $"Unable to create main window: {ex.Message}", "Error detected");
                 Logger.Instance.Error(ex);
                 Environment.Exit(-1);
             }
@@ -124,7 +125,7 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.ShowError(this, $"Unable to correctly load main window: {ex.Message}");
+                MessageDialog.Show(this, $"Unable to correctly load main window: {ex.Message}", "Error detected");
                 Logger.Instance.Error(ex);
                 Environment.Exit(-1);
             }
@@ -186,16 +187,8 @@ namespace GetMediaInfoGUI
             // Open File/Files/Folder
             if (e.Key == Key.O && ctrlPressed)
             {
-                if (shiftPressed)
-                {
-                    //Ctrl+Shift+O : open a folder
-                    MenuItemOpenFolder_Click(null, null);
-                }
-                else
-                {
-                    //Ctrl+O : open a file
-                    MenuItemOpenFiles_Click(null, null);
-                }
+                //Ctrl+O : open a file
+                MenuItemOpenFiles_Click(null, null);
             }
 
             // Save 
@@ -307,26 +300,6 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the MenuItem_Open control: opens a new openfiledialog to choose new input file\s.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void MenuItemOpenFiles_Click(object sender, RoutedEventArgs e)
-        {
-            var file = new OpenFileDialog()
-            {
-                Filter = "Media Files|*.*",
-                Title = "Select a files to analyze",
-                Multiselect = true
-            };
-            if (file.ShowDialog().GetValueOrDefault())
-            {
-
-                CreateFileTabs(file.FileNames);
-            }
-        }
-
-        /// <summary>
         /// Handles the Click event of the MenuItemSaveStandardReport control: saves the standard report to disk.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -407,23 +380,22 @@ namespace GetMediaInfoGUI
         }
 
         /// <summary>
-        /// Handles the Click event of the MenuItemOpenFolder control. Analyze all files inside the target folder.
+        /// Handles the Click event of the MenuItem_Open control: opens a new openfiledialog to choose new input file\s.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void MenuItemOpenFolder_Click(object sender, RoutedEventArgs e)
+        private void MenuItemOpenFiles_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog folder = new System.Windows.Forms.FolderBrowserDialog()
+            var file = new OpenFileDialog()
             {
-                ShowNewFolderButton = false,
-                Description = "Select a folder to analyze"
+                Filter = "Media Files|*.*",
+                Title = "Select a files to analyze",
+                Multiselect = true
             };
-            if (folder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (file.ShowDialog().GetValueOrDefault())
             {
-                if (Directory.Exists(folder.SelectedPath))
-                {
-                    CreateFileTabs(Directory.GetFiles(folder.SelectedPath));
-                }
+
+                CreateFileTabs(file.FileNames);
             }
         }
 
@@ -642,7 +614,7 @@ namespace GetMediaInfoGUI
                         Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
                     {
                         //Compute drop screen point
-                        var mousePos = System.Windows.Forms.Cursor.Position;
+                        var mousePos = MouseUtils.GetMousePosition();
                         var dropPos = new System.Drawing.Point(mousePos.X, mousePos.Y);
 
                         //Detect collision with other instances window
@@ -807,8 +779,8 @@ namespace GetMediaInfoGUI
 
             if (paths.Length > 10)
             {
-                var result = MessageBoxHelper.Show(this, $"Are you sure do you want to open {paths.Length} files?",
-                    "Multiple files opening confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageDialog.Show(this, $"Are you sure do you want to open {paths.Length} files?",
+                    "Multiple files opening confirmation", MessageBoxButton.YesNo);
 
                 if (result == MessageBoxResult.No)
                 {
@@ -920,7 +892,7 @@ namespace GetMediaInfoGUI
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.ShowError(this, $"Unable to save recent file history: {ex.Message}");
+                MessageDialog.Show(this, $"Unable to save recent file history: {ex.Message}", "Error detected");
                 Logger.Instance.Error(ex);
             }
         }
@@ -1000,7 +972,7 @@ namespace GetMediaInfoGUI
                     }
                     else
                     {
-                        MessageBoxHelper.ShowError(this, $"Unable to download the latest version of Mediainfo library");
+                        MessageDialog.Show(this, $"Unable to download the latest version of Mediainfo library", "Error detected");
                         Logger.Instance.Error("Unable to download the latest version of Mediainfo library");
                         Application.Current.Shutdown();
                     }
@@ -1016,7 +988,7 @@ namespace GetMediaInfoGUI
             if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GetMediaInfo.dll")))
             {
                 GeneralGrid.IsEnabled = false;
-                MessageBoxHelper.ShowError(this, $"GetMediaInfo.dll library not found");
+                MessageDialog.Show(this, $"GetMediaInfo.dll library not found", "Error detected");
                 Logger.Instance.Error("GetMediaInfo.dll library not found");
                 Application.Current.Shutdown();
             }
@@ -1033,9 +1005,9 @@ namespace GetMediaInfoGUI
                 StartUpdater();
             } else if (DateTime.Now.Date.Subtract(lastCheckDate).Days > 7)
             {
-                var result = MessageBoxHelper.Show(this,
-                    $"The latest Mediainfo library version was checked at {lastCheckDate.ToString("g")}. Do you want to check again?",
-                    "Mediainfo update check", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                var result = MessageDialog.Show(this,
+                    $"The latest Mediainfo library version was checked at {lastCheckDate:g}. Do you want to check again?",
+                    "Mediainfo update check", MessageBoxButton.YesNo);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -1053,8 +1025,8 @@ namespace GetMediaInfoGUI
         {
             if (_libraryAlreadyLoaded)
             {
-                var result = MessageBox.Show("In order to update the library the program needs to be restarted, do you want to restart now?", 
-                    "Update confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageDialog.Show(this, $"To complete the update the program needs to be restarted.{Environment.NewLine}Do you want to restart it now?", 
+                    "Update confirmation", MessageBoxButton.YesNo);
                 if (result != MessageBoxResult.Yes)
                 {
                     return false;
