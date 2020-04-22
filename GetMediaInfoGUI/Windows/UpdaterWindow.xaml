@@ -31,7 +31,7 @@
         
         <Button x:FieldModifier="private" x:Name="CancelButton" Grid.Row="2" Content="Cancel" Click="CancelButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,2"/>
 
-        <Expander x:FieldModifier="private" x:Name="Expander" Grid.Row="3" Header="Less details" VerticalAlignment="Stretch" Margin="4,0" IsExpanded="True" Collapsed="Expander_Collapsed" Expanded="Expander_Expanded">
+        <Expander x:FieldModifier="private" x:Name="Expander" Grid.Row="3" Header="More details" VerticalAlignment="Stretch" Margin="4,0" IsExpanded="False" Collapsed="Expander_Collapsed" Expanded="Expander_Expanded">
             <TextBox x:FieldModifier="private" x:Name="Log" TextWrapping="Wrap" IsReadOnly="True" ScrollViewer.CanContentScroll="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,4"/>
         </Expander>
     </Grid>
