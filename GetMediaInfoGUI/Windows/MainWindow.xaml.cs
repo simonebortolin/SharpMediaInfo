@@ -19,7 +19,7 @@ using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Windows;
 using GetMediaInfoGUI.Theme;
-using GetMediaInfoGUI.Themes.Custom;
+using GetMediaInfoGUI.Theme.Custom;
 
 namespace GetMediaInfoGUI
 {
