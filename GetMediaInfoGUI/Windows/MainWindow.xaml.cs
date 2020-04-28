@@ -20,6 +20,7 @@ using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Windows;
 using GetMediaInfoGUI.Theme;
 using GetMediaInfoGUI.Theme.Custom;
+using Ookii.Dialogs.Wpf;
 
 namespace GetMediaInfoGUI
 {
@@ -395,20 +396,17 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItemOpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            // Create a "Save As" dialog for selecting a directory (HACK)
-            var dialog = new SaveFileDialog
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog
             {
-                //InitialDirectory = textbox.Text; // Use current value for initial dir
-                Title = "Select a Directory", // instead of default "Save As"
-                Filter = "Directory|*.this.directory", // Prevents displaying files
-                FileName = "select", // Filename will then be "select.this.directory"
+                Description = "Select a Directory",
+                UseDescriptionForTitle = true, // This applies to the Vista style dialog only, not the old dialog.
             };
-            if (dialog.ShowDialog() == true)
+            if (!VistaFolderBrowserDialog.IsVistaFolderDialogSupported)
+                MessageDialog.Show(this, "Because you are not using Windows Vista or later, the regular folder browser dialog will be used. Please use Windows Vista to see the new dialog.", "Sample folder browser dialog");
+           
+            if (dialog.ShowDialog(this) == true)
             {
-                string path = dialog.FileName;
-                // Remove fake filename from resulting path
-                path = path.Replace("\\select.this.directory", "");
-                path = path.Replace(".this.directory", "");
+                string path = dialog.SelectedPath;              
                 // If user has changed the filename, create the new directory
                 if (Directory.Exists(path))
                 {
