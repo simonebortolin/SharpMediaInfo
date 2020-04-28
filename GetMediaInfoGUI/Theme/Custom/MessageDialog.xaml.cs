@@ -1,11 +1,10 @@
-﻿using GetMediaInfoGUI.Theme;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 
-namespace GetMediaInfoGUI.Themes.Custom
+namespace GetMediaInfoGUI.Theme.Custom
 {
     /// <summary>
     /// Interaction logic for MessageDialog.xaml
@@ -91,8 +90,7 @@ namespace GetMediaInfoGUI.Themes.Custom
             if (value is string str && int.TryParse(str, out int type))
             {
                 return (DialogButtonType)Enum.ToObject(typeof(DialogButtonType), type);
-            }
-            else
+            } else
             {
                 throw new ArgumentException($"'{value}' was not recognized as a valid dialog button type");
             }
@@ -109,8 +107,11 @@ namespace GetMediaInfoGUI.Themes.Custom
         /// <returns>The message</returns>
         public static void Show(Window owner, string message, string caption)
         {
-            var dialog = new MessageDialog(owner, message, caption);
-            dialog.ShowDialog();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var dialog = new MessageDialog(owner, message, caption);
+                dialog.ShowDialog();
+            });     
         }
 
         /// <summary>
@@ -123,9 +124,14 @@ namespace GetMediaInfoGUI.Themes.Custom
         /// <returns>The message result</returns>
         public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton buttons)
         {
-            var dialog = new MessageDialog(owner, message, caption, buttons);
-            dialog.ShowDialog();
-            return dialog.Result;
+            MessageBoxResult result = MessageBoxResult.None;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var dialog = new MessageDialog(owner, message, caption, buttons);
+                dialog.ShowDialog();
+                result = dialog.Result;
+            });
+            return result;
         }
         #endregion
 
