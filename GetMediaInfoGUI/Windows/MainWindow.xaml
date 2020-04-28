@@ -48,6 +48,7 @@
             <Menu>
                 <MenuItem Header="_File">
                     <MenuItem Header="_Open files…" Click="MenuItemOpenFiles_Click" InputGestureText="Ctrl+O"/>
+                    <MenuItem Header="_Open folder..." Click="MenuItemOpenFolder_Click" InputGestureText="Ctrl+Shift+O"/>
                     <MenuItem Header="_Open recent" x:Name="HistoryMenuItem" InputGestureText="Ctrl+H"/>
                     <MenuItem Header="_Close all" Click="MenuItemCloseFiles_Click" InputGestureText="Ctrl+X"/>
                     <Separator />

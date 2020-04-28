@@ -187,8 +187,17 @@ namespace GetMediaInfoGUI
             // Open File/Files/Folder
             if (e.Key == Key.O && ctrlPressed)
             {
-                //Ctrl+O : open a file
-                MenuItemOpenFiles_Click(null, null);
+                if (shiftPressed)
+                {
+                    //Ctrl+Shift+O : open a folder
+                    MenuItemOpenFolder_Click(null, null);
+                }
+                else
+                {
+                    //Ctrl+O : open a file
+                    MenuItemOpenFiles_Click(null, null);
+                }
+
             }
 
             // Save 
@@ -377,6 +386,35 @@ namespace GetMediaInfoGUI
             UpdateHistoryMenuItem();
 
             Task.Run(() => RefreshTabs());
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MenuItemOpenFolder control. Analyze all files inside the target folder.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MenuItemOpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            // Create a "Save As" dialog for selecting a directory (HACK)
+            var dialog = new SaveFileDialog
+            {
+                //InitialDirectory = textbox.Text; // Use current value for initial dir
+                Title = "Select a Directory", // instead of default "Save As"
+                Filter = "Directory|*.this.directory", // Prevents displaying files
+                FileName = "select", // Filename will then be "select.this.directory"
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+                // Remove fake filename from resulting path
+                path = path.Replace("\\select.this.directory", "");
+                path = path.Replace(".this.directory", "");
+                // If user has changed the filename, create the new directory
+                if (Directory.Exists(path))
+                {
+                    CreateFileTabs(Directory.GetFiles(path));
+                }
+            }
         }
 
         /// <summary>
