@@ -7,9 +7,10 @@
         mc:Ignorable="d"
         Title="About" 
         Height="450" 
-        Width="600" 
+        Width="600"
+        Icon="../Resources/icon.ico"
         Style="{DynamicResource WindowStyle}">
-    
+
     <Window.Resources>
         <Style TargetType="TextBlock">
             <!--<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Visible" />-->
@@ -19,7 +20,7 @@
             <Setter Property="FontSize" Value="12" />
         </Style>
     </Window.Resources>
-    
+
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="72"/>
@@ -41,28 +42,34 @@
             <Label Grid.Column="0" Grid.Row="0" Content="{Binding ProgramInfo}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             <Label Grid.Column="0" Grid.Row="1" Content="{Binding LibraryInfo}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             <Label Grid.Column="0" Grid.Row="2" Content="Additional MediaInfo information:" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-            <Image Grid.Column="1" Grid.RowSpan="3" Margin="5" Source="/GetMediaInfoGUI;component/icon.ico" />
+            <Image Grid.Column="1" Grid.RowSpan="3" Margin="5" Source="/GetMediaInfoGUI;component/Resources/icon.ico" />
         </Grid>
-             
+
         <TabControl Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Known codecs">
                 <Grid>
                     <ScrollViewer>
-                        <TextBlock Text="{Binding KnownCodecs}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <TextBlock Text="{Binding KnownCodecs}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                   FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                   FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Parameters list">
                 <Grid>
                     <ScrollViewer>
-                        <TextBlock Text="{Binding ParametersList}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <TextBlock Text="{Binding ParametersList}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                   FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                   FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Capacities">
                 <Grid>
                     <ScrollViewer>
-                        <TextBlock Text="{Binding Capacities}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock Text="{Binding Capacities}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                   FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                   FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                     </ScrollViewer>
                 </Grid>
             </TabItem>

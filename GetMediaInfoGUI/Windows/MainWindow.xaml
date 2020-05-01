@@ -18,7 +18,7 @@
         Width="522"
         MinWidth="522" 
         MinHeight="584"        
-        Icon="../icon.ico"
+        Icon="../Resources/icon.ico"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         Style="{DynamicResource WindowStyle}">
@@ -48,7 +48,7 @@
             <Menu>
                 <MenuItem Header="_File">
                     <MenuItem Header="_Open files…" Click="MenuItemOpenFiles_Click" InputGestureText="Ctrl+O"/>
-                    <MenuItem Header="_Open folder..." Click="MenuItemOpenFolder_Click" InputGestureText="Ctrl+Shift+O"/>
+                    <MenuItem Header="_Open folder…" Click="MenuItemOpenFolder_Click" InputGestureText="Ctrl+Shift+O"/>
                     <MenuItem Header="_Open recent" x:Name="HistoryMenuItem" InputGestureText="Ctrl+H"/>
                     <MenuItem Header="_Close all" Click="MenuItemCloseFiles_Click" InputGestureText="Ctrl+X"/>
                     <Separator />
@@ -74,7 +74,7 @@
                         <extra:AnimatedImage GifSource="/GetMediaInfoGUI;component/Resources/loading.gif" Visibility="{Binding LoadingIconVisibility}"/>
                         <TextBlock Text="{Binding HeaderText}" Margin="0,0,10,0" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
                         <Button Click="TabItem_CloseButton_Click" Template="{StaticResource ResourceKey=closeButton}" HorizontalAlignment="Right"/>
-                        
+
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
@@ -116,7 +116,9 @@
                                                     <ColumnDefinition Width="{Binding SimpleReportCoverWidth}"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock TextWrapping="Wrap" Margin="0,0,-2,0" Grid.Column="0" Text="{Binding SimpleReportGeneralSection}"/>
+                                                <TextBlock TextWrapping="Wrap" Margin="0,0,-2,0" Grid.Column="0" Text="{Binding SimpleReportGeneralSection}"
+                                                           FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                                           FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                                                 <Image RenderOptions.BitmapScalingMode="Fant" RenderTransformOrigin="2,0" Width="150" Grid.Column="1" Source="{Binding SimpleReportCover}">
                                                     <Image.ContextMenu>
                                                         <ContextMenu>
@@ -128,19 +130,29 @@
                                         </Grid>
                                     </GroupBox>
                                     <GroupBox Header="Video Tracks" Grid.Row="1" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Visibility="{Binding SimpleReportVideoSectionVisibility}">
-                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportVideoSection}" Margin="0,0,-2,0"/>
+                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportVideoSection}" Margin="0,0,-2,0"
+                                                    FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                                    FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                                     </GroupBox>
                                     <GroupBox  Header="Audio Tracks" Grid.Row="2" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Visibility="{Binding SimpleReportAudioSectionVisibility}">
-                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportAudioSection}" Margin="0,0,-2,0"/>
+                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportAudioSection}" Margin="0,0,-2,0"
+                                                    FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                                    FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                                     </GroupBox>
                                     <GroupBox Header="Text Tracks" Grid.Row="3" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Visibility="{Binding SimpleReportTextSectionVisibility}">
-                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportTextSection}" Margin="0,0,-2,0"/>
+                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportTextSection}" Margin="0,0,-2,0"
+                                                    FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                                    FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                                     </GroupBox>
                                     <GroupBox Header="Menu Tracks" Grid.Row="4" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Visibility="{Binding SimpleReportMenuSectionVisibility}">
-                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportMenuSection}" Margin="0,0,-2,0"/>
+                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportMenuSection}" Margin="0,0,-2,0"
+                                                    FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                                    FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                                     </GroupBox>
                                     <GroupBox Header="Image Tracks" Grid.Row="5" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Visibility="{Binding SimpleReportImageSectionVisibility}">
-                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportImageSection}" Margin="0,0,-2,0"/>
+                                        <TextBlock  TextWrapping="Wrap" Text="{Binding SimpleReportImageSection}" Margin="0,0,-2,0"
+                                                    FontSize="{Binding FontSize}"  FontFamily="{Binding FontFamily}"
+                                                    FontStyle="{Binding FontStyle}" FontWeight="{Binding FontWeight}" />
                                     </GroupBox>
                                 </Grid>
                             </ScrollViewer>

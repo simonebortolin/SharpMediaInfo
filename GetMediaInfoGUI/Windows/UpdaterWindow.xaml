@@ -12,7 +12,7 @@
         Closing="Window_Closing"
         Width="394" 
         Height="170"
-        Icon="../icon.ico"
+        Icon="../Resources/icon.ico"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         Style="{DynamicResource WindowStyle}">

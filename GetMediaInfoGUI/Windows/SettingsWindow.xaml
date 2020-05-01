@@ -13,7 +13,7 @@
         Height="580"
         Width="480"
         ResizeMode="NoResize"
-        Icon="../icon.ico"
+        Icon="../Resources/icon.ico"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         WindowStartupLocation="CenterOwner"

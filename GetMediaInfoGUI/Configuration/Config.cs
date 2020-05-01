@@ -39,12 +39,12 @@ namespace GetMediaInfoGUI.Configuration
         /// <summary>
         /// Gets or sets a value indicating whether to remove justification in standard and complete report.
         /// </summary>
-        public bool RemoveJustification { set; get; } = false;
+        public bool RemoveJustification { set; get; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to show or hide the cover if it's present.
         /// </summary>
-        public bool ShowCover { get; set; } = false;
+        public bool ShowCover { get; set; } = true;
         #endregion
 
         #region Appearence
@@ -71,7 +71,7 @@ namespace GetMediaInfoGUI.Configuration
         /// <summary>
         /// Gets or sets the font family of the report text.
         /// </summary>
-        public string ReportFontFamily { get; set; } = "Segoe UI";
+        public string ReportFontFamily { get; set; } = "Lucida Console";
         #endregion
 
         #region History
