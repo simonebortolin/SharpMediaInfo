@@ -442,12 +442,9 @@ namespace GetMediaInfoGUI
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItemCloseFiles_Click(object sender, RoutedEventArgs e)
         {
-            while (FileTabControl.HasItems)
-            {
-                var fileTab = FileTabControl.Items.GetItemAt(0) as FileTab;
-                fileTab.Dispose();
-                FileTabControl.Items.Remove(fileTab);
-            }
+            FileTabControl.Items.Cast<FileTab>().ToList().ForEach(i => i.Dispose());
+            FileTabControl.Items.Clear();
+            StatusLab.Content = "Ready.";
         }
 
         /// <summary>
@@ -1105,19 +1102,6 @@ namespace GetMediaInfoGUI
         #endregion
 
         #region Helpers     
-        /// <summary>
-        /// Restore interface to his default state and flush all main variables.
-        /// </summary>
-        private void RestoreInterface()
-        {
-            StatusLab.Content = "Cleaning all...";
-            StatusLab.InvalidateVisual();
-            FileTabControl.Items.Cast<FileTab>().ToList().ForEach(i => i.Dispose());
-            FileTabControl.Items.Clear();
-            StatusLab.Content = "Ready.";
-            StatusLab.InvalidateVisual();
-        }
-
         /// <summary>
         /// Saves all resources.
         /// </summary>
