@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Reflection;
-using GetMediaInfo.Exceptions;
+using GetMediaInfo.Exception;
 using System.Text;
+using GetMediaInfo.Model;
 
 namespace GetMediaInfo
 {
@@ -13,7 +14,7 @@ namespace GetMediaInfo
     /// every information MediaInfo.dll can collect.
     /// Tracks are accessibles as properties.
     /// </summary>
-    public class MediaInfo : IDisposable
+    public partial class MediaInfo : IDisposable
     {
         #region Global variables
         /// <summary>
@@ -164,7 +165,7 @@ namespace GetMediaInfo
 #endif     
 
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 throw new MediaInfoAnalysisException("An error occurred while trying to analyze the file.", ex);
             }
@@ -206,7 +207,7 @@ namespace GetMediaInfo
                 System.Diagnostics.Debug.WriteLine(string.Format("GetMediaInfo data parsing time: {0} ms", sw.ElapsedMilliseconds));
 #endif     
 
-            } catch (Exception ex)
+            } catch (System.Exception ex)
             {
                 throw new MediaInfoAnalysisException("An error occurred while trying to analyze input stream.", ex);
             }

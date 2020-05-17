@@ -9,7 +9,7 @@ namespace GetMediaInfoGUI.Theme.Custom
     /// <summary>
     /// Interaction logic for MessageDialog.xaml
     /// </summary>
-    public partial class MessageDialog : Window
+    public partial class MessageDialog : System.Windows.Window
     {
         private enum DialogButtonType
         {
@@ -25,7 +25,7 @@ namespace GetMediaInfoGUI.Theme.Custom
         #endregion
 
         #region Private
-        private MessageDialog(Window owner, string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK)
+        private MessageDialog(System.Windows.Window owner, string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK)
         {
             InitializeComponent();
 
@@ -105,7 +105,7 @@ namespace GetMediaInfoGUI.Theme.Custom
         /// <param name="message"></param>
         /// <param name="caption"></param>
         /// <returns>The message</returns>
-        public static void Show(Window owner, string message, string caption)
+        public static void Show(System.Windows.Window owner, string message, string caption)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -122,7 +122,7 @@ namespace GetMediaInfoGUI.Theme.Custom
         /// <param name="caption">The caption of the dialog</param>
         /// <param name="buttons">The buttons to show</param>
         /// <returns>The message result</returns>
-        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton buttons)
+        public static MessageBoxResult Show(System.Windows.Window owner, string message, string caption, MessageBoxButton buttons)
         {
             MessageBoxResult result = MessageBoxResult.None;
             Application.Current.Dispatcher.Invoke(() =>
@@ -165,7 +165,7 @@ namespace GetMediaInfoGUI.Theme.Custom
             /// Changes the style of the target window by removing the icon and minimize/maximise buttons.
             /// </summary>
             /// <param name="window">The target window</param>
-            public static void ChangeStyle(Window window)
+            public static void ChangeStyle(System.Windows.Window window)
             {
                 // Get this window's handle
                 IntPtr hwnd = new WindowInteropHelper(window).Handle;

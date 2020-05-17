@@ -1,4 +1,4 @@
-﻿using GetMediaInfoGUI.Utils;
+﻿using GetMediaInfoGUI.Util;
 using System;
 using System.IO;
 

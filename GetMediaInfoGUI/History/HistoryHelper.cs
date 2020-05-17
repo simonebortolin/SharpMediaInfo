@@ -1,5 +1,5 @@
 ﻿using GetMediaInfoGUI.Configuration;
-using GetMediaInfoGUI.Utils;
+using GetMediaInfoGUI.Util;
 using System.IO;
 using System.Xml.Serialization;
 
