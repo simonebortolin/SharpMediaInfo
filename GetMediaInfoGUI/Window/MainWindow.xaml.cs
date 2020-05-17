@@ -17,12 +17,11 @@ using GetMediaInfoGUI.Interop;
 using GetMediaInfoGUI.Configuration;
 using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
-using GetMediaInfoGUI.Window;
 using GetMediaInfoGUI.Theme;
 using GetMediaInfoGUI.Theme.Custom;
 using Ookii.Dialogs.Wpf;
 
-namespace GetMediaInfoGUI
+namespace GetMediaInfoGUI.Window
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

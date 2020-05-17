@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GetMediaInfoGUI"
         xmlns:extra="clr-namespace:GetMediaInfoGUI.Control"
-        x:Class="GetMediaInfoGUI.MainWindow"
+        x:Class="GetMediaInfoGUI.Window.MainWindow"
         mc:Ignorable="d"
         AllowDrop="True"
         Drop="Window_Drop"

@@ -17,7 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
 
-namespace GetMediaInfoGUI
+namespace GetMediaInfoGUI.Window
 {
     /// <summary>
     /// Iteration logic for SettingsWindow.xaml

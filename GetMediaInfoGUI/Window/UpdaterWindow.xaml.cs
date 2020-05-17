@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 
-namespace GetMediaInfoGUI
+namespace GetMediaInfoGUI.Window
 {
     /// <summary>
     /// Interaction logic for UpdateComponent.xaml
