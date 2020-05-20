@@ -805,9 +805,7 @@ namespace GetMediaInfoGUI.Window
         /// <param name="skipWarning">Whether to skip the warning about the number of files to open</param>
         private void CreateFileTabs(params string[] paths)
         {
-            List<string> formatToIgnore = new List<string>() { ".lnk", ".db" , ".exe", ".dll", ".bat",
-                ".cmd", ".ini", ".xml", ".cfg", ".json", ".iso", ".bin", ".rar", ".zip", ".7z", ".inf",
-                ".nfo", ".pdf", ".pptx", ".ppt", ".docx", ".doc", ".xls", ".xlsx" };
+            List<string> formatToIgnore = new List<string>() {  };
 
             if (paths.Length > 10)
             {
