@@ -19,7 +19,6 @@ using GetMediaInfoGUI.History;
 using GetMediaInfoGUI.Logging;
 using GetMediaInfoGUI.Theme;
 using GetMediaInfoGUI.Theme.Custom;
-using Ookii.Dialogs.Wpf;
 
 namespace GetMediaInfoGUI.Window
 {
@@ -395,17 +394,14 @@ namespace GetMediaInfoGUI.Window
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItemOpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog
+            OpenFolderDialog dialog = new OpenFolderDialog
             {
-                Description = "Select a Directory",
-                UseDescriptionForTitle = true, // This applies to the Vista style dialog only, not the old dialog.
+                Title = "Select a Directory",
             };
-            if (!VistaFolderBrowserDialog.IsVistaFolderDialogSupported)
-                MessageDialog.Show(this, "Because you are not using Windows Vista or later, the regular folder browser dialog will be used. Please use Windows Vista to see the new dialog.", "Sample folder browser dialog");
-           
+            
             if (dialog.ShowDialog(this) == true)
             {
-                string path = dialog.SelectedPath;              
+                string path = dialog.FolderName;              
                 // If user has changed the filename, create the new directory
                 if (Directory.Exists(path))
                 {
