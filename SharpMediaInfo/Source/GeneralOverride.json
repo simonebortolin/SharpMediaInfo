@@ -1,0 +1,279 @@
+[
+  {
+    "OverrideType": "Field",
+    "CsvName": "FileSize",
+    "Type": "BigInteger?",
+    "ParseFunction": "GetBigIntegerValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize",
+    "Type": "BigInteger?",
+    "ParseFunction": "GetBigIntegerValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize",
+    "Type": "BigInteger?",
+    "ParseFunction": "GetBigIntegerValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded",
+    "Type": "BigInteger?",
+    "ParseFunction": "GetBigIntegerValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded",
+    "Type": "BigInteger?",
+    "ParseFunction": "GetBigIntegerValueNullable"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Cover",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "IsStreamable",
+    "Name": "IsStreamable",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Cover_Data",
+    "Name": "CoverData",
+    "Type": "List<byte[]>",
+    "ParseFunction": "GetCoverDataValue"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "OverallBitRate",
+    "Name": "OverallBitRateInternal",
+    "Modifier": "private",
+    "Type": "long?",
+    "ParseFunction": "GetLongValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "OverallBitRate/String",
+    "Name": "OverallBitRateStringInternal",
+    "Modifier": "private"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Video_Format_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Video_Language_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Audio_Format_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Audio_Language_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Text_Format_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Text_Language_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Other_Format_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Other_Language_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Image_Format_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Image_Language_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Menu_Format_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Menu_Language_List",
+    "Type": "List<string>",
+    "ParseFunction": "GetStringListValue"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Interleaved",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String3",
+    "Name": "DurationTimecode",
+    "Type": "TimeSpan",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String5",
+    "Skip": true
+  }
+]

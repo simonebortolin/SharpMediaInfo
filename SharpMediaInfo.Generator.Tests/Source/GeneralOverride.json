@@ -1,0 +1,8 @@
+[
+  {
+    "OverrideType": "Field",
+    "CsvName": "FileSize",
+    "Name": "FileSize",
+    "Type": "BigInteger"
+  }
+]

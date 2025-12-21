@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Source\MenuOverride.json" />
+    <None Remove="Source\TextOverride.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Source\Audio.csv" />
+    <AdditionalFiles Include="Source\General.csv" />
+    <AdditionalFiles Include="Source\AudioOverride.json" />
+    <AdditionalFiles Include="Source\MenuOverride.json" />
+    <AdditionalFiles Include="Source\TextOverride.json" />
+    <AdditionalFiles Include="Source\VideoOverride.json" />
+	<AdditionalFiles Include="Source\GeneralOverride.json" />
+    <AdditionalFiles Include="Source\Image.csv" />
+    <AdditionalFiles Include="Source\Menu.csv" />
+    <AdditionalFiles Include="Source\Other.csv" />
+    <AdditionalFiles Include="Source\Text.csv" />
+    <AdditionalFiles Include="Source\Video.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharpMediaInfo.Generator\SharpMediaInfo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\SharpMediaInfo.Native\SharpMediaInfo.Native.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
+</Project>
