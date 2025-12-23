@@ -67,5 +67,13 @@ namespace SharpMediaInfo.Native
         void OpenStream(Stream stream);
 
         static IMediaInfoNative Create(bool parseCoverData) => new MediaInfoNative(parseCoverData);
+
+        /// <summary>
+        /// Gets library information using MediaInfo_Option with IntPtr.Zero handle.
+        /// </summary>
+        static string GetLibraryInfo(string option, string value = "")
+        {
+            return MediaInfoNative.GetLibraryInfoStatic(option, value);
+        }
     }
 }

@@ -16,8 +16,17 @@ namespace SharpMediaInfo.Native
     /// <param name="parseCoverData">true to enable parsing of embedded cover image data; otherwise, false. The default is false.</param>
     internal sealed class MediaInfoNative(bool parseCoverData = false) : IMediaInfoNative
     {
-
         private MediaInfoHandle? handle;
+
+        /// <summary>
+        /// Static method to get library information (version, capabilities, etc.)
+        /// </summary>
+        internal static string GetLibraryInfoStatic(string option, string value)
+        {
+            var ptr = MediaInfoNativeMethods.SetOption(IntPtr.Zero, option, value);
+            return Marshal.PtrToStringUni(ptr) ?? string.Empty;
+        }
+
         /// <summary>
         /// Gets the value of a parameter of a track at a defined index with a defined kind.
         /// </summary>

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SharpMediaInfo.Generator
 {
-    public class PopulateMediaInfoBuilder
+    public class PopulateMethodGenerator
     {
-        public static string GeneratePopulateMediaInfo(string className, IEnumerable<TrackFieldInfo> fields)
+        public static string GeneratePopulateMethod(string className, IEnumerable<TrackFieldInfo> fields)
         {
             var track = className.Replace("Track", "");
             var sb = new StringBuilder();
@@ -20,9 +20,9 @@ namespace SharpMediaInfo.Generator
             sb.AppendLine();
             sb.AppendLine( "namespace SharpMediaInfo");
             sb.AppendLine( "{");
-            sb.AppendLine($"  partial class MediaInfo");
+            sb.AppendLine($"  partial class MediaInfoBuilder");
             sb.AppendLine( "  {");
-            sb.AppendLine($"    internal static {className} Populte{className}(IMediaInfoNative mediaInfoNative, int index)");
+            sb.AppendLine($"    private {className} Populate{className}(IMediaInfoNative mediaInfoNative, int index)");
             sb.AppendLine( "    {");
             sb.AppendLine($"      return new {className}");
             sb.AppendLine( "      {");

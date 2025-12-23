@@ -48,9 +48,9 @@ namespace SharpMediaInfo.Generator
                 if (trackResult != null)
                     spc.AddSource($"SharpMediaInfo.Tracks.{nameAndContent.name}Track.g.cs", trackResult);
 
-                var helperResult = GeneratePopulateMediaInfoClass(nameAndContent.name, nameAndContent.csvContent, overrideFields);
+                var helperResult = GeneratePopulateMethodForBuilder(nameAndContent.name, nameAndContent.csvContent, overrideFields);
                 if (helperResult != null)
-                    spc.AddSource($"SharpMediaInfo.MediaInfo.{nameAndContent.name}.g.cs", helperResult);
+                    spc.AddSource($"SharpMediaInfo.MediaInfoBuilder.{nameAndContent.name}.g.cs", helperResult);
             });
         }
 
@@ -108,12 +108,12 @@ namespace SharpMediaInfo.Generator
             return code;
         }
 
-        public string GeneratePopulateMediaInfoClass(string name, string csvText, IOverridableField[]? @override = null)
+        public string GeneratePopulateMethodForBuilder(string name, string csvText, IOverridableField[]? @override = null)
         {
 
             var fields = CalculateOverrideFields(TrackFieldInfoParser.ParseCsv(csvText), @override);
 
-            string code = PopulateMediaInfoBuilder.GeneratePopulateMediaInfo($"{name}Track", fields.Where(it => it.Skip == false));
+            string code = PopulateMethodGenerator.GeneratePopulateMethod($"{name}Track", fields.Where(it => it.Skip == false));
 
             return code;
         }
