@@ -622,10 +622,8 @@ namespace SharpMediaInfo
             return new BitRateInfo(GetLongValueNullable(input));
         }
 
-        private StreamSizeInfo GetStreamSizeInfo(string sizeInput, string proportionInput)
+        private StreamSizeInfo GetStreamSizeInfo(long? size, double? proportion)
         {
-            var size = GetLongValueNullable(sizeInput);
-            var proportion = GetDoubleValueNullable(proportionInput);
             return new StreamSizeInfo(size, proportion);
         }
 
