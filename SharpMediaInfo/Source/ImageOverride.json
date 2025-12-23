@@ -91,5 +91,15 @@
     "OverrideType": "Field",
     "CsvName": "StreamSize_Demuxed/String5",
     "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
   }
 ]

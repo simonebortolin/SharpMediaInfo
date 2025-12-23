@@ -70,5 +70,15 @@
     "OverrideType": "Field",
     "CsvName": "StreamSize/String5",
     "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
   }
 ]

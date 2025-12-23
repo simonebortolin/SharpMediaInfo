@@ -316,6 +316,15 @@
     "OverrideType": "Field",
     "CsvName": "FrameRate_Maximum/String",
     "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
   }
-
 ]

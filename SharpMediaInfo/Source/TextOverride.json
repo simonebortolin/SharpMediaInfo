@@ -168,5 +168,15 @@
     "OverrideType": "Field",
     "CsvName": "Source_StreamSize_Encoded/String5",
     "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
   }
 ]
