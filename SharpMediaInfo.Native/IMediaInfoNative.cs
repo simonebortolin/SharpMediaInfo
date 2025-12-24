@@ -1,7 +1,7 @@
 ﻿using SharpMediaInfo.Native.Enum;
 namespace SharpMediaInfo.Native
 {
-    public interface IMediaInfoNative
+    public interface IMediaInfoNative : IDisposable
     {
         /// <summary>
         /// Gets the value of a parameter of a track at a defined index with a defined kind.

@@ -154,8 +154,9 @@ namespace SharpMediaInfo
             }
             finally
             {
-                // Close native handle
+                // Dispose native handle properly
                 _mediaInfoNative?.Close();
+                _mediaInfoNative?.Dispose();
             }
         }
 

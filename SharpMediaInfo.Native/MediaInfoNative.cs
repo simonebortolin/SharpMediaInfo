@@ -17,6 +17,7 @@ namespace SharpMediaInfo.Native
     internal sealed class MediaInfoNative(bool parseCoverData = false) : IMediaInfoNative
     {
         private MediaInfoHandle? handle;
+        private bool disposed = false;
 
         /// <summary>
         /// Static method to get library information (version, capabilities, etc.)
@@ -227,21 +228,41 @@ namespace SharpMediaInfo.Native
                 stream.CopyTo(memoryStream);
 
                 var rawDataHandle = GCHandle.Alloc(memoryStream.GetBuffer(), GCHandleType.Pinned);
-                IntPtr pointer = rawDataHandle.AddrOfPinnedObject();
-
-                //creates a new handle
-                handle = new MediaInfoHandle();
-
-                //opens the buffer
-                if (!MediaInfoNativeMethods.InitializeBuffer(handle.DangerousGetHandle(), stream.Length, 0))
+                try
                 {
-                    throw new MediaInfoNativeOpenException("Unable to open the stream.");
+                    IntPtr pointer = rawDataHandle.AddrOfPinnedObject();
+
+                    //creates a new handle
+                    handle = new MediaInfoHandle();
+
+                    //opens the buffer
+                    if (!MediaInfoNativeMethods.InitializeBuffer(handle.DangerousGetHandle(), stream.Length, 0))
+                    {
+                        throw new MediaInfoNativeOpenException("Unable to open the stream.");
+                    }
+                    MediaInfoNativeMethods.ReadBuffer(handle.DangerousGetHandle(), pointer, (UIntPtr)memoryStream.Length);
+                    if (!MediaInfoNativeMethods.FinalizeBuffer(handle.DangerousGetHandle()))
+                    {
+                        throw new MediaInfoNativeFinalizeException("Unable to finalize the stream.");
+                    }
                 }
-                MediaInfoNativeMethods.ReadBuffer(handle.DangerousGetHandle(), pointer, (UIntPtr)memoryStream.Length);
-                if (!MediaInfoNativeMethods.FinalizeBuffer(handle.DangerousGetHandle()))
+                finally
                 {
-                    throw new MediaInfoNativeFinalizeException("Unable to finalize the stream.");
+                    rawDataHandle.Free();
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                if (handle != null && !handle.IsInvalid)
+                {
+                    Close();
+                    handle.Dispose();
+                }
+                disposed = true;
             }
         }
     }
