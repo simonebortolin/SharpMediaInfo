@@ -11,14 +11,14 @@ namespace SharpMediaInfo.Generator
 
             sb.AppendLine("using System;");
             sb.AppendLine("using System.Numerics;");
-            sb.AppendLine("using SharpMediaInfo.Info;");
+            sb.AppendLine("using SharpMediaInfo.Types;");
             sb.AppendLine();
             sb.AppendLine("namespace SharpMediaInfo.Tracks");
             sb.AppendLine("{");
             sb.AppendLine($"    public partial class {className}");
             sb.AppendLine("    {");
 
-            
+
             foreach (var f in fields)
             {
                 sb.AppendLine("        /// <summary>");
@@ -28,7 +28,7 @@ namespace SharpMediaInfo.Generator
                 {
                     sb.AppendLine("        [Obsolete(\"This field is deprecated and may be removed in future versions.\")]");
                 }
-                sb.AppendLine($"        public {f.Type} {f.Name} {{ get; init; }} //{f.CsvName}");
+                sb.AppendLine($"        {f.Modifier} {f.Type} {f.Name} {{ get; init; }} //{f.CsvName}");
                 sb.AppendLine();
             }
 

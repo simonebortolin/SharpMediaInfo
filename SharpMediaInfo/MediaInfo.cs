@@ -1,5 +1,5 @@
 ﻿using SharpMediaInfo.Exception;
-using SharpMediaInfo.Info;
+using SharpMediaInfo.Types;
 using SharpMediaInfo.Native;
 using SharpMediaInfo.Native.Enum;
 using SharpMediaInfo.Tracks;
@@ -33,7 +33,7 @@ namespace SharpMediaInfo
         private readonly int _menuCount;
         private readonly string? _infoComplete;
         private readonly string? _infoStandard;
-        private readonly string? _infoCustom;
+        private string? _infoCustom;
         private readonly string? _fileName;
         private readonly bool _parseCoverData;
         #endregion
@@ -71,25 +71,6 @@ namespace SharpMediaInfo
 
         #region Helper Methods (used by Builder and Track classes)
         /// <summary>
-        /// Parses channels count from channels string.
-        /// </summary>
-        /// <param name="channelstring">The formatted channel string.</param>
-        /// <returns>Numbers of channels parsed from the input string, 0 in case of failure.</returns>
-        internal static int? GetChannelsCount(string channelstring)
-        {
-            var mat = new System.Text.RegularExpressions.Regex("(\\d)\\schannels").Match(channelstring);
-
-            if (mat.Success)
-            {
-                if (int.TryParse(mat.Groups[1].Value, out int channels))
-                {
-                    return channels;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Gets every property for every track in a tracklist and get its value.
         /// </summary>
         /// <typeparam name="T">Type of tracklist, for instance IReadOnlyList'VideoTrack'</typeparam>
@@ -120,46 +101,6 @@ namespace SharpMediaInfo
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets the formatted bitrate string.
-        /// </summary>
-        /// <param name="bitrate">The bitrate.</param>
-        /// <returns>the formatted bitrate string.</returns>
-        internal static string? GetFormattedBitRate(long? bitrate)
-        {
-            if (!bitrate.HasValue) { return null; }
-
-            double doublebytes;
-
-            if (bitrate >= 1099511627776)
-            {
-                doublebytes = (double)bitrate / (double)1099511627776;
-                return string.Format("{0:0.##} Tbps", doublebytes);
-            }
-            else if (1073741824 < bitrate && bitrate < 1099511627775)
-            {
-                doublebytes = (double)bitrate / (double)1073741824;
-                return string.Format("{0:0.##} Gbps", doublebytes);
-            }
-            else if (1048576 < bitrate && bitrate < 1073741823)
-            {
-                doublebytes = (double)bitrate / (double)1048576;
-                return string.Format("{0:0.##} Mbps", doublebytes);
-            }
-            else if (1024 < bitrate && bitrate < 1048575)
-            {
-                doublebytes = (double)bitrate / (double)1024;
-                return string.Format("{0:0.##} Kbps", doublebytes);
-            }
-            else if (0 < bitrate && bitrate < 1023)
-            {
-                doublebytes = (double)bitrate;
-                return string.Format("{0:0.##} Bps", doublebytes);
-            }
-
-            return null;
         }
 
         public bool InfoAvailable()
@@ -282,7 +223,7 @@ namespace SharpMediaInfo
                 sb.AppendLine("Menu");
                 ListEveryAvailablePropery(Menu, sb);
 
-                return sb.ToString();
+                return _infoCustom = sb.ToString();
             }
         }
 

@@ -1,4 +1,4 @@
-namespace SharpMediaInfo.Info
+namespace SharpMediaInfo.Types
 {
     /// <summary>
     /// Represents a measured value with its unit of measurement.

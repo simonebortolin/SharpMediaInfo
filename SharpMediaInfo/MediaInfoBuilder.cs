@@ -1,5 +1,5 @@
 using SharpMediaInfo.Exception;
-using SharpMediaInfo.Info;
+using SharpMediaInfo.Types;
 using SharpMediaInfo.Native;
 using SharpMediaInfo.Native.Enum;
 using SharpMediaInfo.Tracks;
@@ -82,10 +82,10 @@ namespace SharpMediaInfo
         /// Enables parsing of cover image data as base64.
         /// </summary>
         /// <returns>The builder instance for method chaining.</returns>
-        public MediaInfoBuilder WithCoverData()
+        public MediaInfoBuilder WithCoverData(bool with = true)
         {
             ThrowIfBuilt();
-            _parseCoverData = true;
+            _parseCoverData = with;
             return this;
         }
 
@@ -93,11 +93,11 @@ namespace SharpMediaInfo
         /// Enables parsing of both complete and standard reports.
         /// </summary>
         /// <returns>The builder instance for method chaining.</returns>
-        public MediaInfoBuilder WithReports()
+        public MediaInfoBuilder WithReports(bool with = true)
         {
             ThrowIfBuilt();
-            _parseCompleteReport = true;
-            _parseStandardReport = true;
+            _parseCompleteReport = with;
+            _parseStandardReport = with;
             return this;
         }
 
@@ -105,10 +105,10 @@ namespace SharpMediaInfo
         /// Enables parsing of the complete report only.
         /// </summary>
         /// <returns>The builder instance for method chaining.</returns>
-        public MediaInfoBuilder WithCompleteReport()
+        public MediaInfoBuilder WithCompleteReport(bool with = true)
         {
             ThrowIfBuilt();
-            _parseCompleteReport = true;
+            _parseCompleteReport = with;
             return this;
         }
 
@@ -116,10 +116,10 @@ namespace SharpMediaInfo
         /// Enables parsing of the standard report only.
         /// </summary>
         /// <returns>The builder instance for method chaining.</returns>
-        public MediaInfoBuilder WithStandardReport()
+        public MediaInfoBuilder WithStandardReport(bool with = true)
         {
             ThrowIfBuilt();
-            _parseStandardReport = true;
+            _parseStandardReport = with;
             return this;
         }
 
@@ -520,14 +520,14 @@ namespace SharpMediaInfo
             }
         }
 
-        private FrameRateInfo? GetFrameRateValueNullable(double? frameRate, long? num, long? den)
+        private FrameRate? GetFrameRateValueNullable(double? frameRate, long? num, long? den)
         {
-            return (frameRate.HasValue || (num.HasValue && den.HasValue)) ? new FrameRateInfo(frameRate, num, den) : null;
+            return (frameRate.HasValue || (num.HasValue && den.HasValue)) ? new FrameRate(frameRate, num, den) : null;
         }
 
-        private FrameRateInfo? GetFrameRateValueNullable(double? frameRate, double? num, double? den)
+        private FrameRate? GetFrameRateValueNullable(double? frameRate, double? num = null, double? den = null)
         {
-            return (frameRate.HasValue || (num.HasValue && den.HasValue)) ? new FrameRateInfo(frameRate, (long?)num, (long?)den) : null;
+            return (frameRate.HasValue || (num.HasValue && den.HasValue)) ? new FrameRate(frameRate, (long?)num, (long?)den) : null;
         }
 
         private bool? GetBoolValueNullable(string input)
@@ -617,20 +617,50 @@ namespace SharpMediaInfo
             return new MeasuredValue<BigInteger>(GetBigIntegerValueNullable(input), unit);
         }
 
-        private BitRateInfo GetBitRateInfo(string input)
+        private BitRate GetBitRateValue(string input)
         {
-            return new BitRateInfo(GetLongValueNullable(input));
+            return new BitRate(GetLongValueNullable(input));
         }
 
-        private StreamSizeInfo GetStreamSizeInfo(long? size, double? proportion)
+        private FrameSize GetFrameSizeValue(string input)
         {
-            return new StreamSizeInfo(size, proportion);
+            return new FrameSize(GetLongValueNullable(input));
         }
 
-        private TimeSpan? GetDurationAsTimeSpan(string input)
+        private ByteSize GetByteSizeValue(string input)
         {
-            var milliseconds = GetLongValueNullable(input);
-            return milliseconds.HasValue ? TimeSpan.FromMilliseconds(milliseconds.Value) : null;
+            return new ByteSize(GetIntValueNullable(input));
+        }
+
+        private ByteSize GetByteSizeValue(long? size, double? proportion = null)
+        {
+            return new ByteSize(size, proportion);
+        }
+
+        private ByteSize GetByteSizeValue(long? size, string proportion)
+        {
+            return new ByteSize(size, GetDoubleValueNullable(proportion));
+        }
+
+        private FrameSize GetFrameSize(string input, string unit = "pixel")
+        {
+            return new FrameSize(GetLongValueNullable(input), unit);
+        }
+
+        private AspectRatio GetAspectRatioValue(string input)
+        {
+            return new AspectRatio(GetDoubleValueNullable(input));
+        }
+
+        private Language GetLanguageValue(string input)
+        {
+            // MediaInfo already provides the best available language code format
+            return new Language(input);
+        }
+
+        private ChannelConfig GetChannelConfigValue(long? count, string? positions, string? layout)
+        {
+            return new ChannelConfig(count, positions, layout);
         }
 
         #endregion

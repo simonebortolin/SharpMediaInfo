@@ -1,9 +1,9 @@
-namespace SharpMediaInfo.Info
+namespace SharpMediaInfo.Types
 {
     /// <summary>
-    /// Represents stream size information with various formatting options.
+    /// Represents size information (file size, stream size, etc.) with various formatting options.
     /// </summary>
-    public readonly struct StreamSizeInfo
+    public readonly struct ByteSize
     {
         /// <summary>
         /// Gets the size in bytes.
@@ -31,11 +31,11 @@ namespace SharpMediaInfo.Info
         public double? GigaBytes => Bytes.HasValue ? Bytes.Value / (1024.0 * 1024.0 * 1024.0) : null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamSizeInfo"/> struct.
+        /// Initializes a new instance of the <see cref="ByteSize"/> struct.
         /// </summary>
         /// <param name="bytes">The size in bytes</param>
         /// <param name="proportion">The proportion relative to total file size (optional)</param>
-        public StreamSizeInfo(long? bytes, double? proportion = null)
+        public ByteSize(long? bytes, double? proportion = null)
         {
             Bytes = bytes;
             Proportion = proportion;
@@ -44,14 +44,14 @@ namespace SharpMediaInfo.Info
         /// <summary>
         /// Returns the size in the default format with appropriate unit and percentage.
         /// </summary>
-        public override string ToString() => ToString(StreamSizeFormat.AutoWithPercentage);
+        public override string ToString() => ToString(ByteSizeFormat.AutoWithPercentage);
 
         /// <summary>
         /// Returns the size in the specified format.
         /// </summary>
         /// <param name="format">The format to use</param>
         /// <returns>Formatted size string</returns>
-        public string ToString(StreamSizeFormat format)
+        public string ToString(ByteSizeFormat format)
         {
             if (!Bytes.HasValue)
                 return string.Empty;
@@ -60,12 +60,12 @@ namespace SharpMediaInfo.Info
 
             return format switch
             {
-                StreamSizeFormat.Auto => FormatAuto(bytes, false),
-                StreamSizeFormat.AutoWithPercentage => FormatAuto(bytes, true),
-                StreamSizeFormat.Bytes => $"{bytes} bytes",
-                StreamSizeFormat.KiloBytes => $"{bytes / 1024.0:F2} KiB",
-                StreamSizeFormat.MegaBytes => $"{bytes / (1024.0 * 1024.0):F2} MiB",
-                StreamSizeFormat.GigaBytes => $"{bytes / (1024.0 * 1024.0 * 1024.0):F2} GiB",
+                ByteSizeFormat.Auto => FormatAuto(bytes, false),
+                ByteSizeFormat.AutoWithPercentage => FormatAuto(bytes, true),
+                ByteSizeFormat.Bytes => $"{bytes} bytes",
+                ByteSizeFormat.KiloBytes => $"{bytes / 1024.0:F2} KiB",
+                ByteSizeFormat.MegaBytes => $"{bytes / (1024.0 * 1024.0):F2} MiB",
+                ByteSizeFormat.GigaBytes => $"{bytes / (1024.0 * 1024.0 * 1024.0):F2} GiB",
                 _ => FormatAuto(bytes, true)
             };
         }
@@ -95,13 +95,13 @@ namespace SharpMediaInfo.Info
         /// <summary>
         /// Implicitly converts to nullable long (bytes).
         /// </summary>
-        public static implicit operator long?(StreamSizeInfo size) => size.Bytes;
+        public static implicit operator long?(ByteSize size) => size.Bytes;
     }
 
     /// <summary>
-    /// Specifies the format for stream size string representation.
+    /// Specifies the format for byte size string representation.
     /// </summary>
-    public enum StreamSizeFormat
+    public enum ByteSizeFormat
     {
         /// <summary>
         /// Automatic format with appropriate unit (e.g., "10.5 MiB")

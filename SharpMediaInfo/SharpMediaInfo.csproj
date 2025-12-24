@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Source\MenuOverride.json" />
+    <None Remove="Source\nul" />
     <None Remove="Source\TextOverride.json" />
   </ItemGroup>
 

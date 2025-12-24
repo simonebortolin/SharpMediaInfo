@@ -228,7 +228,7 @@ SharpMediaInfo/                 # Main library
 ├── MediaInfoBuilder.cs        # Builder for creating instances
 ├── IMediaInfo.cs             # Public interface
 ├── Tracks/                   # Track model classes (generated)
-├── Info/                     # Helper types (FrameRateInfo, etc.)
+├── Info/                     # Helper types (FrameRate, etc.)
 └── Exception/                # Custom exceptions
 
 SharpMediaInfo.Native/         # Native interop layer

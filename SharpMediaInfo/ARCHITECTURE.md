@@ -98,7 +98,7 @@ SharpMediaInfo/
 │   ├── AudioTrack.cs
 │   └── ...
 ├── Info/
-│   └── FrameRateInfo.cs       # Helper types
+│   └── FrameRate.cs       # Helper types
 ├── Exception/
 │   └── MediaInfoAnalysisException.cs
 └── Source/
@@ -430,13 +430,13 @@ public sealed class MediaInfo
 ### Helper Types
 
 ```csharp
-public sealed class FrameRateInfo
+public sealed class FrameRate
 {
     public double? Value { get; }         // FPS as double
     public long? Numerator { get; }       // Rational representation
     public long? Denominator { get; }
 
-    public FrameRateInfo(double? value, long? num, long? den)
+    public FrameRate(double? value, long? num, long? den)
     {
         Value = value;
         Numerator = num;
@@ -515,7 +515,7 @@ internal static partial class MediaInfo
 1. **Lazy Lists** - Empty lists created only when accessed
 2. **Single Parse** - All data parsed once during Build()
 3. **No Reflection** - Source-generated populate methods
-4. **Struct Where Appropriate** - FrameRateInfo could be a struct
+4. **Struct Where Appropriate** - FrameRate could be a struct
 5. **String Interning** - Consider interning common codec names
 
 ## Future Enhancements

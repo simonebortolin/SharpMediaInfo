@@ -2,47 +2,47 @@
 {
     public partial class GeneralTrack
     {
-        public long? OverallBitRate
+        /*
+        /// <summary>
+        /// Gets the calculated overall bitrate with fallback logic.
+        /// </summary>
+        /// <remarks>
+        /// Returns the bitrate from the OverallBitRate field if available.
+        /// If not available or zero, calculates from Duration and FileSize.
+        /// Returns null if calculation is not possible.
+        /// </remarks>
+        public long? OverallBitRateCalculated
         {
             get
             {
-                if (this.OverallBitRateInternal.GetValueOrDefault() == 0)
+                // Primary: use OverallBitRate field if available and non-zero
+                if (this.OverallBitRate.BitsPerSecond.HasValue && this.OverallBitRate.BitsPerSecond.Value > 0)
                 {
-                    if (this.Duration.GetValueOrDefault() > 0 && this.FileSize.HasValue && this.FileSize.Value > System.Numerics.BigInteger.Zero)
+                    return this.OverallBitRate.BitsPerSecond.Value;
+                }
+
+                // Fallback: calculate from Duration and FileSize
+                if (this.Duration.Milliseconds.HasValue && this.Duration.Milliseconds.Value > 0 &&
+                    this.FileSize.Bytes.HasValue && this.FileSize.Bytes.Value > 0)
+                {
+                    // duration is in ms → seconds
+                    var durationSeconds = this.Duration.Milliseconds.Value / 1000.0;
+                    if (durationSeconds <= 0) return null;
+
+                    // bits = bytes * 8
+                    var bits = this.FileSize.Bytes.Value * 8;
+
+                    // Clamp to long range to avoid overflow
+                    if (bits > long.MaxValue)
                     {
-                        // duration is in ms → seconds
-                        var durationSeconds = (long)(this.Duration!.Value / 1000);
-                        if (durationSeconds <= 0) return null;
-
-                        // bits = bytes * 8
-                        var bits = this.FileSize.Value * 8;
-
-                        // Clamp to long range to avoid overflow
-                        var max = new System.Numerics.BigInteger(long.MaxValue);
-                        if (bits > max)
-                        {
-                            // If extremely large, cap to long.MaxValue to avoid overflow
-                            return long.MaxValue;
-                        }
-
-                        return (long)(bits / durationSeconds);
+                        return long.MaxValue;
                     }
-                    return null;
-                }
-                return this.OverallBitRateInternal.GetValueOrDefault();
-            }
-        }
 
-        public string? OverallBitRateString
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.OverallBitRateStringInternal) && this.OverallBitRate.GetValueOrDefault() > 0)
-                {
-                    return MediaInfo.GetFormattedBitRate(this.OverallBitRate);
+                    return (long)(bits / durationSeconds);
                 }
-                return this.OverallBitRateStringInternal ?? null;
+
+                return null;
             }
-        }
+        }*/
     }
 }

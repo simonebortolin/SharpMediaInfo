@@ -1,9 +1,9 @@
-namespace SharpMediaInfo.Info
+namespace SharpMediaInfo.Types
 {
     /// <summary>
     /// Represents bit rate information with automatic unit conversion.
     /// </summary>
-    public readonly struct BitRateInfo
+    public readonly struct BitRate
     {
         /// <summary>
         /// Gets the bit rate in bits per second.
@@ -24,13 +24,13 @@ namespace SharpMediaInfo.Info
         /// Initializes a new instance of the <see cref="BitRateInfo"/> struct.
         /// </summary>
         /// <param name="bitsPerSecond">The bit rate in bits per second</param>
-        public BitRateInfo(long? bitsPerSecond)
+        public BitRate(long? bitsPerSecond)
         {
             BitsPerSecond = bitsPerSecond;
         }
 
         /// <summary>
-        /// Returns the bit rate with appropriate unit (bps, kb/s, Mb/s).
+        /// Returns the bit rate with appropriate unit (Bps, Kbps, Mbps, Gbps, Tbps).
         /// </summary>
         public override string ToString()
         {
@@ -39,17 +39,21 @@ namespace SharpMediaInfo.Info
 
             var bps = BitsPerSecond.Value;
 
-            if (bps >= 1_000_000)
-                return $"{bps / 1_000_000.0:F2} Mb/s";
-            else if (bps >= 1_000)
-                return $"{bps / 1_000.0:F0} kb/s";
+            if (bps >= 1099511627776)
+                return $"{bps / 1099511627776.0:0.##} Tbps";
+            else if (bps >= 1073741824)
+                return $"{bps / 1073741824.0:0.##} Gbps";
+            else if (bps >= 1048576)
+                return $"{bps / 1048576.0:0.##} Mbps";
+            else if (bps >= 1024)
+                return $"{bps / 1024.0:0.##} Kbps";
             else
-                return $"{bps} bps";
+                return $"{bps:0.##} Bps";
         }
 
         /// <summary>
         /// Implicitly converts to nullable long (bits per second).
         /// </summary>
-        public static implicit operator long?(BitRateInfo bitRate) => bitRate.BitsPerSecond;
+        public static implicit operator long?(BitRate bitRate) => bitRate.BitsPerSecond;
     }
 }

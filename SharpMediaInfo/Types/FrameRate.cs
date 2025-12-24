@@ -1,13 +1,13 @@
-﻿namespace SharpMediaInfo.Info
+﻿namespace SharpMediaInfo.Types
 {
-    public readonly struct FrameRateInfo
+    public readonly struct FrameRate
     {
         public double? Value { get; }
         public long? Numerator { get; }
         public long? Denominator { get; }
 
         // Full constructor (existing)
-        public FrameRateInfo(double? value, long? numerator, long? denominator)
+        public FrameRate(double? value, long? numerator, long? denominator)
         {
             Value = value;
             Numerator = numerator;
@@ -15,7 +15,7 @@
         }
 
         // Constructor for value-only (e.g., 25.000)
-        public FrameRateInfo(double? value)
+        public FrameRate(double? value)
         {
             Value = value;
             Numerator = null;
@@ -23,7 +23,7 @@
         }
 
         // Constructor for rational-only (e.g., 30000/1001)
-        public FrameRateInfo(long? numerator, long? denominator)
+        public FrameRate(long? numerator, long? denominator)
         {
             Numerator = numerator;
             Denominator = denominator;

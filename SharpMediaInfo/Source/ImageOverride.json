@@ -1,36 +1,222 @@
 [
   {
+    
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Disabled",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Default",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Forced",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Width",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Width_Offset",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_Offset/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Width_Original",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_Original/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Height",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Height_Offset",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_Offset/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Height_Original",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_Original/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Active_Width",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_Width/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Active_Height",
+    "Type": "FrameSize",
+    "ParseFunction": "GetFrameSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_Height/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_Original",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_Original/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_Original",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_Original/String",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Active_DisplayAspectRatio",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_DisplayAspectRatio/String",
+    "Skip": true
+  },
+
+  {
+    
     "OverrideType": "Field",
     "CsvName": "StreamSize_Proportion",
     "Type": "double?",
     "ParseFunction": "GetDoubleValueNullable"
   },
-
   {
-    "OverrideType": "Field",
-    "CsvName": "colour_description_present",
-    "Type": "bool?",
-    "ParseFunction": "GetBoolValueNullable"
+    "OverrideType": "Merge",
+    "Name": "StreamSize",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue",
+    "CsvNames": [
+      "StreamSize",
+      "StreamSize_Proportion"
+    ]
   },
-  {
-    "OverrideType": "Field",
-    "CsvName": "colour_description_present_Source",
-    "Type": "bool?",
-    "ParseFunction": "GetBoolValueNullable"
-  },
-  {
-    "OverrideType": "Field",
-    "CsvName": "colour_description_present_Original",
-    "Type": "bool?",
-    "ParseFunction": "GetBoolValueNullable"
-  },
-  {
-    "OverrideType": "Field",
-    "CsvName": "colour_description_present_Original_Source",
-    "Type": "bool?",
-    "ParseFunction": "GetBoolValueNullable"
-  },
-
   {
     "OverrideType": "Field",
     "CsvName": "StreamSize/String",
@@ -63,6 +249,13 @@
   },
 
   {
+    
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue"
+  },
+  {
     "OverrideType": "Field",
     "CsvName": "StreamSize_Demuxed/String",
     "Skip": true
@@ -92,14 +285,63 @@
     "CsvName": "StreamSize_Demuxed/String5",
     "Skip": true
   },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "Language",
+    "Type": "Language",
+    "ParseFunction": "GetLanguageValue"
+  },
   {
     "OverrideType": "Field",
-    "CsvName": "Status",
+    "CsvName": "Language/String",
     "Skip": true
   },
   {
     "OverrideType": "Field",
-    "CsvName": "Inform",
+    "CsvName": "Language/String1",
     "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String4",
+    "Skip": true
+  },
+
+  {
+    
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present_Source",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present_Original",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present_Original_Source",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
   }
 ]

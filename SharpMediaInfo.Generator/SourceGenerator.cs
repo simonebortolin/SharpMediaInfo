@@ -42,15 +42,29 @@ namespace SharpMediaInfo.Generator
 
             context.RegisterSourceOutput(merged, (spc, nameAndContent) =>
             {
-                var overrideFields = string.IsNullOrEmpty(nameAndContent.overrideContent) == false ? JsonSerializer.Deserialize<IOverridableField[]>(nameAndContent.overrideContent!) : null;
+                try
+                {
+                    var overrideFields = string.IsNullOrEmpty(nameAndContent.overrideContent) == false ? JsonSerializer.Deserialize<IOverridableField[]>(nameAndContent.overrideContent!) : null;
 
-                var trackResult = GenerateTrackClass(nameAndContent.name, nameAndContent.csvContent, overrideFields);
-                if (trackResult != null)
-                    spc.AddSource($"SharpMediaInfo.Tracks.{nameAndContent.name}Track.g.cs", trackResult);
+                    var trackResult = GenerateTrackClass(nameAndContent.name, nameAndContent.csvContent, overrideFields);
+                    if (trackResult != null)
+                        spc.AddSource($"SharpMediaInfo.Tracks.{nameAndContent.name}Track.g.cs", trackResult);
 
-                var helperResult = GeneratePopulateMethodForBuilder(nameAndContent.name, nameAndContent.csvContent, overrideFields);
-                if (helperResult != null)
-                    spc.AddSource($"SharpMediaInfo.MediaInfoBuilder.{nameAndContent.name}.g.cs", helperResult);
+                    var helperResult = GeneratePopulateMethodForBuilder(nameAndContent.name, nameAndContent.csvContent, overrideFields);
+                    if (helperResult != null)
+                        spc.AddSource($"SharpMediaInfo.MediaInfoBuilder.{nameAndContent.name}.g.cs", helperResult);
+                }
+                catch (Exception ex)
+                {
+                    spc.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+                        id: "SMIG001",
+                        title: "CSV Source Generator Error",
+                        messageFormat: $"An error occurred while generating source for {nameAndContent.name}: {ex.Message}",
+                        category: "SourceGenerator",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true), Location.None));
+
+                }
             });
         }
 
@@ -103,7 +117,7 @@ namespace SharpMediaInfo.Generator
         {
             var fields = CalculateOverrideFields(TrackFieldInfoParser.ParseCsv(csvText), @override);
 
-            string code = TrackCodeBuilder.GenerateClass($"{name}Track", fields.Where(it => it.Skip == false));
+            string code = TrackCodeBuilder.GenerateClass($"{name}Track", fields.Where(it => it.Skip == false && it.Deprecated == false));
 
             return code;
         }
@@ -113,7 +127,7 @@ namespace SharpMediaInfo.Generator
 
             var fields = CalculateOverrideFields(TrackFieldInfoParser.ParseCsv(csvText), @override);
 
-            string code = PopulateMethodGenerator.GeneratePopulateMethod($"{name}Track", fields.Where(it => it.Skip == false));
+            string code = PopulateMethodGenerator.GeneratePopulateMethod($"{name}Track", fields.Where(it => it.Skip == false && it.Deprecated == false));
 
             return code;
         }

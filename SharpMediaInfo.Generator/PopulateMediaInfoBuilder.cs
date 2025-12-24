@@ -16,7 +16,7 @@ namespace SharpMediaInfo.Generator
             sb.AppendLine( "using SharpMediaInfo.Tracks;");
             sb.AppendLine( "using SharpMediaInfo.Native;");
             sb.AppendLine( "using SharpMediaInfo.Native.Enum;");
-            sb.AppendLine( "using SharpMediaInfo.Info;");
+            sb.AppendLine( "using SharpMediaInfo.Types;");
             sb.AppendLine();
             sb.AppendLine( "namespace SharpMediaInfo");
             sb.AppendLine( "{");
