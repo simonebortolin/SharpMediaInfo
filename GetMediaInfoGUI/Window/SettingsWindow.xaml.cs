@@ -420,7 +420,7 @@ namespace GetMediaInfoGUI.Window
         /// </summary>
         private void RetrieveGetMediaInfoVersion()
         {
-            var fileVersionInfo = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("GetMediaInfo.dll"));
+            var fileVersionInfo = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("SharpMediaInfo.dll"));
             if (!string.IsNullOrWhiteSpace(fileVersionInfo))
             {
                 StatusGetMediaInfo.Text = fileVersionInfo;

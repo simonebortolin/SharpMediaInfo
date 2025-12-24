@@ -1011,11 +1011,11 @@ namespace GetMediaInfoGUI.Window
         /// </summary>
         private void VerifyGetMediaInfo()
         {
-            if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GetMediaInfo.dll")))
+            if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SharpMediaInfo.dll")))
             {
                 GeneralGrid.IsEnabled = false;
-                MessageDialog.Show(this, $"GetMediaInfo.dll library not found", "Error detected");
-                Logger.Instance.Error("GetMediaInfo.dll library not found");
+                MessageDialog.Show(this, $"SharpMediaInfo.dll library not found", "Error detected");
+                Logger.Instance.Error("SharpMediaInfo.dll library not found");
                 Application.Current.Shutdown();
             }
         }

@@ -1,6 +1,6 @@
-﻿using GetMediaInfo;
-using GetMediaInfoGUI.Configuration;
+﻿using GetMediaInfoGUI.Configuration;
 using GetMediaInfoGUI.Util;
+using SharpMediaInfo;
 using System;
 using System.ComponentModel;
 using System.Reflection;
@@ -29,7 +29,7 @@ namespace GetMediaInfoGUI.Window
             public AboutModel()
             {
                 var mediainfoLibVersion = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("MediaInfo.dll"));
-                var getMediaInfoLibVersion = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("GetMediaInfo.dll"));
+                var getMediaInfoLibVersion = FileUtils.GetAssemblyVersion(FolderUtils.GetAbsolutePathFromBaseDir("SharpMediaInfo.dll"));
 
                 KnownCodecs = MediaInfo.KnownCodecs();
                 Capacities = MediaInfo.Capacities();
