@@ -1,6 +1,8 @@
 using Microsoft.Xaml.Behaviors;
 using SharpMediaInfo.GUI.ViewModels;
+using SharpMediaInfo.GUI.WPF.Extensions;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,7 +17,8 @@ public class TabDragDropBehavior : Behavior<TabControl>
 {
     private Point _startPosition;
     private bool _isDragging;
-    private TabItem? _draggedTab;
+    private FileTabViewModel? _draggedViewModel;
+    private bool _wasDraggedOutside;
 
     public static readonly DependencyProperty AllowOutsideDragProperty =
         DependencyProperty.Register(
@@ -38,7 +41,6 @@ public class TabDragDropBehavior : Behavior<TabControl>
         base.OnAttached();
         AssociatedObject.PreviewMouseLeftButtonDown += OnMouseDown;
         AssociatedObject.PreviewMouseMove += OnMouseMove;
-        AssociatedObject.PreviewMouseLeftButtonUp += OnMouseUp;
         AssociatedObject.Drop += OnDrop;
         AssociatedObject.AllowDrop = true;
     }
@@ -47,23 +49,35 @@ public class TabDragDropBehavior : Behavior<TabControl>
     {
         AssociatedObject.PreviewMouseLeftButtonDown -= OnMouseDown;
         AssociatedObject.PreviewMouseMove -= OnMouseMove;
-        AssociatedObject.PreviewMouseLeftButtonUp -= OnMouseUp;
         AssociatedObject.Drop -= OnDrop;
+        
+        // Cleanup drag handlers
+        var window = Window.GetWindow(AssociatedObject);
+        if (window != null)
+        {
+            DragDrop.RemoveQueryContinueDragHandler(window, OnQueryContinueDrag);
+        }
+        
         base.OnDetaching();
     }
 
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.Source is TabItem tabItem && tabItem.DataContext is FileTabViewModel)
+        if (e.Source is TabItem tabItem && tabItem.DataContext is FileTabViewModel viewModel)
         {
             _startPosition = e.GetPosition(null);
-            _draggedTab = tabItem;
+            _draggedViewModel = viewModel;
+            _wasDraggedOutside = false;
+        }
+        else
+        {
+            _draggedViewModel = null;
         }
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-        if (_draggedTab == null || e.LeftButton != MouseButtonState.Pressed)
+        if (_draggedViewModel == null || e.LeftButton != MouseButtonState.Pressed || _isDragging)
             return;
 
         var currentPosition = e.GetPosition(null);
@@ -73,34 +87,114 @@ public class TabDragDropBehavior : Behavior<TabControl>
         if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
             Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
         {
-            _isDragging = true;
-
-            if (_draggedTab.DataContext is FileTabViewModel viewModel)
-            {
-                // Create drag data
-                var data = new DataObject();
-                data.SetData(DataFormats.FileDrop, new[] { viewModel.Model.FilePath });
-                data.SetData("FileTabViewModel", viewModel);
-
-                // Start drag operation
-                var result = DragDrop.DoDragDrop(_draggedTab, data, DragDropEffects.Move | DragDropEffects.Copy);
-
-                // Handle post-drag cleanup
-                if (result == DragDropEffects.Move && AllowOutsideDrag)
-                {
-                    HandleOutsideDrop(viewModel);
-                }
-            }
-
-            _isDragging = false;
-            _draggedTab = null;
+            StartDrag();
         }
     }
 
-    private void OnMouseUp(object sender, MouseButtonEventArgs e)
+    private void StartDrag()
     {
-        _isDragging = false;
-        _draggedTab = null;
+        if (_draggedViewModel == null) return;
+
+        _isDragging = true;
+        _wasDraggedOutside = false;
+
+        try
+        {
+            var window = Window.GetWindow(AssociatedObject);
+            if (window != null && AllowOutsideDrag)
+            {
+                // Hook QueryContinueDrag to detect when drag goes outside window
+                DragDrop.AddQueryContinueDragHandler(window, OnQueryContinueDrag);
+            }
+
+            // Create drag data
+            var data = new DataObject();
+            data.SetData(DataFormats.FileDrop, new[] { _draggedViewModel.Model.FilePath });
+            data.SetData("FileTabViewModel", _draggedViewModel);
+
+            // Start drag operation
+            var result = DragDrop.DoDragDrop(AssociatedObject, data, DragDropEffects.Move | DragDropEffects.Copy);
+
+            // Handle completion
+            if (_wasDraggedOutside && result == DragDropEffects.None)
+            {
+                // Dragged outside - create new instance
+                HandleOutsideDrop();
+            }
+        }
+        finally
+        {
+            var window = Window.GetWindow(AssociatedObject);
+            if (window != null)
+            {
+                DragDrop.RemoveQueryContinueDragHandler(window, OnQueryContinueDrag);
+            }
+
+            _isDragging = false;
+            _draggedViewModel = null;
+        }
+    }
+
+    private void OnQueryContinueDrag(object sender, QueryContinueDragEventArgs e)
+    {
+        // Check if Escape pressed
+        if (e.EscapePressed)
+        {
+            e.Action = DragAction.Cancel;
+            return;
+        }
+
+        // Check if still dragging
+        if (e.KeyStates.HasFlag(DragDropKeyStates.LeftMouseButton))
+        {
+            // Check if mouse is outside window
+            var window = Window.GetWindow(AssociatedObject);
+            if (window != null)
+            {
+                var mousePos = MouseExtensions.GetScreenPosition();
+                var windowBounds = MouseExtensions.GetWindowScreenBounds(window);
+
+                if (!windowBounds.Contains(new Point(mousePos.X, mousePos.Y)))
+                {
+                    // Mouse is outside window - mark for outside drop
+                    _wasDraggedOutside = true;
+                    
+                    // Continue drag but signal that we'll handle it ourselves
+                    e.Action = DragAction.Continue;
+                }
+                else
+                {
+                    e.Action = DragAction.Continue;
+                }
+            }
+        }
+        else
+        {
+            // Mouse released - drop
+            e.Action = DragAction.Drop;
+        }
+
+        e.Handled = true;
+    }
+
+    private void HandleOutsideDrop()
+    {
+        if (_draggedViewModel == null) return;
+
+        var window = Window.GetWindow(AssociatedObject);
+        if (window?.DataContext is MainViewModel mainViewModel)
+        {
+            Debug.WriteLine($"Tab dragged outside window: {_draggedViewModel.Model.FilePath}");
+
+            // Execute command to handle outside drop
+            Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                if (mainViewModel.CompleteTabDragOutsideCommand.CanExecute(_draggedViewModel))
+                {
+                    await mainViewModel.CompleteTabDragOutsideCommand.ExecuteAsync(_draggedViewModel);
+                }
+            });
+        }
     }
 
     private void OnDrop(object sender, DragEventArgs e)
@@ -113,39 +207,16 @@ public class TabDragDropBehavior : Behavior<TabControl>
             // Get MainViewModel from window DataContext
             if (Window.GetWindow(AssociatedObject)?.DataContext is MainViewModel mainViewModel)
             {
+                Debug.WriteLine($"Files dropped: {string.Join(", ", files)}");
+
                 // Open dropped files
                 Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
                     await mainViewModel.AddFilesFromDropAsync(files);
                 });
             }
-        }
-    }
 
-    private void HandleOutsideDrop(FileTabViewModel viewModel)
-    {
-        // Check if dropped outside window
-        var mousePos = Extensions.MouseExtensions.GetScreenPosition();
-        var window = Window.GetWindow(AssociatedObject);
-        
-        if (window == null) return;
-
-        var windowBounds = Extensions.MouseExtensions.GetWindowScreenBounds(window);
-
-        // If dropped outside current window
-        if (!windowBounds.Contains(mousePos))
-        {
-            if (window.DataContext is MainViewModel mainViewModel)
-            {
-                // Execute drag outside command
-                Application.Current.Dispatcher.InvokeAsync(async () =>
-                {
-                    if (mainViewModel.CompleteTabDragOutsideCommand.CanExecute(viewModel))
-                    {
-                        await mainViewModel.CompleteTabDragOutsideCommand.ExecuteAsync(viewModel);
-                    }
-                });
-            }
+            e.Handled = true;
         }
     }
 }

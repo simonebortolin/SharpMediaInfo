@@ -22,6 +22,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IClipboardService _clipboardService;
     private readonly IConfigurationService _configurationService;
     private readonly IRecentFilesService _recentFilesService;
+    private readonly IMousePositionService _mousePositionService;
 
     private const string RecentFilesPath = "recent_files.json";
 
@@ -54,6 +55,7 @@ public partial class MainViewModel : ObservableObject
         IClipboardService clipboardService, 
         IConfigurationService configurationService, 
         IRecentFilesService recentFilesService,
+        IMousePositionService mousePositionService,
         AppConfiguration configuration)
     {
         _fileService = fileService ?? throw new System.ArgumentNullException(nameof(fileService));
@@ -61,6 +63,7 @@ public partial class MainViewModel : ObservableObject
         _clipboardService = clipboardService ?? throw new System.ArgumentNullException(nameof(clipboardService));
         _configurationService = configurationService ?? throw new System.ArgumentNullException(nameof(configurationService));
         _recentFilesService = recentFilesService ?? throw new System.ArgumentNullException(nameof(recentFilesService));
+        _mousePositionService = mousePositionService ?? throw new System.ArgumentNullException(nameof(mousePositionService));
         _configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
 
         // Attach autosave to the shared configuration instance
@@ -163,6 +166,10 @@ public partial class MainViewModel : ObservableObject
         if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
         {
             await AddFilesFromDropAsync(new[] { filePath });
+        } 
+        else
+        {
+            RecentFiles.Remove(filePath);
         }
     }
 
@@ -352,29 +359,25 @@ public partial class MainViewModel : ObservableObject
                 return;
             }
 
-            // Create new instance with the file
+            // Get current mouse position for window placement
+            var mousePos = _mousePositionService.GetScreenPosition();
+            
+            // Create new instance with the file AND position arguments
             var startInfo = new ProcessStartInfo
             {
                 FileName = exePath,
-                Arguments = $"\"{tab.Model.FilePath}\"",
+                Arguments = $"--window-position {mousePos.X},{mousePos.Y} \"{tab.Model.FilePath}\"",
                 UseShellExecute = true
             };
 
-            Process.Start(startInfo);
+            var newProcess = Process.Start(startInfo);
 
             // Remove tab from current instance
             Tabs.Remove(tab);
-
-            // Close this window if no more tabs
-            if (Tabs.Count == 0)
-            {
-                StatusMessage = "Closing...";
-                // Signal to close via Application.Current.Shutdown() 
-                // (handled in behavior or code-behind)
-            }
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
+            Debug.WriteLine($"ERROR creating new instance: {ex.Message}");
             await _dialogService.ShowErrorAsync($"Failed to create new instance: {ex.Message}");
         }
     }

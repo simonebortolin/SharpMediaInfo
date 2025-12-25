@@ -377,7 +377,7 @@ public class TrackToReportConverter
         if (text.Forced.GetValueOrDefault())
             headerText += ", Forced";
 
-        items.Add(new ReportItem("Text", headerText.Trim(), ReportItemType.Subheader));
+        items.Add(new ReportItem("", headerText.Trim(), ReportItemType.Subheader));
 
         return new ReportSection("Text", items);
     }
@@ -405,7 +405,7 @@ public class TrackToReportConverter
         if (menu.Forced.GetValueOrDefault())
             headerText += ", Forced";
 
-        items.Add(new ReportItem("Menu", headerText.Trim(), ReportItemType.Subheader));
+        items.Add(new ReportItem("", headerText.Trim(), ReportItemType.Subheader));
 
         // Chapters
         foreach (var chapter in menu.Chapters)
@@ -466,7 +466,7 @@ public class TrackToReportConverter
         if (!string.IsNullOrWhiteSpace(image.ChromaSubsampling))
             text += image.ChromaSubsampling;
 
-        items.Add(new ReportItem("Image", text.TrimEnd(' ', ','), ReportItemType.Subheader));
+        items.Add(new ReportItem("", text.TrimEnd(' ', ','), ReportItemType.Subheader));
 
         return new ReportSection("Image", items);
     }

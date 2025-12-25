@@ -25,11 +25,11 @@ public static class MouseExtensions
     /// Gets the mouse position relative to the screen (not the window)
     /// </summary>
     /// <returns>The screen coordinates of the mouse cursor</returns>
-    public static System.Windows.Point GetScreenPosition()
+    public static (int X, int Y) GetScreenPosition()
     {
         var w32Point = new Win32Point();
         GetCursorPos(ref w32Point);
-        return new System.Windows.Point(w32Point.X, w32Point.Y);
+        return (w32Point.X, w32Point.Y);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public static class MouseExtensions
     /// </summary>
     public static Rect GetWindowScreenBounds(Window window)
     {
-        var source = System.Windows.Interop.HwndSource.FromVisual(window);
+        var source = System.Windows.Interop.HwndSource.FromVisual(window) as System.Windows.Interop.HwndSource;
         if (source != null)
         {
             var handle = source.Handle;

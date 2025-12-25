@@ -88,7 +88,10 @@
         <TabControl Grid.Row="1" 
                     ItemsSource="{Binding Tabs}"
                     SelectedItem="{Binding SelectedTab}"
-                    Margin="5">
+                    Margin="5"
+                    x:Name="MainTabControl"
+                    AllowDrop="True"
+                    Drop="TabControl_Drop">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type vm:FileTabViewModel}">
                     <views:FileTabView />
@@ -102,6 +105,17 @@
                     <views:AboutTabView />
                 </DataTemplate>
             </TabControl.Resources>
+            
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="TabItem_PreviewMouseLeftButtonDown"/>
+                    <EventSetter Event="PreviewMouseMove" Handler="TabItem_PreviewMouseMove"/>
+                    <EventSetter Event="PreviewMouseLeftButtonUp" Handler="TabItem_PreviewMouseLeftButtonUp"/>
+                    <EventSetter Event="Drop" Handler="TabItem_Drop"/>
+                    <Setter Property="AllowDrop" Value="True"/>
+                </Style>
+            </TabControl.ItemContainerStyle>
+            
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
