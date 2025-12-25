@@ -22,6 +22,7 @@ namespace SharpMediaInfo.Generator
             sb.AppendLine( "{");
             sb.AppendLine($"  partial class MediaInfoBuilder");
             sb.AppendLine( "  {");
+            sb.AppendLine( "    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
             sb.AppendLine($"    private {className} Populate{className}(IMediaInfoNative mediaInfoNative, int index)");
             sb.AppendLine( "    {");
             sb.AppendLine($"      return new {className}");

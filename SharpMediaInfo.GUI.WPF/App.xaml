@@ -1,0 +1,13 @@
+<Application x:Class="SharpMediaInfo.GUI.WPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:SharpMediaInfo.GUI.WPF.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:AppThemeToThemeModeConverter x:Key="AppThemeToThemeModeConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -28,6 +28,7 @@ namespace SharpMediaInfo.Generator
                 {
                     sb.AppendLine("        [Obsolete(\"This field is deprecated and may be removed in future versions.\")]");
                 }
+                sb.AppendLine( "        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
                 sb.AppendLine($"        {f.Modifier} {f.Type} {f.Name} {{ get; init; }} //{f.CsvName}");
                 sb.AppendLine();
             }

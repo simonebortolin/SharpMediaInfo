@@ -17,6 +17,8 @@ namespace SharpMediaInfo
     {
         private IMediaInfoNative? _mediaInfoNative;
         private string? _fileName;
+        private string? _filePath; // Store file path
+        private Stream? _stream; // Store stream
         private bool _parseCoverData;
         private bool _parseCompleteReport;
         private bool _parseStandardReport;
@@ -133,6 +135,21 @@ namespace SharpMediaInfo
 
             try
             {
+#if DEBUG
+                System.Diagnostics.Debug.WriteLine($"MediaInfoBuilder.Build() - parseCoverData: {_parseCoverData}, filePath: {_filePath}");
+#endif
+                // NOW create and open MediaInfoNative with correct parseCoverData value
+                _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
+                
+                if (_filePath != null)
+                {
+                    _mediaInfoNative.OpenFile(_filePath);
+                }
+                else if (_stream != null)
+                {
+                    _mediaInfoNative.OpenStream(_stream);
+                }
+
                 // Parse all stream information
                 GetStreamCount();
                 ParseAllStreams();
@@ -170,8 +187,7 @@ namespace SharpMediaInfo
             }
 
             _fileName = path;
-            _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
-            _mediaInfoNative.OpenFile(path);
+            _filePath = path; // Store for later
         }
 
         private void InitializeFromStream(Stream stream)
@@ -181,10 +197,7 @@ namespace SharpMediaInfo
                 throw new ArgumentException("The stream cannot be read or it's empty");
             }
 
-            _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
-            _mediaInfoNative.OpenStream(stream);
-
-            // Try to get filename from General track after opening
+            _stream = stream; // Store for later
             _fileName = string.Empty;
         }
 
@@ -388,9 +401,10 @@ namespace SharpMediaInfo
         private TimeSpan GetTimeSpanValue(string input)
         {
             if (string.IsNullOrEmpty(input)) return TimeSpan.Zero;
-            if (TimeSpan.TryParse(input, out TimeSpan value))
+
+            if (long.TryParse(input, out long value))
             {
-                return value;
+                return TimeSpan.FromMilliseconds(value);
             }
             else
             {
@@ -401,9 +415,9 @@ namespace SharpMediaInfo
         private TimeSpan? GetTimeSpanValueNullable(string input)
         {
             if (string.IsNullOrEmpty(input)) return null;
-            if (TimeSpan.TryParse(input, out TimeSpan value))
+            if (long.TryParse(input, out long value))
             {
-                return value;
+                return TimeSpan.FromMilliseconds(value);
             }
             else
             {

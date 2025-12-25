@@ -1,0 +1,301 @@
+<UserControl
+    x:Class="SharpMediaInfo.GUI.WPF.Views.SettingsTabView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:views="clr-namespace:SharpMediaInfo.GUI.WPF.Views" 
+    xmlns:models="clr-namespace:SharpMediaInfo.GUI.Models;assembly=SharpMediaInfo.GUI"
+    xmlns:ctx="clr-namespace:SharpMediaInfo.GUI.WPF.Controls">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="FontFamilies" Source="{x:Static Fonts.SystemFontFamilies}">
+            <CollectionViewSource.SortDescriptions>
+                <ComponentModel:SortDescription PropertyName="Source" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+        <DataTemplate x:Key="FontTemplate">
+            <TextBlock FontFamily="{Binding Source}" Text="{Binding Source}" ToolTip="{Binding Source}" />
+        </DataTemplate>
+    </UserControl.Resources>
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20,16">
+        <StackPanel MaxWidth="800" HorizontalAlignment="Stretch">
+            
+            <!-- Information Expander -->
+            <Expander IsExpanded="True" Margin="0,0,0,2">
+                <Expander.Header>
+                    <TextBlock Text="Information" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16" >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="SharpMediaInfo GUI Version:" Margin="0,8" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AppVersion}" Margin="0,8" VerticalAlignment="Center" />
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="MediaInfo Version:" Margin="0,8" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MediaInfoVersion}" Margin="0,8" VerticalAlignment="Center" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="SharpMediaInfo Version:" Margin="0,8" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SharpMediaInfoVersion}" Margin="0,8" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </Expander>
+
+            <!-- Updates Expander -->
+            <Expander IsExpanded="False" Margin="0,0,0,2">
+                <Expander.Header>
+                    <TextBlock Text="Updates" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button x:Name="CheckUpdatesButton"
+                                Grid.Column="0"
+                                Content="Check for updates"
+                                MinWidth="140"
+                                Padding="12,8"
+                                Margin="0,0,16,0" />
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+            </Expander>
+
+            <!-- General Expander -->
+            <Expander IsExpanded="True" Margin="0,0,0,2">
+                <Expander.Header>
+                    <TextBlock Text="General" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16" >
+                    <StackPanel>
+                        <CheckBox Content="Auto save standard report to disk" 
+                                  IsChecked="{Binding Configuration.AutoSaveReport}"
+                                  Margin="0,6" />
+                        <CheckBox Content="Disable simple report" 
+                                  IsChecked="{Binding Configuration.DisableSimpleReport}"
+                                  Margin="0,6" />
+                        <CheckBox Content="Disable complete report" 
+                                  IsChecked="{Binding Configuration.DisableCompleteReport}"
+                                  Margin="0,6" />
+                        <CheckBox Content="Disable tree report" 
+                                  IsChecked="{Binding Configuration.DisableTreeReport}"
+                                  Margin="0,6" />
+                        <CheckBox Content="Show milliseconds in tracks duration" 
+                                  IsChecked="{Binding Configuration.ShowMilliseconds}"
+                                  Margin="0,6" />
+                        <CheckBox Content="Remove justification from reports" 
+                                  IsChecked="{Binding Configuration.RemoveJustification}"
+                                  Margin="0,6" />
+                        <CheckBox Content="Show cover if present" 
+                                  IsChecked="{Binding Configuration.ShowCover}"
+                                  Margin="0,6" />
+                    </StackPanel>
+                </Border>
+            </Expander>
+
+            <!-- Appearance Expander -->
+            <Expander IsExpanded="True" Margin="0,0,0,2">
+                <Expander.Header>
+                    <TextBlock Text="Appearance" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16" >
+                    <StackPanel>
+                        <!-- Theme -->
+                        <Grid Margin="0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="202" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" 
+                                       Text="Theme" 
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,16,0" />
+                            <ComboBox Grid.Column="1"
+                                      SelectedItem="{Binding Configuration.AppTheme}"
+                                      HorizontalAlignment="Stretch"
+                                          Height="36"
+                                          Margin="0,0,0,0"
+                                      Padding="12,8">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type models:AppTheme}">
+                                        <models:AppTheme>Auto</models:AppTheme>
+                                        <models:AppTheme>Light</models:AppTheme>
+                                        <models:AppTheme>Dark</models:AppTheme>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                        </Grid>
+
+                        <!-- Report Font -->
+                        <Grid Margin="0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" 
+                                       Text="Report font" 
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,16,0" />
+                            
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="210" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <ComboBox Grid.Column="0"     
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center"
+                                          ItemTemplate="{StaticResource FontTemplate}" 
+                                          Margin="0,0,8,0"
+                                          Padding="12,8"
+                                          Height="36"
+                                          SelectedValuePath="Source"
+                                          SelectedValue="{Binding Configuration.ReportFontFamily}"
+                                          ItemsSource="{Binding Source={StaticResource FontFamilies}}" />
+                                <ComboBox Grid.Column="1" 
+                                          SelectedItem="{Binding Configuration.ReportFontSize}" 
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center"
+                                          Padding="12,8"
+                                          Height="36"
+                                          Margin="0,0,8,0">
+                                    <ComboBox.ItemsSource>
+                                        <x:Array Type="{x:Type System:Double}">
+                                            <System:Double>10</System:Double>
+                                            <System:Double>11</System:Double>
+                                            <System:Double>12</System:Double>
+                                            <System:Double>14</System:Double>
+                                            <System:Double>16</System:Double>
+                                            <System:Double>18</System:Double>
+                                            <System:Double>21</System:Double>
+                                            <System:Double>24</System:Double>
+                                            <System:Double>27</System:Double>
+                                        </x:Array>
+                                    </ComboBox.ItemsSource>
+                                </ComboBox>
+                                <CheckBox Grid.Column="2" 
+                                          Content="Bold" 
+                                          IsChecked="{Binding Configuration.ReportBoldStyle}"
+                                          FontWeight="Bold"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,12,0" />
+                                <CheckBox Grid.Column="3" 
+                                          Content="Italic" 
+                                          IsChecked="{Binding Configuration.ReportItalicStyle}"
+                                          FontStyle="Italic"
+                                          VerticalAlignment="Center" />
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Expander>
+
+            <!-- Context Menu Expander -->
+            <Expander IsExpanded="False" Margin="0,0,0,2">
+                <Expander.Header>
+                    <TextBlock Text="Context menu" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16" >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="AddContextMenu"
+                                Grid.Column="0"
+                                Content="Create"
+                                MinWidth="90"
+                                Padding="12,8"
+                                Margin="0,0,8,0" />
+                        <Button x:Name="RemoveContextMenu"
+                                Grid.Column="1"
+                                Content="Remove"
+                                MinWidth="90"
+                                Padding="12,8"
+                                Margin="0,0,16,0" />
+                        <TextBlock x:Name="AssociationStatus"
+                                   Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+            </Expander>
+
+            <!-- Recent Files History Expander -->
+            <Expander IsExpanded="False" Margin="0,0,0,2">
+                <Expander.Header>
+                    <TextBlock Text="Recent files history" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16" >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Text="History size"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0" />
+                        <ctx:NumericUpDown x:Name="HistorySize"
+                                           Grid.Column="1"
+                                           Width="200"
+                                           MaxValue="20"
+                                           MinValue="0"
+                                           ShowButtons="True"
+                                           Value="{Binding Configuration.MaxRecentFiles, Mode=TwoWay}"
+                                           Margin="0,0,16,0" />
+                        <Button x:Name="ClearRecentFileList"
+                                Grid.Column="2"
+                                Content="Clear history"
+                                MinWidth="110"
+                                Padding="12,8"
+                                HorizontalAlignment="Left"
+                                Command="{Binding DataContext.ClearRecentFilesCommand, RelativeSource={RelativeSource AncestorType=TabControl}}" />
+                    </Grid>
+                </Border>
+            </Expander>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

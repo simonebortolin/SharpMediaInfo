@@ -82,10 +82,15 @@ namespace SharpMediaInfo.Native
         /// <param name="flag">true to enable parsing of cover data as base64; false to disable parsing.</param>
         public void SetCoverDataParsing(bool flag)
         {
-            if (parseCoverData)
-            {
-                MediaInfoNativeMethods.SetOption(handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(), "Cover_Data", flag ? "base64" : "");
-            }
+            // Always set the option when parseCoverData was enabled, regardless of flag value
+            // This allows toggling between base64 mode (for cover data) and empty mode (for reports)
+            var value = parseCoverData && flag ? "base64" : "";
+            MediaInfoNativeMethods.SetOption(
+                handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(),
+                "Cover_Data",
+                value);
+
+           
         }
 
         /// <summary>
@@ -183,7 +188,7 @@ namespace SharpMediaInfo.Native
             MediaInfoNativeMethods.SetOption(handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(), "Complete", "1");
             SetCoverDataParsing(false);
             var @string = Marshal.PtrToStringUni(MediaInfoNativeMethods.Inform(handle.DangerousGetHandle(), 0));
-            SetCoverDataParsing(true);
+            SetCoverDataParsing(parseCoverData);
             return @string;
         }
 
@@ -195,7 +200,7 @@ namespace SharpMediaInfo.Native
             MediaInfoNativeMethods.SetOption(handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(), "Complete", "");
             SetCoverDataParsing(false);
             var @string = Marshal.PtrToStringUni(MediaInfoNativeMethods.Inform(handle.DangerousGetHandle(), 0));
-            SetCoverDataParsing(true);
+            SetCoverDataParsing(parseCoverData);
             return @string;
         }
 
@@ -207,6 +212,8 @@ namespace SharpMediaInfo.Native
         public void OpenFile(string path)
         {
             handle = new MediaInfoHandle();
+
+            SetCoverDataParsing(parseCoverData);
 
             //opens the handle
             if (!MediaInfoNativeMethods.OpenFile(handle.DangerousGetHandle(), path))
@@ -234,6 +241,8 @@ namespace SharpMediaInfo.Native
 
                     //creates a new handle
                     handle = new MediaInfoHandle();
+
+                    SetCoverDataParsing(parseCoverData);
 
                     //opens the buffer
                     if (!MediaInfoNativeMethods.InitializeBuffer(handle.DangerousGetHandle(), stream.Length, 0))
