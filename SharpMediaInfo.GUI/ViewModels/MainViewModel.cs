@@ -311,14 +311,14 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenSetting()
     {
-        var existingSettingsTab = Tabs.FirstOrDefault(tab => tab is SettingsTabViewModel);
+        var existingSettingsTab = Tabs.FirstOrDefault(tab => tab is SettingTabViewModel);
         if (existingSettingsTab != null)
         {
             SelectedTab = existingSettingsTab;
             return;
         }
 
-        var settingsViewModel = _serviceProvider.GetRequiredService<SettingsTabViewModel>();
+        var settingsViewModel = _serviceProvider.GetRequiredService<SettingTabViewModel>();
         Tabs.Add(settingsViewModel);
         SelectedTab = settingsViewModel;
     }
@@ -326,7 +326,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenAbout()
     {
-        var existingAboutTab = Tabs.FirstOrDefault(tab => (tab is AboutTabViewModel) && (tab  is not SettingsTabViewModel));
+        var existingAboutTab = Tabs.FirstOrDefault(tab => (tab is AboutTabViewModel) && (tab  is not SettingTabViewModel));
         if (existingAboutTab != null)
         {
             SelectedTab = existingAboutTab;

@@ -1,0 +1,118 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:SharpMediaInfo.GUI.Models;assembly=SharpMediaInfo.GUI"
+             xmlns:report="clr-namespace:SharpMediaInfo.GUI.Models.Report;assembly=SharpMediaInfo.GUI"
+             xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SharpMediaInfo.GUI.Avalonia.Controls.SimpleReportViewer"
+             xmlns:local="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+             x:Name="SimpleReportViewerControl">
+    
+    <UserControl.Resources>
+        <converters:IndentToMarginConverter x:Key="IndentConverter"/>
+        <converters:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"/>
+    </UserControl.Resources>
+    
+    <Grid ColumnDefinitions="Auto,*">
+        
+        <!-- Cover Image -->
+        <Border Grid.Column="0"
+                BorderThickness="1"
+                CornerRadius="8"
+                Margin="10,10,5,10"
+                Padding="8"
+                IsVisible="{Binding HasCover, ElementName=SimpleReportViewerControl}">
+            <Image Source="{Binding CoverData, Converter={StaticResource ByteArrayToImageConverter}, ElementName=SimpleReportViewerControl}"
+                   Width="155"
+                   Stretch="Uniform"
+                   StretchDirection="DownOnly">
+                <Image.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save Cover..." 
+                                  Command="{Binding SaveCoverCommand, ElementName=SimpleReportViewerControl}"/>
+                    </ContextMenu>
+                </Image.ContextMenu>
+            </Image>
+        </Border>
+        
+        <!-- Report Sections -->
+        <ScrollViewer Grid.Column="1" 
+                      VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Sections, ElementName=SimpleReportViewerControl}" 
+                         Padding="10">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="report:ReportSection">
+                        <Border BorderThickness="1"
+                                CornerRadius="4"
+                                Margin="0,5"
+                                Padding="10">
+                            <StackPanel>
+                                <!-- Section Title -->
+                                <TextBlock Text="{Binding Title}" 
+                                           FontWeight="Bold" 
+                                           FontSize="13"
+                                           Margin="0,0,0,8"/>
+                                
+                                <!-- Section Items -->
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="report:ReportItem">
+                                            <StackPanel Orientation="Horizontal"
+                                                       Margin="{Binding IndentLevel, Converter={StaticResource IndentConverter}}">
+                                                
+                                                <!-- Label part -->
+                                                <TextBlock FontFamily="{Binding Configuration.ReportFontFamily,
+                         RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}" 
+                                                           FontSize="{Binding Configuration.ReportFontSize,
+                         RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}"
+                                                           FontWeight="SemiBold">
+                                                    <TextBlock.Styles>
+                                                        <!-- Header style - Type = 0 -->
+                                                        <Style Selector="TextBlock[Tag=0]">
+                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                            <Setter Property="FontSize" Value="13"/>
+                                                        </Style>
+                                                        <!-- Subheader style - Type = 1 -->
+                                                        <Style Selector="TextBlock[Tag=1]">
+                                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                                            <Setter Property="FontSize" Value="11.5"/>
+                                                        </Style>
+                                                    </TextBlock.Styles>
+                                                    <TextBlock.Tag>
+                                                        <Binding Path="Type"/>
+                                                    </TextBlock.Tag>
+                                                    <Run Text="{Binding Label, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                
+                                                <!-- Colon part (only if Label is not empty) -->
+                                                <TextBlock FontFamily="{Binding Configuration.ReportFontFamily,
+                         RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}" 
+                                                           FontSize="{Binding Configuration.ReportFontSize,
+                         RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}"
+                                                           FontWeight="SemiBold" TextWrapping="Wrap"
+                                                           IsVisible="{Binding Label, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                    <Run Text=": "/>
+                                                </TextBlock>
+                                                
+                                                <!-- Value part -->
+                                                <TextBlock FontFamily="{Binding Configuration.ReportFontFamily,
+                         RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}" 
+                                                           FontSize="{Binding Configuration.ReportFontSize,
+                         RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}"
+                                                           FontWeight="SemiBold" TextWrapping="Wrap"
+                                                           Text="{Binding Value, Mode=OneWay}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SharpMediaInfo.GUI.ViewModels
 {
-    public partial class SettingsTabViewModel : AboutTabViewModel
+    public partial class SettingTabViewModel : AboutTabViewModel
     {
         private readonly IConfigurationService _configurationService;
         private readonly IContextMenuService? _contextMenuService;
@@ -22,7 +22,7 @@ namespace SharpMediaInfo.GUI.ViewModels
         [ObservableProperty]
         private bool _isCheckingContextMenu;
 
-        public SettingsTabViewModel(
+        public SettingTabViewModel(
             IConfigurationService configurationService, 
             AppConfiguration configuration,
             IContextMenuService? contextMenuService,

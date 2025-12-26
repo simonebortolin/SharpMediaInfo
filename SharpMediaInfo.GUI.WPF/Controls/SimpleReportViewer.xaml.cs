@@ -1,4 +1,4 @@
-using SharpMediaInfo.GUI.Models.Report;
+﻿using SharpMediaInfo.GUI.Models.Report;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,7 +19,7 @@ public partial class SimpleReportViewer : UserControl
             nameof(Sections),
             typeof(IEnumerable<ReportSection>),
             typeof(SimpleReportViewer),
-            new PropertyMetadata(null, OnSectionsChanged));
+            new PropertyMetadata(null));
 
     public static readonly DependencyProperty ConfigurationProperty =
         DependencyProperty.Register(
@@ -82,14 +82,6 @@ public partial class SimpleReportViewer : UserControl
     public SimpleReportViewer()
     {
         InitializeComponent();
-    }
-
-    private static void OnSectionsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is SimpleReportViewer viewer)
-        {
-            viewer.SectionsContainer.ItemsSource = e.NewValue as IEnumerable<ReportSection>;
-        }
     }
 }
 

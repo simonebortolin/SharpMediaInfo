@@ -1,0 +1,64 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:SharpMediaInfo.GUI.Models;assembly=SharpMediaInfo.GUI"
+             xmlns:report="clr-namespace:SharpMediaInfo.GUI.Models.Report;assembly=SharpMediaInfo.GUI"
+             xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SharpMediaInfo.GUI.Avalonia.Controls.TreeReportViewer"
+             x:Name="TreeReportViewerControl">
+    
+    <TreeView ItemsSource="{Binding Nodes, ElementName=TreeReportViewerControl}"
+              FontFamily="{Binding Configuration.ReportFontFamily, ElementName=TreeReportViewerControl}"
+              FontSize="{Binding Configuration.ReportFontSize, ElementName=TreeReportViewerControl}" x:DataType="report:TreeNode">
+        
+        <!-- TreeView Styles -->
+        <TreeView.Styles>
+            <Style Selector="TreeView">
+                <Setter Property="FontWeight" Value="Normal"/>
+                <Setter Property="FontStyle" Value="Normal"/>
+            </Style>
+            <Style Selector="TreeView[IsVisible=True]">
+                <Setter Property="FontWeight" Value="{Binding Configuration.ReportBoldStyle, ElementName=TreeReportViewerControl, Converter={x:Static converters:BoolToFontWeightConverter.Instance}}"/>
+                <Setter Property="FontStyle" Value="{Binding Configuration.ReportItalicStyle, ElementName=TreeReportViewerControl, Converter={x:Static converters:BoolToFontStyleConverter.Instance}}"/>
+            </Style>
+            
+            <!-- TreeViewItem Styles -->
+            <Style Selector="TreeViewItem">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+            </Style>
+        </TreeView.Styles>
+        
+        <!-- Item Template -->
+        <TreeView.DataTemplates>
+            <TreeDataTemplate DataType="report:TreeNode" ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Header}">
+                        <!-- Apply font weight based on Type -->
+                        <TextBlock.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="FontWeight" Value="Normal"/>
+                            </Style>
+                            <!-- Section style (bold) - Type = 1 -->
+                            <Style Selector="TextBlock[Tag=1]">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                            <!-- Track style (semi-bold) - Type = 2 -->
+                            <Style Selector="TextBlock[Tag=2]">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Style>
+                        </TextBlock.Styles>
+                        <TextBlock.Tag>
+                            <Binding Path="Type"/>
+                        </TextBlock.Tag>
+                    </TextBlock>
+                    <TextBlock IsVisible="{Binding Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <Run Text=": "/>
+                        <Run Text="{Binding Value, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </TreeDataTemplate>
+        </TreeView.DataTemplates>
+    </TreeView>
+</UserControl>

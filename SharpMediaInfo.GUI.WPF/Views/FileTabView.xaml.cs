@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 namespace SharpMediaInfo.GUI.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for FileTabsView.xaml
+    /// Interaction logic for FileTabView.xaml
     /// </summary>
     public partial class FileTabView : UserControl
     {

@@ -1,0 +1,125 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
+        xmlns:controls="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+        xmlns:views="clr-namespace:SharpMediaInfo.GUI.Avalonia.Views"
+        xmlns:vm="clr-namespace:SharpMediaInfo.GUI.ViewModels;assembly=SharpMediaInfo.GUI"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="SharpMediaInfo.GUI.Avalonia.Windows.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="SharpMediaInfo GUI" 
+        Height="600" 
+        Width="900">
+    
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveStandardReportCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveCompleteReportCommand}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFilesCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+O" Command="{Binding OpenFolderCommand}" />
+        <KeyBinding Gesture="Ctrl+X" Command="{Binding CloseAllFilesCommand}" />
+    </Window.KeyBindings>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Menu -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File" x:Name="RecentFilesMenuItem">
+                <MenuItem Header="Open _Multiple Files" 
+                          Command="{Binding OpenFilesCommand}" 
+                          HotKey="Ctrl+O"/>
+                <MenuItem Header="Open F_older" 
+                          Command="{Binding OpenFolderCommand}" 
+                          HotKey="Ctrl+Shift+O"/>
+                <MenuItem Header="_Close All Files" 
+                          Command="{Binding CloseAllFilesCommand}" 
+                          HotKey="Ctrl+X"/>
+                <controls:GenericMenuItem Header="Open Recent"
+                          Childrens="{Binding RecentFiles}" 
+                          ChildrenCommand="{Binding OpenRecentFileCommand}" />
+                <Separator/>
+                <MenuItem Header="E_xit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Selection">
+                <MenuItem Header="Save _Standard Report" 
+                          Command="{Binding SaveStandardReportCommand}" 
+                          HotKey="Ctrl+S"/>
+                <MenuItem Header="Save _Complete Report" 
+                          Command="{Binding SaveCompleteReportCommand}" 
+                          HotKey="Ctrl+Shift+S"/>
+                <MenuItem Header="Save C_over" 
+                          Command="{Binding SaveCoverCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Settings" 
+                          Command="{Binding OpenSettingCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" 
+                          Command="{Binding OpenAboutCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Main Content -->
+        <TabControl Grid.Row="1" 
+                    ItemsSource="{Binding Tabs}"
+                    SelectedItem="{Binding SelectedTab}"
+                    Margin="5"
+                    x:Name="MainTabControl">
+            
+            <TabControl.DataTemplates>
+                <DataTemplate DataType="vm:FileTabViewModel">
+                    <views:FileTabView />
+                </DataTemplate>
+
+                <DataTemplate DataType="vm:SettingTabViewModel">
+                    <views:SettingTabView />
+                </DataTemplate>
+
+                <DataTemplate DataType="vm:AboutTabViewModel">
+                    <views:AboutTabView />
+                </DataTemplate>
+            </TabControl.DataTemplates>
+            
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Header}" 
+                                   VerticalAlignment="Center" 
+                                   Margin="0,0,10,0"/>
+                        <Button Content="✕" 
+                                Width="16" 
+                                Height="16"
+                                FontSize="10"
+                                Padding="0"
+                                Margin="0"
+                                VerticalAlignment="Center"
+                                Command="{Binding $parent[TabControl].DataContext.CloseTabCommand}" 
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Close"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Cursor="Hand"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl Content="{Binding}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" 
+                BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                Padding="8,4">
+            <TextBlock Text="{Binding StatusMessage}"/>
+        </Border>
+    </Grid>
+</Window>

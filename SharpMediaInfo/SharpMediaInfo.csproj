@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Source\MenuOverride.json" />
-    <None Remove="Source\nul" />
-    <None Remove="Source\TextOverride.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="Source\Audio.csv" />
     <AdditionalFiles Include="Source\General.csv" />
     <AdditionalFiles Include="Source\AudioOverride.json" />
@@ -30,10 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SharpMediaInfo.Generator\SharpMediaInfo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\SharpMediaInfo.Native\SharpMediaInfo.Native.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

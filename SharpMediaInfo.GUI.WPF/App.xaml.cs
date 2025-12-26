@@ -207,7 +207,7 @@ public partial class App : Application
         });
 
         // Register ViewModels
-        services.AddSingleton<SettingsTabViewModel>();
+        services.AddSingleton<SettingTabViewModel>();
         
         services.AddSingleton<AboutTabViewModel>();
 

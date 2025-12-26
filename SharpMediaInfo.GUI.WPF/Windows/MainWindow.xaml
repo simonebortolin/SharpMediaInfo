@@ -97,7 +97,7 @@
                     <views:FileTabView />
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type vm:SettingsTabViewModel}">
+                <DataTemplate DataType="{x:Type vm:SettingTabViewModel}">
                     <views:SettingsTabView />
                 </DataTemplate>
 

@@ -1,0 +1,106 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SharpMediaInfo.GUI.ViewModels;assembly=SharpMediaInfo.GUI"
+             xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
+             xmlns:controls="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SharpMediaInfo.GUI.Avalonia.Views.FileTabView"
+             x:DataType="vm:FileTabViewModel">
+    
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+    </UserControl.Resources>
+    
+    <Grid>
+        <!-- Loading indicator -->
+        <Grid IsVisible="{Binding Model.IsLoading}">
+            <TextBlock Text="Loading..." 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       FontSize="16"/>
+        </Grid>
+
+        <!-- Content when ready -->
+        <TabControl IsVisible="{Binding Model.IsReady}">
+            
+            <!-- Simple Report -->
+            <TabItem Header="Simple Report" 
+                     IsVisible="{Binding Configuration.DisableSimpleReport, Converter={StaticResource InvertBooleanConverter}}">
+                <controls:SimpleReportViewer Sections="{Binding SimpleReportSections}"
+                                            Configuration="{Binding Configuration}"
+                                            CoverData="{Binding Model.CoverData}"
+                                            HasCover="{Binding Model.HasCover}"
+                                            SaveCoverCommand="{ReflectionBinding $parent[Window].DataContext.SaveCoverCommand}"/>
+            </TabItem>
+
+            <!-- Standard Report -->
+            <TabItem Header="Standard Report">
+                <TextBox Text="{Binding Model.StandardReport, Mode=OneWay}"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         FontFamily="{Binding Configuration.ReportFontFamily}"
+                         FontSize="{Binding Configuration.ReportFontSize}">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox">
+                            <Setter Property="FontWeight" Value="Normal"/>
+                            <Setter Property="FontStyle" Value="Normal"/>
+                        </Style>
+                        <Style Selector="TextBox[IsVisible=True]">
+                            <Setter Property="FontWeight" Value="{Binding Configuration.ReportBoldStyle, Converter={x:Static converters:BoolToFontWeightConverter.Instance}}"/>
+                            <Setter Property="FontStyle" Value="{Binding Configuration.ReportItalicStyle, Converter={x:Static converters:BoolToFontStyleConverter.Instance}}"/>
+                        </Style>
+                    </TextBox.Styles>
+                    <TextBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Command="{Binding $parent[TextBox].Copy}" />
+                            <MenuItem Header="Copy All" Command="{Binding CopyAllStandardCommand}" />
+                            <Separator/>
+                            <MenuItem Header="Save" Command="{ReflectionBinding $parent[Window].DataContext.SaveStandardReportCommand}" HotKey="Ctrl+S"/>
+                        </ContextMenu>
+                    </TextBox.ContextMenu>
+                </TextBox>
+            </TabItem>
+
+            <!-- Complete Report -->
+            <TabItem Header="Complete Report" 
+                     IsVisible="{Binding Configuration.DisableCompleteReport, Converter={StaticResource InvertBooleanConverter}}">
+                <TextBox Text="{Binding Model.CompleteReport, Mode=OneWay}"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         FontFamily="{Binding Configuration.ReportFontFamily}"
+                         FontSize="{Binding Configuration.ReportFontSize}">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox">
+                            <Setter Property="FontWeight" Value="Normal"/>
+                            <Setter Property="FontStyle" Value="Normal"/>
+                        </Style>
+                        <Style Selector="TextBox[IsVisible=True]">
+                            <Setter Property="FontWeight" Value="{Binding Configuration.ReportBoldStyle, Converter={x:Static converters:BoolToFontWeightConverter.Instance}}"/>
+                            <Setter Property="FontStyle" Value="{Binding Configuration.ReportItalicStyle, Converter={x:Static converters:BoolToFontStyleConverter.Instance}}"/>
+                        </Style>
+                    </TextBox.Styles>
+                    <TextBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Command="{Binding $parent[TextBox].Copy}" />
+                            <MenuItem Header="Copy All" Command="{Binding CopyAllCompleteCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="Save" Command="{ReflectionBinding $parent[Window].DataContext.SaveCompleteReportCommand}" HotKey="Ctrl+Shift+S"/>
+                        </ContextMenu>
+                    </TextBox.ContextMenu>
+                </TextBox>
+            </TabItem>
+
+            <!-- Tree Report -->
+            <TabItem Header="Tree Report" 
+                     IsVisible="{Binding Configuration.DisableTreeReport, Converter={StaticResource InvertBooleanConverter}}">
+                <controls:TreeReportViewer Nodes="{Binding TreeReportNodes}"
+                                          Configuration="{Binding Configuration}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

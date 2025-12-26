@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>3.9.9.9</Version>
+    <Version>1.0.0</Version>
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
@@ -34,7 +34,4 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
   </ItemGroup>
-
-  <!-- Rimosso il duplicato esplicito di SettingsWindow.xaml e SettingsWindow.xaml.cs -->
-
 </Project>
