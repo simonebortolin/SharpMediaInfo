@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ namespace SharpMediaInfo.GUI.ViewModels;
 /// <summary>
 /// ViewModel for the About tab
 /// </summary>
-public partial class AboutViewModel : ObservableObject, ITabViewModel
+public partial class AboutTabViewModel : ObservableObject, ITabViewModel
 {
     public string Header => "About";
 
@@ -52,7 +52,7 @@ public partial class AboutViewModel : ObservableObject, ITabViewModel
 
     public string Description => "A modern MediaInfo viewer built with C# and MVVM architecture.";
 
-    public string Copyright => $"� {DateTime.Now.Year} SharpMediaInfo Contributors";
+    public string Copyright => $"© {DateTime.Now.Year} SharpMediaInfo Contributors";
 
     public string GitHubUrl => "https://gitlab.com/simonebortolin/get-media";
 

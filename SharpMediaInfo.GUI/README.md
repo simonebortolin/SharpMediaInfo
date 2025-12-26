@@ -1,10 +1,33 @@
-# SharpMediaInfo GUI - Architettura MVVM
+﻿# SharpMediaInfo GUI - Architettura MVVM
 
-## Panoramica
+## 🌟 Modern .NET Showcase Project
 
-Questo progetto � stato convertito in un'architettura MVVM (Model-View-ViewModel) pulita e modulare, separata in due progetti principali:
+Questo progetto è stato convertito in un'architettura MVVM (Model-View-ViewModel) pulita e modulare, **progettato come showcase di modern .NET development** con best practices, tecnologie all'avanguardia, e preparazione cross-platform.
 
-### ?? Struttura dei Progetti
+### 🎯 Technology Stack
+
+**Core:**
+- ✅ .NET 10 (latest runtime)
+- ✅ C# 12 (latest language features)
+- ✅ WPF + Fluent Design (v1.0)
+- ✅ Avalonia cross-platform (planned v2.0)
+
+**Libraries:**
+- 🎯 **CommunityToolkit.Mvvm** - Source generators for MVVM
+- 🎯 **Polly** (v1.1) - Resilience & retry patterns
+- 🎯 **Microsoft.Extensions.DI** - Dependency injection
+- 🎯 **System.Text.Json** - Modern JSON serialization
+
+**Custom:**
+- 🔧 SharpMediaInfo Source Generators
+- 🔧 Named Pipes IPC (cross-platform)
+- 🔧 DPI-aware window positioning
+
+📖 **[Read Full Technology Showcase](../TECHNOLOGY_SHOWCASE.md)**
+
+---
+
+## 📁 Struttura dei Progetti
 
 ```
 SharpMediaInfo.GUI/                    # Progetto condiviso (logica di business)
@@ -35,15 +58,15 @@ SharpMediaInfo.GUI.Avalonia/          # (Futuro) Implementazione Avalonia
 
 ## ?? Vantaggi dell'Architettura
 
-### 1. **Separazione delle Responsabilit�**
+### 1. **Separazione delle Responsabilità**
 - **Models**: Contengono solo dati e logica di dominio
 - **ViewModels**: Gestiscono lo stato e la logica di presentazione
 - **Views**: Solo interfaccia utente (XAML)
 - **Services**: Operazioni I/O e interazioni sistema
 
-### 2. **Riusabilit� del Codice**
-- La logica di business in `SharpMediaInfo.GUI` � completamente indipendente dalla UI
-- � possibile creare implementazioni per diverse piattaforme (WPF, Avalonia, UWP, MAUI)
+### 2. **Riusabilità del Codice**
+- La logica di business in `SharpMediaInfo.GUI` è completamente indipendente dalla UI
+- È possibile creare implementazioni per diverse piattaforme (WPF, Avalonia, UWP, MAUI)
 - I test unitari possono concentrarsi sulla logica senza dipendenze UI
 
 ### 3. **CommunityToolkit.Mvvm**
@@ -71,9 +94,9 @@ private string _name;
 ```
 
 **Caratteristiche principali:**
-- `[ObservableProperty]` - Genera automaticamente propriet� con INotifyPropertyChanged
+- `[ObservableProperty]` - Genera automaticamente proprietà con INotifyPropertyChanged
 - `[RelayCommand]` - Genera automaticamente ICommand da metodi
-- `[NotifyPropertyChangedFor]` - Notifica dipendenze tra propriet�
+- `[NotifyPropertyChangedFor]` - Notifica dipendenze tra proprietà
 - Source Generators per prestazioni ottimali (zero reflection a runtime)
 
 ### 4. **Dependency Injection**
@@ -93,7 +116,7 @@ private void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 5. **Testabilit�**
+### 5. **Testabilità**
 I ViewModels possono essere testati facilmente con mock dei servizi:
 
 ```csharp
@@ -200,7 +223,7 @@ Per creare la versione Avalonia:
 - [x] Implementare servizi WPF
 - [x] Creare Views WPF base
 - [x] Configurare Dependency Injection
-- [ ] Migrare funzionalit� complete da GetMediaInfoGUI
+- [ ] Migrare funzionalità complete da GetMediaInfoGUI
   - [ ] Simple Report view
   - [ ] Tree Report view
   - [ ] History management

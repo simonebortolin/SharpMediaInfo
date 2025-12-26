@@ -1,5 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using SharpMediaInfo.GUI.Models;
 using SharpMediaInfo.GUI.Services;
 using System;
@@ -23,6 +24,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IConfigurationService _configurationService;
     private readonly IRecentFilesService _recentFilesService;
     private readonly IMousePositionService _mousePositionService;
+    private readonly IServiceProvider _serviceProvider;
 
     private const string RecentFilesPath = "recent_files.json";
 
@@ -56,6 +58,7 @@ public partial class MainViewModel : ObservableObject
         IConfigurationService configurationService, 
         IRecentFilesService recentFilesService,
         IMousePositionService mousePositionService,
+        IServiceProvider serviceProvider,
         AppConfiguration configuration)
     {
         _fileService = fileService ?? throw new System.ArgumentNullException(nameof(fileService));
@@ -65,6 +68,7 @@ public partial class MainViewModel : ObservableObject
         _recentFilesService = recentFilesService ?? throw new System.ArgumentNullException(nameof(recentFilesService));
         _mousePositionService = mousePositionService ?? throw new System.ArgumentNullException(nameof(mousePositionService));
         _configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+        _serviceProvider = serviceProvider ?? throw new System.ArgumentNullException(nameof(serviceProvider));
 
         // Attach autosave to the shared configuration instance
         _configurationService.Attach(Configuration);
@@ -311,7 +315,7 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        var settingsViewModel = new SettingsTabViewModel(_configurationService, Configuration);
+        var settingsViewModel = _serviceProvider.GetRequiredService<SettingsTabViewModel>();
         Tabs.Add(settingsViewModel);
         SelectedTab = settingsViewModel;
     }
@@ -319,14 +323,14 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenAbout()
     {
-        var existingAboutTab = Tabs.FirstOrDefault(tab => tab is AboutViewModel);
+        var existingAboutTab = Tabs.FirstOrDefault(tab => (tab is AboutTabViewModel) && (tab  is not SettingsTabViewModel));
         if (existingAboutTab != null)
         {
             SelectedTab = existingAboutTab;
             return;
         }
 
-        var aboutViewModel = new AboutViewModel();
+        var aboutViewModel = _serviceProvider.GetRequiredService<AboutTabViewModel>();
         Tabs.Add(aboutViewModel);
         SelectedTab = aboutViewModel;
     }

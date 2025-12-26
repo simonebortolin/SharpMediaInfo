@@ -101,7 +101,7 @@
                     <views:SettingsTabView />
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type vm:AboutViewModel}">
+                <DataTemplate DataType="{x:Type vm:AboutTabViewModel}">
                     <views:AboutTabView />
                 </DataTemplate>
             </TabControl.Resources>

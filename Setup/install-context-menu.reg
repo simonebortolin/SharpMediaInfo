@@ -1,0 +1,22 @@
+﻿Windows Registry Editor Version 5.00
+
+; SharpMediaInfo Context Menu for Windows 10/11
+; Install: Double-click this file and confirm
+; Uninstall: Run uninstall-context-menu.reg
+; NOTE: Uses HKEY_CURRENT_USER - NO ADMIN REQUIRED!
+
+; Add context menu for all files (current user only)
+[HKEY_CURRENT_USER\Software\Classes\*\shell\SharpMediaInfo]
+@="Analyze with SharpMediaInfo"
+"Icon"="C:\\Program Files\\SharpMediaInfo\\SharpMediaInfo.GUI.WPF.exe,0"
+
+[HKEY_CURRENT_USER\Software\Classes\*\shell\SharpMediaInfo\command]
+@="\"C:\\Program Files\\SharpMediaInfo\\SharpMediaInfo.GUI.WPF.exe\" \"%1\""
+
+; Add context menu for folders (current user only)
+[HKEY_CURRENT_USER\Software\Classes\Directory\shell\SharpMediaInfo]
+@="Analyze folder with SharpMediaInfo"
+"Icon"="C:\\Program Files\\SharpMediaInfo\\SharpMediaInfo.GUI.WPF.exe,0"
+
+[HKEY_CURRENT_USER\Software\Classes\Directory\shell\SharpMediaInfo\command]
+@="\"C:\\Program Files\\SharpMediaInfo\\SharpMediaInfo.GUI.WPF.exe\" \"%1\""

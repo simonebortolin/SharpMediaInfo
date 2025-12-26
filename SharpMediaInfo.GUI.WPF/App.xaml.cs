@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SharpMediaInfo.GUI.Services;
 using SharpMediaInfo.GUI.ViewModels;
@@ -25,106 +26,151 @@ public partial class App : Application
 
         try
         {
+            var parsedArgs = CommandLineParser.Parse(e.Args);
+
             var services = new ServiceCollection();
-            
+
             // Load configuration FIRST
             var tempProvider = services.BuildServiceProvider();
             var cfgService = new ConfigurationService(new WpfFileService());
             var cfg = await cfgService.LoadConfigurationAsync();
             cfgService.Attach(cfg);
-            
+
             // Register the loaded configuration as singleton
             services.AddSingleton(cfg);
-            
+
             ConfigureServices(services);
             _serviceProvider = services.BuildServiceProvider();
 
             ApplyTheme(cfg.AppTheme);
 
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            // ✨ IPC: Start server FIRST (before checking for existing instance)
+            var singleInstance = _serviceProvider.GetRequiredService<ISingleInstanceService>();
             
-            // Parse command line arguments for window position
-            var args = e.Args;
-            if (args.Length >= 2 && args[0] == "--window-position")
+            // Check if we should send to existing master instance
+            if (singleInstance.ShouldCheckSingleInstance(e.Args))
             {
-                // Format: --window-position X,Y "filepath"
-                var positionArg = args[1];
-                var coords = positionArg.Split(',');
-                
-                if (coords.Length == 2 && 
-                    int.TryParse(coords[0], out int x) && 
-                    int.TryParse(coords[1], out int y))
+                // Retry logic: try multiple times with increasing delay
+                bool sentToMaster = false;
+                for (int attempt = 0; attempt < 3; attempt++)
                 {
-                    // Position window AFTER it's loaded so we have correct dimensions
-                    RoutedEventHandler? loadedHandler = null;
-                    loadedHandler = (s, loadedArgs) =>
+                    if (attempt > 0)
                     {
-                        // Get DPI scaling factor for accurate positioning
-                        var source = PresentationSource.FromVisual(mainWindow);
-                        double dpiScaleX = 1.0;
-                        double dpiScaleY = 1.0;
-                        
-                        if (source?.CompositionTarget != null)
-                        {
-                            dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
-                            dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
-                        }
-                        
-                        // Convert physical pixels to WPF device-independent units
-                        double mouseXInDiu = x / dpiScaleX;
-                        double mouseYInDiu = y / dpiScaleY;
-                        
-                        // Position window with cursor near top-left corner (title bar area)
-                        mainWindow.Left = mouseXInDiu - 20;
-                        mainWindow.Top = mouseYInDiu - 10;
-                        
-                        // Ensure window is on screen (using SystemParameters for primary screen bounds)
-                        // Note: This uses primary screen. For multi-monitor, we'd need Win32 MonitorFromPoint
-                        double screenLeft = SystemParameters.VirtualScreenLeft;
-                        double screenTop = SystemParameters.VirtualScreenTop;
-                        double screenRight = SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth;
-                        double screenBottom = SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight;
-                        
-                        if (mainWindow.Left < screenLeft) 
-                            mainWindow.Left = screenLeft;
-                        if (mainWindow.Top < screenTop) 
-                            mainWindow.Top = screenTop;
-                        if (mainWindow.Left + mainWindow.ActualWidth > screenRight)
-                            mainWindow.Left = screenRight - mainWindow.ActualWidth;
-                        if (mainWindow.Top + mainWindow.ActualHeight > screenBottom)
-                            mainWindow.Top = screenBottom - mainWindow.ActualHeight;
-                        
-                        // Remove handler after first use to prevent memory leak
-                        mainWindow.Loaded -= loadedHandler;
-                    };
+                        await Task.Delay(200 * attempt); // 200ms, 400ms
+                    }
                     
-                    mainWindow.Loaded += loadedHandler;
+                    if (await singleInstance.TrySendToMasterAsync(parsedArgs.Files))
+                    {
+                        sentToMaster = true;
+                        break;
+                    }
+                }
+                
+                if (sentToMaster)
+                {
+                    // Sent to master! Close this instance
+                    Shutdown();
+                    return;
                 }
             }
-            
+
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+
+            // ✨ Parse window position
+            if (parsedArgs.WindowPosition.HasValue)
+            {
+                var (x, y) = parsedArgs.WindowPosition.Value;
+
+                // Position window AFTER it's loaded so we have correct dimensions
+                RoutedEventHandler? loadedHandler = null;
+                loadedHandler = (s, loadedArgs) =>
+                {
+                    // Get DPI scaling factor for accurate positioning
+                    var source = PresentationSource.FromVisual(mainWindow);
+                    double dpiScaleX = 1.0;
+                    double dpiScaleY = 1.0;
+
+                    if (source?.CompositionTarget != null)
+                    {
+                        dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
+                        dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
+                    }
+
+                    // Convert physical pixels to WPF device-independent units
+                    double mouseXInDiu = x / dpiScaleX;
+                    double mouseYInDiu = y / dpiScaleY;
+
+                    // Position window with cursor near top-left corner (title bar area)
+                    mainWindow.Left = mouseXInDiu - 20;
+                    mainWindow.Top = mouseYInDiu - 10;
+
+                    // Ensure window is on screen
+                    double screenLeft = SystemParameters.VirtualScreenLeft;
+                    double screenTop = SystemParameters.VirtualScreenTop;
+                    double screenRight = SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth;
+                    double screenBottom = SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight;
+
+                    if (mainWindow.Left < screenLeft)
+                        mainWindow.Left = screenLeft;
+                    if (mainWindow.Top < screenTop)
+                        mainWindow.Top = screenTop;
+                    if (mainWindow.Left + mainWindow.ActualWidth > screenRight)
+                        mainWindow.Left = screenRight - mainWindow.ActualWidth;
+                    if (mainWindow.Top + mainWindow.ActualHeight > screenBottom)
+                        mainWindow.Top = screenBottom - mainWindow.ActualHeight;
+
+                    // Remove handler after first use to prevent memory leak
+                    mainWindow.Loaded -= loadedHandler;
+                };
+
+                mainWindow.Loaded += loadedHandler;
+            }
+
+            // ✨ IPC: Start server BEFORE showing window
+            // This ensures the server is ready before the window is visible
+            await singleInstance.StartServerAsync(async receivedFiles =>
+            {
+                // ✅ ALWAYS run on UI thread
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    // Bring window to foreground
+                    if (mainWindow.WindowState == WindowState.Minimized)
+                        mainWindow.WindowState = WindowState.Normal;
+                    
+                    mainWindow.Activate();
+                    mainWindow.Topmost = true;  // Force to top
+                    mainWindow.Topmost = false; // Remove topmost
+                    mainWindow.Focus();
+
+                    // Open received files (now on UI thread!)
+                    if (receivedFiles.Length > 0)
+                    {
+                        var vm = _serviceProvider.GetRequiredService<MainViewModel>();
+                        await vm.AddFilesFromDropAsync(receivedFiles);
+                    }
+                });
+            });
+
+            // Now show the window
             mainWindow.Show();
 
-            // Handle command line arguments (files to open)
-            var filesToOpen = args
-                .Where(arg => !arg.StartsWith("--") && System.IO.File.Exists(arg))
-                .ToArray();
-
-            if (filesToOpen.Length > 0)
+            // Open files from parsed arguments
+            if (parsedArgs.Files.Length > 0)
             {
                 var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-                
+
                 // Use Dispatcher to ensure UI is ready
                 await Dispatcher.InvokeAsync(async () =>
                 {
-                    await mainViewModel.AddFilesFromDropAsync(filesToOpen);
+                    await mainViewModel.AddFilesFromDropAsync(parsedArgs.Files);
                 });
             }
         }
         catch (System.Exception ex)
         {
-            MessageBox.Show($"Error during startup: {ex.Message}\n\n{ex.StackTrace}", 
-                "Startup Error", 
-                MessageBoxButton.OK, 
+            MessageBox.Show($"Error during startup: {ex.Message}\n\n{ex.StackTrace}",
+                "Startup Error",
+                MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown();
         }
@@ -139,6 +185,8 @@ public partial class App : Application
         services.AddSingleton<IConfigurationService, ConfigurationService>();
         services.AddSingleton<IRecentFilesService, RecentFilesService>();
         services.AddSingleton<IMousePositionService, WpfMousePositionService>();
+        services.AddSingleton<ISingleInstanceService, SingleInstanceService>();
+        services.AddSingleton<IContextMenuService, WpfContextMenuService>();
 
         // Register ViewModels as factory so we can pass configuration
         services.AddSingleton<MainViewModel>(sp =>
@@ -153,17 +201,13 @@ public partial class App : Application
                 cfgService,
                 sp.GetRequiredService<IRecentFilesService>(),
                 sp.GetRequiredService<IMousePositionService>(),
+                sp,
                 cfg);
         });
         
-        services.AddSingleton<SettingsTabViewModel>(sp =>
-        {
-            var cfgService = sp.GetRequiredService<IConfigurationService>();
-            var cfg = sp.GetRequiredService<AppConfiguration>();
-            return new SettingsTabViewModel(cfgService, cfg);
-        });
+        services.AddSingleton<SettingsTabViewModel>();
         
-        services.AddSingleton<AboutViewModel>();
+        services.AddSingleton<AboutTabViewModel>();
 
         // Register Views
         services.AddTransient<MainWindow>(sp => 
@@ -179,8 +223,14 @@ public partial class App : Application
         Application.Current.ThemeMode = mode;
     }
 
-    protected override void OnExit(ExitEventArgs e)
+    protected override async void OnExit(ExitEventArgs e)
     {
+        var singleInstance = _serviceProvider?.GetService<ISingleInstanceService>();
+        if (singleInstance != null)
+        {
+            await singleInstance.StopServerAsync();
+        }
+
         _serviceProvider?.Dispose();
         base.OnExit(e);
     }
