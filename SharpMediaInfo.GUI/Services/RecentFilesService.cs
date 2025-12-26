@@ -1,4 +1,5 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -68,9 +69,9 @@ namespace SharpMediaInfo.GUI.Services
                 var json = JsonSerializer.Serialize(list);
                 await _fileService.WriteTextFileAsync(json, RecentFilesPath);
             }
-            catch
+            catch (System.Exception e)
             {
-                // ignore
+                Debug.WriteLine(e);
             }
         }
     }

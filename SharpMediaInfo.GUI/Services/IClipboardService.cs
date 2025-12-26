@@ -1,5 +1,11 @@
-namespace SharpMediaInfo.GUI.Services
+﻿namespace SharpMediaInfo.GUI.Services
 {
+    /// <summary>
+    /// Defines methods for copying text to and retrieving text from the system clipboard.
+    /// </summary>
+    /// <remarks>Implementations of this interface provide clipboard functionality for applications, enabling
+    /// text-based data transfer between the application and other programs or system components. Thread safety and
+    /// clipboard availability may vary depending on the platform and implementation.</remarks>
     public interface IClipboardService
     {
         /// <summary>

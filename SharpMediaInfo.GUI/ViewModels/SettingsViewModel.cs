@@ -157,11 +157,6 @@ namespace SharpMediaInfo.GUI.ViewModels
             _ = value;
         }
 
-        public string Header => "Settings";
-
-        public Task<bool> OnCloseAsync()
-        {
-            return Task.FromResult(true);
-        }
+        public override string Header => "Settings";
     }
 }

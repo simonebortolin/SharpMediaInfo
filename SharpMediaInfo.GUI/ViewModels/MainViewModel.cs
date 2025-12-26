@@ -24,6 +24,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IConfigurationService _configurationService;
     private readonly IRecentFilesService _recentFilesService;
     private readonly IMousePositionService _mousePositionService;
+    private readonly IProcessService _processService;
     private readonly IServiceProvider _serviceProvider;
 
     private const string RecentFilesPath = "recent_files.json";
@@ -58,6 +59,7 @@ public partial class MainViewModel : ObservableObject
         IConfigurationService configurationService, 
         IRecentFilesService recentFilesService,
         IMousePositionService mousePositionService,
+        IProcessService processService,
         IServiceProvider serviceProvider,
         AppConfiguration configuration)
     {
@@ -67,6 +69,7 @@ public partial class MainViewModel : ObservableObject
         _configurationService = configurationService ?? throw new System.ArgumentNullException(nameof(configurationService));
         _recentFilesService = recentFilesService ?? throw new System.ArgumentNullException(nameof(recentFilesService));
         _mousePositionService = mousePositionService ?? throw new System.ArgumentNullException(nameof(mousePositionService));
+        _processService = processService ?? throw new System.ArgumentNullException(nameof(processService));
         _configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
         _serviceProvider = serviceProvider ?? throw new System.ArgumentNullException(nameof(serviceProvider));
 
@@ -198,7 +201,7 @@ public partial class MainViewModel : ObservableObject
     {
         var sb = new StringBuilder();
 
-        foreach (var section in fileTabModel.SimpleReportSections)
+        foreach (var section in fileTabModel.SimpleReportSections ?? [])
         {
             sb.AppendLine(section.Title);
             sb.AppendLine(new string('-', section.Title.Length));
@@ -353,31 +356,22 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            // Get current process info
-            var currentProcess = Process.GetCurrentProcess();
-            var exePath = Environment.ProcessPath ?? currentProcess.MainModule?.FileName;
-
-            if (string.IsNullOrEmpty(exePath))
-            {
-                await _dialogService.ShowErrorAsync("Unable to determine application path");
-                return;
-            }
-
             // Get current mouse position for window placement
             var mousePos = _mousePositionService.GetScreenPosition();
             
-            // Create new instance with the file AND position arguments
-            var startInfo = new ProcessStartInfo
+            // Use ProcessService to start new instance
+            var arguments = $"--window-position {mousePos.X},{mousePos.Y} \"{tab.Model.FilePath}\"";
+            var success = await _processService.StartNewInstanceAsync(arguments);
+
+            if (success)
             {
-                FileName = exePath,
-                Arguments = $"--window-position {mousePos.X},{mousePos.Y} \"{tab.Model.FilePath}\"",
-                UseShellExecute = true
-            };
-
-            var newProcess = Process.Start(startInfo);
-
-            // Remove tab from current instance
-            Tabs.Remove(tab);
+                // Remove tab from current instance only if new instance started successfully
+                Tabs.Remove(tab);
+            }
+            else
+            {
+                await _dialogService.ShowErrorAsync("Failed to create new instance");
+            }
         }
         catch (System.Exception ex)
         {

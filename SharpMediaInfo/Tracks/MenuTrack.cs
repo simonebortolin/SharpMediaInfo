@@ -10,7 +10,7 @@ namespace SharpMediaInfo.Tracks
     public partial class MenuTrack
     {
         internal List<ChapterTrack>? ChaptersInternal { get; set; }
-        public IReadOnlyList<ChapterTrack>? Chapters => ChaptersInternal;
+        public IReadOnlyList<ChapterTrack> Chapters => ChaptersInternal ?? new();
         public int? ChaptersCount => ChaptersInternal?.Count;
     }
 }

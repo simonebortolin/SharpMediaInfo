@@ -24,11 +24,11 @@ namespace SharpMediaInfo.GUI.WPF.Controls.Converters
         {
             if (System.Convert.ToBoolean(value))
             {
-                return System.Windows.Visibility.Visible;
+                return Visibility.Visible;
             }
             else
             {
-                return System.Windows.Visibility.Collapsed;
+                return Visibility.Collapsed;
             }
         }
 

@@ -3,7 +3,6 @@ using SharpMediaInfo.GUI.Services;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using SysException = System.Exception;
 
@@ -71,12 +70,12 @@ public class WpfContextMenuService : IContextMenuService
         catch (UnauthorizedAccessException)
         {
             // Shouldn't happen with HKCU, but just in case
-            Debug.WriteLine("❌ Unexpected: UnauthorizedAccessException with HKCU");
+            Debug.WriteLine("Unexpected: UnauthorizedAccessException with HKCU");
             return false;
         }
         catch (SysException ex)
         {
-            Debug.WriteLine($"❌ Error installing context menu: {ex.Message}");
+            Debug.WriteLine($"Error installing context menu: {ex.Message}");
             return false;
         }
     }
@@ -114,7 +113,7 @@ public class WpfContextMenuService : IContextMenuService
         }
         catch (SysException ex)
         {
-            Debug.WriteLine($"❌ Error uninstalling context menu: {ex.Message}");
+            Debug.WriteLine($"Error uninstalling context menu: {ex.Message}");
             return false;
         }
     }
@@ -135,41 +134,5 @@ public class WpfContextMenuService : IContextMenuService
                 commandKey.SetValue("", $"\"{exePath}\" \"%1\"");
             }
         }
-    }
-
-    private string GenerateInstallRegContent(string exePath)
-    {
-        // Escape backslashes for registry
-        var escapedPath = exePath.Replace(@"\", @"\\");
-
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("Windows Registry Editor Version 5.00");
-        sb.AppendLine();
-        // Use HKEY_CURRENT_USER for non-admin installation
-        sb.AppendLine(@"[HKEY_CURRENT_USER\Software\Classes\*\shell\SharpMediaInfo]");
-        sb.AppendLine($"@=\"{MenuDisplayName}\"");
-        sb.AppendLine($"\"Icon\"=\"{escapedPath},0\"");
-        sb.AppendLine();
-        sb.AppendLine(@"[HKEY_CURRENT_USER\Software\Classes\*\shell\SharpMediaInfo\command]");
-        sb.AppendLine($"@=\"\\\"{escapedPath}\\\" \\\"%1\\\"\"");
-        sb.AppendLine();
-        sb.AppendLine(@"[HKEY_CURRENT_USER\Software\Classes\Directory\shell\SharpMediaInfo]");
-        sb.AppendLine($"@=\"{FolderMenuDisplayName}\"");
-        sb.AppendLine($"\"Icon\"=\"{escapedPath},0\"");
-        sb.AppendLine();
-        sb.AppendLine(@"[HKEY_CURRENT_USER\Software\Classes\Directory\shell\SharpMediaInfo\command]");
-        sb.AppendLine($"@=\"\\\"{escapedPath}\\\" \\\"%1\\\"\"");
-        
-        return sb.ToString();
-    }
-
-    private string GenerateUninstallRegContent()
-    {
-        return @"Windows Registry Editor Version 5.00
-
-[-HKEY_CURRENT_USER\Software\Classes\*\shell\SharpMediaInfo]
-
-[-HKEY_CURRENT_USER\Software\Classes\Directory\shell\SharpMediaInfo]
-";
     }
 }

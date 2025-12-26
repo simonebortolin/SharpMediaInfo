@@ -1,9 +1,9 @@
-using SharpMediaInfo.GUI.Models;
+﻿using SharpMediaInfo.GUI.Models;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.IO;
 using System;
-using System.ComponentModel;
+using System.Diagnostics;
 
 namespace SharpMediaInfo.GUI.Services
 {
@@ -22,7 +22,7 @@ namespace SharpMediaInfo.GUI.Services
         {
             var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SharpMediaInfo");
             Directory.CreateDirectory(folder);
-            return Path.Combine(folder, "appsettings.json");
+            return Path.Combine(folder, ConfigFilePath);
         }
 
         public async Task<AppConfiguration> LoadConfigurationAsync()
@@ -55,9 +55,9 @@ namespace SharpMediaInfo.GUI.Services
                 {
                     await SaveConfigurationAsync(configuration);
                 }
-                catch
+                catch (System.Exception e)
                 {
-                    // ignore to avoid crashing UI
+                    Debug.WriteLine(e);
                 }
             };
 

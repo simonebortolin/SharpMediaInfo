@@ -1,4 +1,4 @@
-using SharpMediaInfo.GUI.Models;
+ï»¿using SharpMediaInfo.GUI.Models;
 using SharpMediaInfo.GUI.Models.Report;
 using SharpMediaInfo.Tracks;
 using System.Collections.Generic;
@@ -145,7 +145,7 @@ public class TrackToTreeConverter
             children.Add(new TreeNode($"Track Title: {video.Title}") { Type = TreeNodeType.Property });
 
         if (video.Width.HasValue && video.Height.HasValue && video.Width > 0 && video.Height > 0)
-            children.Add(new TreeNode($"Resolution: {video.Width}×{video.Height}") { Type = TreeNodeType.Property });
+            children.Add(new TreeNode($"Resolution: {video.Width}Ã—{video.Height}") { Type = TreeNodeType.Property });
 
         if (!string.IsNullOrWhiteSpace(video.FormatCommercial))
         {
@@ -374,7 +374,7 @@ public class TrackToTreeConverter
                 var chapterChildren = new List<TreeNode>();
 
                 if (!ValidateChapterTitle(chapter.Timecode, chapter.Title, ':', '.', ' '))
-                    chapterChildren.Add(new TreeNode($"Title: {chapter.Title.Trim(':')}") { Type = TreeNodeType.Property });
+                    chapterChildren.Add(new TreeNode($"Title: {chapter.Title!.Trim(':')}") { Type = TreeNodeType.Property });
 
                 chapterChildren.Add(new TreeNode($"Time: {chapter.Timecode}") { Type = TreeNodeType.Property });
 
@@ -407,7 +407,7 @@ public class TrackToTreeConverter
             children.Add(new TreeNode($"Format profile: {image.FormatProfile}") { Type = TreeNodeType.Property });
 
         if (image.Width.HasValue && image.Height.HasValue && image.Width > 0 && image.Height > 0)
-            children.Add(new TreeNode($"Resolution: {image.Width}×{image.Height}") { Type = TreeNodeType.Property });
+            children.Add(new TreeNode($"Resolution: {image.Width}Ã—{image.Height}") { Type = TreeNodeType.Property });
 
         if (!string.IsNullOrWhiteSpace(image.CompressionMode))
             children.Add(new TreeNode($"Compression mode: {image.CompressionMode}") { Type = TreeNodeType.Property });
@@ -455,8 +455,10 @@ public class TrackToTreeConverter
         return str;
     }
 
-    private bool ValidateChapterTitle(string title, string timecode, params char[] ignoreChars)
+    private bool ValidateChapterTitle(string? title, string? timecode, params char[] ignoreChars)
     {
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(timecode))
+            return false;
         if (title.Length < 3 || timecode.Length < 3) return false;
 
         foreach (var c in ignoreChars)

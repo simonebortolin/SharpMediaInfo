@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SharpMediaInfo.GUI.Services;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SysException = System.Exception;
 
 namespace SharpMediaInfo.GUI.ViewModels;
 
@@ -13,7 +15,14 @@ namespace SharpMediaInfo.GUI.ViewModels;
 /// </summary>
 public partial class AboutTabViewModel : ObservableObject, ITabViewModel
 {
-    public string Header => "About";
+    private readonly IProcessService? _processService;
+
+    public AboutTabViewModel(IProcessService? processService = null)
+    {
+        _processService = processService;
+    }
+
+    public virtual string Header => "About";
 
     public string AppName => "SharpMediaInfo GUI";
 
@@ -59,19 +68,27 @@ public partial class AboutTabViewModel : ObservableObject, ITabViewModel
     public string MediaInfoUrl => "https://mediaarea.net/MediaInfo";
 
     [RelayCommand]
-    private void OpenUrl(string url)
+    private async Task OpenUrlAsync(string url)
     {
-        try
+        if (_processService != null)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = url,
-                UseShellExecute = true
-            });
+            await _processService.OpenUrlAsync(url);
         }
-        catch
+        else
         {
-            // Ignore errors opening URL
+            // Fallback if service not available
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (SysException ex)
+            {
+                Debug.WriteLine($"Error opening URL: {ex.Message}");
+            }
         }
     }
 

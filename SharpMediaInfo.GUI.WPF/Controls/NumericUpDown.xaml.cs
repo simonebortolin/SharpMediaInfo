@@ -85,7 +85,7 @@ namespace SharpMediaInfo.GUI.WPF.Controls
         /// <summary>
         /// Reference for static Functions
         /// </summary>
-        static NumericUpDown thisReference = null;
+        static NumericUpDown? thisReference = null;
         #endregion
 
         #region Constructor and Deconstructor

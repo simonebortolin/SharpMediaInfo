@@ -1,4 +1,4 @@
-using SharpMediaInfo.GUI.Models.Report;
+﻿using SharpMediaInfo.GUI.Models.Report;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +20,7 @@ public partial class TreeReportViewer : UserControl
     public static readonly DependencyProperty ConfigurationProperty =
         DependencyProperty.Register(
             nameof(Configuration),
-            typeof(SharpMediaInfo.GUI.Models.AppConfiguration),
+            typeof(Models.AppConfiguration),
             typeof(TreeReportViewer),
             new PropertyMetadata(null));
 
@@ -30,9 +30,9 @@ public partial class TreeReportViewer : UserControl
         set => SetValue(NodesProperty, value);
     }
 
-    public SharpMediaInfo.GUI.Models.AppConfiguration? Configuration
+    public Models.AppConfiguration? Configuration
     {
-        get => (SharpMediaInfo.GUI.Models.AppConfiguration?)GetValue(ConfigurationProperty);
+        get => (Models.AppConfiguration?)GetValue(ConfigurationProperty);
         set => SetValue(ConfigurationProperty, value);
     }
 

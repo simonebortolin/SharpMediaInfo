@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SharpMediaInfo.GUI.Services;
@@ -44,7 +43,7 @@ public partial class App : Application
 
             ApplyTheme(cfg.AppTheme);
 
-            // ✨ IPC: Start server FIRST (before checking for existing instance)
+            // IPC: Start server FIRST (before checking for existing instance)
             var singleInstance = _serviceProvider.GetRequiredService<ISingleInstanceService>();
             
             // Check if we should send to existing master instance
@@ -76,7 +75,7 @@ public partial class App : Application
 
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
 
-            // ✨ Parse window position
+            // Parse window position
             if (parsedArgs.WindowPosition.HasValue)
             {
                 var (x, y) = parsedArgs.WindowPosition.Value;
@@ -126,11 +125,11 @@ public partial class App : Application
                 mainWindow.Loaded += loadedHandler;
             }
 
-            // ✨ IPC: Start server BEFORE showing window
+            // IPC: Start server BEFORE showing window
             // This ensures the server is ready before the window is visible
             await singleInstance.StartServerAsync(async receivedFiles =>
             {
-                // ✅ ALWAYS run on UI thread
+                // ALWAYS run on UI thread
                 await Dispatcher.InvokeAsync(async () =>
                 {
                     // Bring window to foreground
@@ -187,6 +186,7 @@ public partial class App : Application
         services.AddSingleton<IMousePositionService, WpfMousePositionService>();
         services.AddSingleton<ISingleInstanceService, SingleInstanceService>();
         services.AddSingleton<IContextMenuService, WpfContextMenuService>();
+        services.AddSingleton<IProcessService, ProcessService>();
 
         // Register ViewModels as factory so we can pass configuration
         services.AddSingleton<MainViewModel>(sp =>
@@ -201,17 +201,19 @@ public partial class App : Application
                 cfgService,
                 sp.GetRequiredService<IRecentFilesService>(),
                 sp.GetRequiredService<IMousePositionService>(),
+                sp.GetRequiredService<IProcessService>(),
                 sp,
                 cfg);
         });
-        
+
+        // Register ViewModels
         services.AddSingleton<SettingsTabViewModel>();
         
         services.AddSingleton<AboutTabViewModel>();
 
+
         // Register Views
-        services.AddTransient<MainWindow>(sp => 
-            new MainWindow(sp.GetRequiredService<MainViewModel>()));
+        services.AddTransient<MainWindow>();
     }
 
     private void ApplyTheme(AppTheme appTheme)
@@ -220,7 +222,7 @@ public partial class App : Application
         if (appTheme == AppTheme.Light) mode = ThemeMode.Light;
         else if (appTheme == AppTheme.Dark) mode = ThemeMode.Dark;
 
-        Application.Current.ThemeMode = mode;
+        Current.ThemeMode = mode;
     }
 
     protected override async void OnExit(ExitEventArgs e)

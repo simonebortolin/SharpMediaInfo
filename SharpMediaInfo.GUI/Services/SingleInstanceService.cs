@@ -23,7 +23,6 @@ public class SingleInstanceService : ISingleInstanceService
     private readonly AsyncRetryPolicy _electionPolicy;
     private NamedPipeServerStream? _masterServer;
     private CancellationTokenSource? _cts;
-    private bool _isMaster;
     private TaskCompletionSource<bool>? _serverReadyTcs;
 
     public SingleInstanceService()
@@ -40,7 +39,7 @@ public class SingleInstanceService : ISingleInstanceService
                 },
                 onRetry: (exception, timespan) =>
                 {
-                    Debug.WriteLine($"🔄 Master heartbeat failed, retry in {timespan.TotalSeconds:F1}s");
+                    Debug.WriteLine($"Master heartbeat failed, retry in {timespan.TotalSeconds:F1}s");
                 });
     }
 
@@ -60,27 +59,26 @@ public class SingleInstanceService : ISingleInstanceService
                 MasterPipeName,
                 PipeDirection.Out);
 
-            // ✅ Increase timeout to 3 seconds to handle slow server startup
-            await client.ConnectAsync(3000); // 3 sec timeout (was 1 sec)
+            await client.ConnectAsync(1000); // 1 second timeout
 
-            var message = new PipeMessage { Files = filePaths ?? Array.Empty<string>() };
+            var message = new PipeMessage { Files = filePaths ?? [] };
             var json = JsonSerializer.Serialize(message);
             var bytes = Encoding.UTF8.GetBytes(json);
 
             await client.WriteAsync(bytes, 0, bytes.Length);
             await client.FlushAsync();
 
-            Debug.WriteLine($"✅ Sent {filePaths?.Length ?? 0} file(s) to master (or just activated)");
+            Debug.WriteLine($"Sent {filePaths?.Length ?? 0} file(s) to master (or just activated)");
             return true; // Master found!
         }
         catch (TimeoutException)
         {
-            Debug.WriteLine("⚠️ No master found - becoming master");
+            Debug.WriteLine("No master found - becoming master");
             return false; // No master - we become one!
         }
         catch (SysException ex)
         {
-            Debug.WriteLine($"❌ Error sending to master: {ex.Message}");
+            Debug.WriteLine($"Error sending to master: {ex.Message}");
             return false;
         }
     }
@@ -93,16 +91,15 @@ public class SingleInstanceService : ISingleInstanceService
         // Try to become master immediately
         if (await TryBecomeMasterAsync())
         {
-            _isMaster = true;
-            Debug.WriteLine("👑 Became master instance");
+            Debug.WriteLine("Became master instance");
             StartMasterServer(onFilesReceived);
             
-            // ✅ Wait for server to be ready
+            // Wait for server to be ready
             await _serverReadyTcs.Task;
         }
         else
         {
-            Debug.WriteLine("📊 Master exists - starting election monitor");
+            Debug.WriteLine("Master exists - starting election monitor");
             // Start election monitor with Polly
             StartElectionMonitor(onFilesReceived);
             _serverReadyTcs.SetResult(true); // No server to wait for
@@ -127,11 +124,11 @@ public class SingleInstanceService : ISingleInstanceService
                 PipeTransmissionMode.Byte,
                 PipeOptions.Asynchronous);
 
-            return true; // ✅ Successfully created master pipe!
+            return true; // Successfully created master pipe!
         }
         catch (IOException)
         {
-            return false; // ❌ Master already exists
+            return false; //Master already exists
         }
     }
 
@@ -139,14 +136,14 @@ public class SingleInstanceService : ISingleInstanceService
     {
         await Task.Run(async () =>
         {
-            // ✅ Signal that server is ready to accept connections
+            // Signal that server is ready to accept connections
             _serverReadyTcs?.SetResult(true);
             
-            while (!_cts!.Token.IsCancellationRequested)
+            while (!_cts?.Token.IsCancellationRequested == true)
             {
                 try
                 {
-                    await _masterServer!.WaitForConnectionAsync(_cts.Token);
+                    await _masterServer!.WaitForConnectionAsync(_cts?.Token ?? default);
 
                     using var reader = new StreamReader(_masterServer);
                     var json = await reader.ReadToEndAsync();
@@ -154,12 +151,12 @@ public class SingleInstanceService : ISingleInstanceService
 
                     if (message?.Files != null && message.Files.Length > 0)
                     {
-                        Debug.WriteLine($"📨 Master received {message.Files.Length} file(s)");
+                        Debug.WriteLine($"Master received {message.Files.Length} file(s)");
                         await onFilesReceived(message.Files);
                     }
                     else
                     {
-                        Debug.WriteLine($"👁️ Master received focus request (no files)");
+                        Debug.WriteLine($"Master received focus request (no files)");
                         await onFilesReceived(Array.Empty<string>());
                     }
 
@@ -171,11 +168,11 @@ public class SingleInstanceService : ISingleInstanceService
                 }
                 catch (SysException ex)
                 {
-                    Debug.WriteLine($"❌ Master server error: {ex.Message}");
+                    Debug.WriteLine($"Master server error: {ex.Message}");
                     break;
                 }
             }
-        }, _cts.Token);
+        }, _cts?.Token ?? default);
     }
 
     private void StartElectionMonitor(Func<string[], Task> onFilesReceived)
@@ -198,7 +195,7 @@ public class SingleInstanceService : ISingleInstanceService
                     // Master alive - throw to continue retry loop
                     throw new TimeoutException("Master still alive");
 
-                }, _cts!.Token);
+                }, _cts?.Token ?? default);
             }
             catch (OperationCanceledException)
             {
@@ -210,22 +207,21 @@ public class SingleInstanceService : ISingleInstanceService
                 // Master dead! Try to become master
                 if (await TryBecomeMasterAsync())
                 {
-                    _isMaster = true;
-                    Debug.WriteLine("👑 Elected as new master!");
+                    Debug.WriteLine("Elected as new master!");
                     StartMasterServer(onFilesReceived);
                 }
                 else
                 {
                     // Lost election - restart monitor
-                    Debug.WriteLine("⚠️ Lost election, restarting monitor");
+                    Debug.WriteLine("Lost election, restarting monitor");
                     StartElectionMonitor(onFilesReceived);
                 }
             }
-        }, _cts.Token);
+        }, _cts?.Token ?? default);
     }
 
     private class PipeMessage
     {
-        public string[] Files { get; set; } = Array.Empty<string>();
+        public string[] Files { get; set; } = [];
     }
 }

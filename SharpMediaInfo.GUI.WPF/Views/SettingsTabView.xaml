@@ -47,7 +47,7 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="SharpMediaInfo GUI Version:" Margin="0,8" VerticalAlignment="Center" />
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AppVersion}" Margin="0,8" VerticalAlignment="Center" />
-                        
+
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="MediaInfo Version:" Margin="0,8" VerticalAlignment="Center" />
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MediaInfoVersion}" Margin="0,8" VerticalAlignment="Center" />
 
@@ -56,35 +56,7 @@
                     </Grid>
                 </Border>
             </Expander>
-
-            <!-- Updates Expander -->
-            <Expander IsExpanded="False" Margin="0,0,0,2">
-                <Expander.Header>
-                    <TextBlock Text="Updates" 
-                               FontSize="16" 
-                               FontWeight="SemiBold" 
-                               Padding="8,12" />
-                </Expander.Header>
-                <Border Padding="16,8,16,16">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Button x:Name="CheckUpdatesButton"
-                                Grid.Column="0"
-                                Content="Check for updates"
-                                MinWidth="140"
-                                Padding="12,8"
-                                Margin="0,0,16,0" />
-                        <TextBlock Grid.Column="1"
-                                   VerticalAlignment="Center"
-                                   TextWrapping="Wrap" />
-                    </Grid>
-                </Border>
-            </Expander>
-
+            
             <!-- General Expander -->
             <Expander IsExpanded="True" Margin="0,0,0,2">
                 <Expander.Header>

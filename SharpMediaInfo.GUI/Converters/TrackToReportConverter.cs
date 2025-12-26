@@ -1,4 +1,4 @@
-using SharpMediaInfo.GUI.Models;
+ï»¿using SharpMediaInfo.GUI.Models;
 using SharpMediaInfo.GUI.Models.Report;
 using SharpMediaInfo.Tracks;
 using System.Collections.Generic;
@@ -94,7 +94,7 @@ public class TrackToReportConverter
             items.Add(new ReportItem("Duration", FormatDuration(general.Duration.ToString())));
 
         if (mediaInfo.Video.Count > 0 && mediaInfo.Video[0].FrameCount.HasValue)
-            items.Add(new ReportItem("Frame Count", mediaInfo.Video[0].FrameCount.ToString()));
+            items.Add(new ReportItem("Frame Count", mediaInfo.Video[0].FrameCount!.Value.ToString()));
 
         if (general.OverallBitRate.BitsPerSecond.HasValue)
             items.Add(new ReportItem("Overall Bitrate", general.OverallBitRate.ToString()));
@@ -135,13 +135,13 @@ public class TrackToReportConverter
         if (!string.IsNullOrWhiteSpace(video.Title))
             sb.Append($" - [{video.Title}]");
 
-        if (video.Duration != default)
-            sb.Append($" - {FormatDuration(video.Duration.ToString())} -");
+        if (video.Duration.HasValue && video.Duration.Value != default)
+            sb.Append($" - {FormatDuration(video.Duration.Value.ToString())} -");
         else
             sb.Append(" -");
 
         if (video.Width.HasValue && video.Height.HasValue && video.Width > 0 && video.Height > 0)
-            sb.Append($" {video.Width}×{video.Height}, ");
+            sb.Append($" {video.Width}Ã—{video.Height}, ");
 
         if (!string.IsNullOrWhiteSpace(video.FormatCommercial))
         {
@@ -166,7 +166,7 @@ public class TrackToReportConverter
         if (video.BitRate.BitsPerSecond.HasValue)
             sb.Append($"{video.BitRate.ToString()}, ");
 
-        if (video.FrameRate.HasValue)
+        if (video.FrameRate.HasValue && video.FrameRate.Value.Value.HasValue)
             sb.Append($"{video.FrameRate.Value.Value.Value:F3} fps, ");
 
         if (video.DisplayAspectRatio.Value.HasValue)
@@ -412,10 +412,10 @@ public class TrackToReportConverter
         {
             var chapterText = new StringBuilder();
 
-            if (!ValidateChapterTitle(chapter.Timecode, chapter.Title, ':', '.', ' '))
-                chapterText.Append($"{chapter.Title.Trim(':')}: ");
+            if (!ValidateChapterTitle(chapter?.Timecode, chapter?.Title, ':', '.', ' '))
+                chapterText.Append($"{chapter!.Title!.Trim(':')}: ");
 
-            chapterText.Append(chapter.Timecode);
+            chapterText.Append(chapter!.Timecode);
 
             if (chapter.Language != ":0" && !string.IsNullOrEmpty(chapter.Language))
                 chapterText.Append($" ({chapter.Language})");
@@ -452,7 +452,7 @@ public class TrackToReportConverter
             text += " ";
 
         if (image.Width.HasValue && image.Height.HasValue && image.Width > 0 && image.Height > 0)
-            text += $"{image.Width}×{image.Height}, ";
+            text += $"{image.Width}Ã—{image.Height}, ";
 
         if (!string.IsNullOrWhiteSpace(image.CompressionMode))
             text += $"{image.CompressionMode}, ";
@@ -502,8 +502,10 @@ public class TrackToReportConverter
         return str;
     }
 
-    private bool ValidateChapterTitle(string title, string timecode, params char[] ignoreChars)
+    private bool ValidateChapterTitle(string? title, string? timecode, params char[] ignoreChars)
     {
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(timecode))
+            return false;
         if (title.Length < 3 || timecode.Length < 3) return false;
 
         foreach (var c in ignoreChars)

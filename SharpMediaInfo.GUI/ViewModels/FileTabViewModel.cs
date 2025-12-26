@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SharpMediaInfo.GUI.Converters;
 using SharpMediaInfo.GUI.Models;
@@ -248,7 +248,7 @@ public partial class FileTabViewModel : ObservableObject, ITabViewModel
 
         try
         {
-            var completeName = Model.MediaInfo.General[0].CompleteName;
+            var completeName = Model.MediaInfo?.General[0].CompleteName;
             if (string.IsNullOrEmpty(completeName))
                 return;
 
