@@ -1,4 +1,5 @@
-﻿using Avalonia.Data.Converters;
+﻿using Avalonia.Data;
+using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
 
@@ -21,6 +22,7 @@ public class BoolToStringConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        // One-way converter, cannot convert back
+        return BindingOperations.DoNothing;
     }
 }

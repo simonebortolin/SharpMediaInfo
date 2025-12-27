@@ -5,12 +5,13 @@
              xmlns:models="clr-namespace:SharpMediaInfo.GUI.Models;assembly=SharpMediaInfo.GUI"
              xmlns:report="clr-namespace:SharpMediaInfo.GUI.Models.Report;assembly=SharpMediaInfo.GUI"
              xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
+             xmlns:at="clr-namespace:SharpMediaInfo.GUI.Avalonia.AttachedProperties"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SharpMediaInfo.GUI.Avalonia.Controls.TreeReportViewer"
              x:Name="TreeReportViewerControl">
     
     <TreeView ItemsSource="{Binding Nodes, ElementName=TreeReportViewerControl}"
-              FontFamily="{Binding Configuration.ReportFontFamily, ElementName=TreeReportViewerControl}"
+              at:FontFamilyHelper.FontFamilyString="{Binding Configuration.ReportFontFamily, ElementName=TreeReportViewerControl}" 
               FontSize="{Binding Configuration.ReportFontSize, ElementName=TreeReportViewerControl}" x:DataType="report:TreeNode">
         
         <!-- TreeView Styles -->

@@ -2,7 +2,194 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+             xmlns:vm="clr-namespace:SharpMediaInfo.GUI.ViewModels;assembly=SharpMediaInfo.GUI"
+             xmlns:models="clr-namespace:SharpMediaInfo.GUI.Models;assembly=SharpMediaInfo.GUI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="SharpMediaInfo.GUI.Avalonia.Views.SettingTabView">
-  Welcome to Avalonia!
+             x:Class="SharpMediaInfo.GUI.Avalonia.Views.SettingTabView"
+             x:DataType="vm:SettingTabViewModel">
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="800" Margin="20,16" Spacing="2">
+            
+            <!-- Information Expander -->
+            <Expander IsExpanded="True" HorizontalAlignment="Stretch">
+                <Expander.Header>
+                    <TextBlock Text="Information" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16">
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                        <TextBlock Grid.Row="0" Grid.Column="0" 
+                                   Text="Application Version" 
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" 
+                                   Text="{Binding AppVersion}" 
+                                   VerticalAlignment="Center" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" 
+                                   Text="MediaInfo Version" 
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" 
+                                   Text="{Binding MediaInfoVersion}" 
+                                   VerticalAlignment="Center" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" 
+                                   Text="SharpMediaInfo Version" 
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" 
+                                   Text="{Binding SharpMediaInfoVersion}" 
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </Expander>
+            
+            <!-- General Expander -->
+            <Expander IsExpanded="True" HorizontalAlignment="Stretch">
+                <Expander.Header>
+                    <TextBlock Text="General" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16">
+                    <StackPanel Spacing="6">
+                        <CheckBox Content="Auto save standard report to disk" 
+                                  IsChecked="{Binding Configuration.AutoSaveReport}" />
+                        <CheckBox Content="Disable simple report" 
+                                  IsChecked="{Binding Configuration.DisableSimpleReport}" />
+                        <CheckBox Content="Disable complete report" 
+                                  IsChecked="{Binding Configuration.DisableCompleteReport}" />
+                        <CheckBox Content="Disable tree report" 
+                                  IsChecked="{Binding Configuration.DisableTreeReport}" />
+                        <CheckBox Content="Show milliseconds in tracks duration" 
+                                  IsChecked="{Binding Configuration.ShowMilliseconds}" />
+                        <CheckBox Content="Remove justification from reports" 
+                                  IsChecked="{Binding Configuration.RemoveJustification}" />
+                        <CheckBox Content="Show cover if present" 
+                                  IsChecked="{Binding Configuration.ShowCover}" />
+                    </StackPanel>
+                </Border>
+            </Expander>
+
+            <!-- Appearance Expander -->
+            <Expander IsExpanded="True" HorizontalAlignment="Stretch">
+                <Expander.Header>
+                    <TextBlock Text="Appearance" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16">
+                    <StackPanel Spacing="8">
+                        <!-- Theme -->
+                        <Grid ColumnDefinitions="120,202">
+                            <TextBlock Grid.Column="0" 
+                                       Text="Theme" 
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,16,0" />
+                            <ComboBox Grid.Column="1"
+                                      SelectedItem="{Binding Configuration.AppTheme}"
+                                      HorizontalAlignment="Stretch"
+                                      Height="36"
+                                      Padding="12,8">
+                                <models:AppTheme>Auto</models:AppTheme>
+                                <models:AppTheme>Light</models:AppTheme>
+                                <models:AppTheme>Dark</models:AppTheme>
+                            </ComboBox>
+                        </Grid>
+
+                        <!-- Report Font -->
+                        <Grid ColumnDefinitions="120,*">
+                            <TextBlock Grid.Column="0" 
+                                       Text="Report font" 
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,16,0" />
+                            
+                            <Grid Grid.Column="1" ColumnDefinitions="210,100,80,*">
+                                <local:FontFamilyComboBox Grid.Column="0"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,8,0"
+                                          Padding="12,8"
+                                          Height="36"
+                                          SelectedFontFamily="{Binding Configuration.ReportFontFamily}" >
+                                    <local:FontFamilyComboBox.ItemTemplate>
+										<DataTemplate x:CompileBindings="False" x:DataType="FontFamily">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontFamily="{Binding}" />
+                                        </DataTemplate>
+                                    </local:FontFamilyComboBox.ItemTemplate>
+                                </local:FontFamilyComboBox>
+                                
+                                <ComboBox Grid.Column="1" 
+                                          SelectedItem="{Binding Configuration.ReportFontSize}" 
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center"
+                                          Padding="12,8"
+                                          Height="36"
+                                          Margin="0,0,8,0">
+                                    <x:Double>10</x:Double>
+                                    <x:Double>11</x:Double>
+                                    <x:Double>12</x:Double>
+                                    <x:Double>14</x:Double>
+                                    <x:Double>16</x:Double>
+                                    <x:Double>18</x:Double>
+                                    <x:Double>21</x:Double>
+                                    <x:Double>24</x:Double>
+                                    <x:Double>27</x:Double>
+                                </ComboBox>
+                                
+                                <CheckBox Grid.Column="2" 
+                                          Content="Bold" 
+                                          IsChecked="{Binding Configuration.ReportBoldStyle}"
+                                          FontWeight="Bold"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,12,0" />
+                                <CheckBox Grid.Column="3" 
+                                          Content="Italic" 
+                                          IsChecked="{Binding Configuration.ReportItalicStyle}"
+                                          FontStyle="Italic"
+                                          VerticalAlignment="Center" />
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Expander>
+
+            <!-- Recent Files Expander -->
+            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+                <Expander.Header>
+                    <TextBlock Text="Recent files history" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Padding="8,12" />
+                </Expander.Header>
+                <Border Padding="16,8,16,16">
+                    <Grid ColumnDefinitions="120,220,*">
+                        <TextBlock Grid.Column="0"
+                                   Text="History size"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0" />
+                        <NumericUpDown Grid.Column="1"
+                                       Width="200"
+                                       Maximum="20"
+                                       Minimum="0"
+                                       ShowButtonSpinner="True"
+                                       Value="{Binding Configuration.MaxRecentFiles, Mode=TwoWay}"
+                                       Margin="0,0,16,0" />
+                        <Button Grid.Column="2"
+                                Content="Clear history"
+                                MinWidth="110"
+                                Padding="12,8"
+                                HorizontalAlignment="Left"
+                                Command="{ReflectionBinding $parent[TabControl].DataContext.ClearRecentFilesCommand}" />
+                    </Grid>
+                </Border>
+            </Expander>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

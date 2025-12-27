@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:SharpMediaInfo.GUI.ViewModels;assembly=SharpMediaInfo.GUI"
              xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
              xmlns:controls="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+             xmlns:at="clr-namespace:SharpMediaInfo.GUI.Avalonia.AttachedProperties"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SharpMediaInfo.GUI.Avalonia.Views.FileTabView"
              x:DataType="vm:FileTabViewModel">
@@ -42,7 +43,7 @@
                          IsReadOnly="True"
                          TextWrapping="Wrap"
                          AcceptsReturn="True"
-                         FontFamily="{Binding Configuration.ReportFontFamily}"
+                         at:FontFamilyHelper.FontFamilyString="{Binding Configuration.ReportFontFamily}"
                          FontSize="{Binding Configuration.ReportFontSize}">
                     <TextBox.Styles>
                         <Style Selector="TextBox">
@@ -72,7 +73,7 @@
                          IsReadOnly="True"
                          TextWrapping="Wrap"
                          AcceptsReturn="True"
-                         FontFamily="{Binding Configuration.ReportFontFamily}"
+                         at:FontFamilyHelper.FontFamilyString="{Binding Configuration.ReportFontFamily}" 
                          FontSize="{Binding Configuration.ReportFontSize}">
                     <TextBox.Styles>
                         <Style Selector="TextBox">

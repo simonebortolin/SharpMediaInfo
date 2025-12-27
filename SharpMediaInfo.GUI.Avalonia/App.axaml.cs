@@ -12,6 +12,7 @@ using SharpMediaInfo.GUI.Models;
 using SharpMediaInfo.GUI.Services;
 using SharpMediaInfo.GUI.ViewModels;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace SharpMediaInfo.GUI.Avalonia;
@@ -19,11 +20,6 @@ namespace SharpMediaInfo.GUI.Avalonia;
 public partial class App : Application
 {
     private ServiceProvider? _serviceProvider;
-
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     public override async void OnFrameworkInitializationCompleted()
     {
@@ -48,7 +44,17 @@ public partial class App : Application
                 ConfigureServices(services);
                 _serviceProvider = services.BuildServiceProvider();
 
+                // Apply initial theme
                 ApplyTheme(cfg.AppTheme);
+                
+                // Subscribe to theme changes
+                cfg.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(AppConfiguration.AppTheme))
+                    {
+                        ApplyTheme(cfg.AppTheme);
+                    }
+                };
 
                 // Single instance check
                 var singleInstance = _serviceProvider.GetRequiredService<ISingleInstanceService>();
@@ -161,6 +167,7 @@ public partial class App : Application
                 cfg);
         });
 
+        // Register ViewModels
         services.AddSingleton<SettingTabViewModel>();
         services.AddSingleton<AboutTabViewModel>();
 
@@ -168,7 +175,7 @@ public partial class App : Application
         services.AddTransient<MainWindow>();
     }
 
-    private void ApplyTheme(AppTheme appTheme)
+    internal void ApplyTheme(AppTheme appTheme)
     {
         RequestedThemeVariant = appTheme switch
         {

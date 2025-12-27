@@ -8,6 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SharpMediaInfo.GUI.Avalonia.Controls.SimpleReportViewer"
              xmlns:local="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+             xmlns:at="clr-namespace:SharpMediaInfo.GUI.Avalonia.AttachedProperties"
              x:Name="SimpleReportViewerControl">
     
     <UserControl.Resources>
@@ -64,7 +65,7 @@
                                                        Margin="{Binding IndentLevel, Converter={StaticResource IndentConverter}}">
                                                 
                                                 <!-- Label part -->
-                                                <TextBlock FontFamily="{Binding Configuration.ReportFontFamily,
+                                                <TextBlock at:FontFamilyHelper.FontFamilyString="{Binding Configuration.ReportFontFamily,
                          RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}" 
                                                            FontSize="{Binding Configuration.ReportFontSize,
                          RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}"
@@ -88,7 +89,7 @@
                                                 </TextBlock>
                                                 
                                                 <!-- Colon part (only if Label is not empty) -->
-                                                <TextBlock FontFamily="{Binding Configuration.ReportFontFamily,
+                                                <TextBlock at:FontFamilyHelper.FontFamilyString="{Binding Configuration.ReportFontFamily,
                          RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}" 
                                                            FontSize="{Binding Configuration.ReportFontSize,
                          RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}"
@@ -98,7 +99,7 @@
                                                 </TextBlock>
                                                 
                                                 <!-- Value part -->
-                                                <TextBlock FontFamily="{Binding Configuration.ReportFontFamily,
+                                                <TextBlock at:FontFamilyHelper.FontFamilyString="{Binding Configuration.ReportFontFamily,
                          RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}" 
                                                            FontSize="{Binding Configuration.ReportFontSize,
                          RelativeSource={RelativeSource AncestorType=local:SimpleReportViewer}}"
