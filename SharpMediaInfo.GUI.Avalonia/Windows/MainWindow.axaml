@@ -11,7 +11,8 @@
         x:DataType="vm:MainViewModel"
         Title="SharpMediaInfo GUI" 
         Height="600" 
-        Width="900">
+        Width="900"
+        DragDrop.AllowDrop="True">
     
     <Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveStandardReportCommand}" />
@@ -66,7 +67,8 @@
                     ItemsSource="{Binding Tabs}"
                     SelectedItem="{Binding SelectedTab}"
                     Margin="5"
-                    x:Name="MainTabControl">
+                    x:Name="MainTabControl"
+                    DragDrop.AllowDrop="True">
             
             <TabControl.DataTemplates>
                 <DataTemplate DataType="vm:FileTabViewModel">
@@ -84,7 +86,14 @@
             
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
+                    <!-- Tab header con drag & drop support -->
+                    <StackPanel Orientation="Horizontal" 
+                                DragDrop.AllowDrop="True"
+                                PointerPressed="TabHeader_PointerPressed"
+                                PointerMoved="TabHeader_PointerMoved"
+                                PointerReleased="TabHeader_PointerReleased"
+                                DragDrop.DragOver="TabHeader_DragOver"
+                                DragDrop.Drop="TabHeader_Drop">
                         <TextBlock Text="{Binding Header}" 
                                    VerticalAlignment="Center" 
                                    Margin="0,0,10,0"/>

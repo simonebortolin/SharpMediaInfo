@@ -88,10 +88,7 @@ namespace SharpMediaInfo.GUI.ViewModels
                 if (success)
                 {
                     await _dialogService.ShowInformationAsync(
-                        "Context menu installed successfully!\n\n" +
-                        "You can now right-click any file in Windows Explorer and select 'Analyze with SharpMediaInfo'.\n\n" +
-                        "Note: Installed for current user only.\n" +
-                        "On Windows 11, look for it under 'Show more options'.");
+                        "Context menu installed successfully!");
                     
                     IsContextMenuInstalled = true;
                 }

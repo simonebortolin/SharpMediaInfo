@@ -67,6 +67,8 @@ public partial class AboutTabViewModel : ObservableObject, ITabViewModel
 
     public string MediaInfoUrl => "https://mediaarea.net/MediaInfo";
 
+    public string Id => this.GetType().FullName!;
+
     [RelayCommand]
     private async Task OpenUrlAsync(string url)
     {

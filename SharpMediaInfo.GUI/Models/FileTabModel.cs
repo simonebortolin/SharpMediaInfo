@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SharpMediaInfo.GUI.ViewModels;
 
@@ -22,7 +22,7 @@ public partial class FileTabModel : ObservableObject
     private bool _isReady;
 
     [ObservableProperty]
-    private SharpMediaInfo.MediaInfo? _mediaInfo;
+    private IMediaInfo? _mediaInfo;
 
     [ObservableProperty]
     private string? _standardReport;

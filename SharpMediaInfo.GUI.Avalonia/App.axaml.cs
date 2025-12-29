@@ -149,6 +149,7 @@ public partial class App : Application
         services.AddSingleton<ISingleInstanceService, SingleInstanceService>();
         services.AddSingleton<IContextMenuService, AvaloniaContextMenuService>();
         services.AddSingleton<IProcessService, ProcessService>();
+        services.AddSingleton<IMediaInfoAnalyzer, MediaInfoAnalyzer>();
 
         // Register ViewModels as factory
         services.AddSingleton<MainViewModel>(sp =>
@@ -164,6 +165,7 @@ public partial class App : Application
                 sp.GetRequiredService<IMousePositionService>(),
                 sp.GetRequiredService<IProcessService>(),
                 sp,
+                sp.GetRequiredService<IMediaInfoAnalyzer>(),
                 cfg);
         });
 

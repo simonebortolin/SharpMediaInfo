@@ -26,8 +26,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IMousePositionService _mousePositionService;
     private readonly IProcessService _processService;
     private readonly IServiceProvider _serviceProvider;
-
-    private const string RecentFilesPath = "recent_files.json";
+    private readonly IMediaInfoAnalyzer _mediaInfoAnalyzer;
 
     [ObservableProperty]
     private ObservableCollection<ITabViewModel> _tabs = new();
@@ -53,20 +52,22 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<string> _recentFiles = new();
 
     public MainViewModel(
-        IFileService fileService, 
-        IDialogService dialogService, 
-        IClipboardService clipboardService, 
-        IConfigurationService configurationService, 
+        IFileService fileService,
+        IDialogService dialogService,
+        IClipboardService clipboardService,
+        IConfigurationService configurationService,
         IRecentFilesService recentFilesService,
         IMousePositionService mousePositionService,
         IProcessService processService,
         IServiceProvider serviceProvider,
+        IMediaInfoAnalyzer mediaInfoAnalyzer,
         AppConfiguration configuration)
     {
         _fileService = fileService ?? throw new System.ArgumentNullException(nameof(fileService));
         _dialogService = dialogService ?? throw new System.ArgumentNullException(nameof(dialogService));
         _clipboardService = clipboardService ?? throw new System.ArgumentNullException(nameof(clipboardService));
         _configurationService = configurationService ?? throw new System.ArgumentNullException(nameof(configurationService));
+        _mediaInfoAnalyzer = mediaInfoAnalyzer ?? throw new System.ArgumentNullException(nameof(mediaInfoAnalyzer));
         _recentFilesService = recentFilesService ?? throw new System.ArgumentNullException(nameof(recentFilesService));
         _mousePositionService = mousePositionService ?? throw new System.ArgumentNullException(nameof(mousePositionService));
         _processService = processService ?? throw new System.ArgumentNullException(nameof(processService));
@@ -238,7 +239,11 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        var fileTab = new FileTabViewModel(new FileTabModel { FilePath = filePath }, _fileService, _dialogService, _clipboardService);
+        var fileTab = new FileTabViewModel(
+            new FileTabModel { FilePath = filePath },
+            _fileService,
+            _clipboardService,
+            _mediaInfoAnalyzer);
         
         Tabs.Add(fileTab);
         

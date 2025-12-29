@@ -23,6 +23,11 @@ public partial class MainWindow : Window
     private FileTabViewModel? _draggedTab;
     private bool _wasDraggedOutside;
 
+    const string customFormat = "SharpMediaInfo.TabTransfer";
+
+    const string tabFormat = "SharpMediaInfo.FileTabViewModel";
+
+
     public MainWindow(MainViewModel viewModel)
     {
         // Apply current app theme before UI loads to reduce flash
@@ -76,7 +81,6 @@ public partial class MainWindow : Window
 
     private async void Window_Drop(object sender, DragEventArgs e)
     {
-        const string customFormat = "SharpMediaInfo.TabTransfer";
 
         // Priority 1: Check for SharpMediaInfo custom format
         if (e.Data.GetDataPresent(customFormat))
@@ -92,7 +96,7 @@ public partial class MainWindow : Window
         }
 
         // Priority 2: Internal tab drag (reordering within same window)
-        if (e.Data.GetDataPresent("FileTabViewModel"))
+        if (e.Data.GetDataPresent(tabFormat))
         {
             e.Handled = true;
             return;
@@ -117,8 +121,6 @@ public partial class MainWindow : Window
 
     private void Window_DragEnter(object sender, DragEventArgs e)
     {
-        const string customFormat = "SharpMediaInfo.TabTransfer";
-
         // Accept ONLY SharpMediaInfo custom format or regular file drops
         if (e.Data.GetDataPresent(customFormat))
         {
@@ -136,8 +138,6 @@ public partial class MainWindow : Window
 
     private void TabControl_Drop(object sender, DragEventArgs e)
     {
-        const string customFormat = "SharpMediaInfo.TabTransfer";
-
         // Priority 1: SharpMediaInfo tab transfer
         if (e.Data.GetDataPresent(customFormat))
         {
@@ -213,9 +213,9 @@ public partial class MainWindow : Window
             return;
 
         // Check if this is an internal tab drag
-        if (e.Data.GetDataPresent("FileTabViewModel"))
+        if (e.Data.GetDataPresent(tabFormat))
         {
-            var sourceTab = e.Data.GetData("FileTabViewModel") as FileTabViewModel;
+            var sourceTab = e.Data.GetData(tabFormat) as FileTabViewModel;
             if (sourceTab != null && sourceTab != targetTab && DataContext is MainViewModel viewModel)
             {
                 // Get indices
@@ -262,11 +262,10 @@ public partial class MainWindow : Window
             var data = new DataObject();
 
             // Custom format for SharpMediaInfo inter-instance communication
-            const string customFormat = "SharpMediaInfo.TabTransfer";
             data.SetData(customFormat, _draggedTab.Model.FilePath);
 
             // Internal reordering marker (process-specific)
-            data.SetData("FileTabViewModel", _draggedTab);
+            data.SetData(tabFormat, _draggedTab);
 
             // Start drag operation
             var result = DragDrop.DoDragDrop(MainTabControl, data, DragDropEffects.Move | DragDropEffects.Copy);

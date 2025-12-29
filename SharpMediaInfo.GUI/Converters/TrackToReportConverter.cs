@@ -22,7 +22,7 @@ public class TrackToReportConverter
     /// <summary>
     /// Converts all tracks to report sections
     /// </summary>
-    public List<ReportSection> Convert(MediaInfo mediaInfo)
+    public List<ReportSection> Convert(IMediaInfo mediaInfo)
     {
         var sections = new List<ReportSection>();
 
@@ -77,7 +77,7 @@ public class TrackToReportConverter
         return sections;
     }
 
-    private ReportSection ConvertGeneral(GeneralTrack general, MediaInfo mediaInfo)
+    private ReportSection ConvertGeneral(GeneralTrack general, IMediaInfo mediaInfo)
     {
         var items = new List<ReportItem>();
 

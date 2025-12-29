@@ -20,8 +20,8 @@ namespace SharpMediaInfo.GUI.ViewModels;
 public partial class FileTabViewModel : ObservableObject, ITabViewModel
 {
     private readonly IFileService _fileService;
-    private readonly IDialogService _dialogService;
     private readonly IClipboardService _clipboardService;
+    private readonly IMediaInfoAnalyzer _mediaInfoAnalyzer;
 
     [ObservableProperty]
     private FileTabModel _model;
@@ -37,14 +37,20 @@ public partial class FileTabViewModel : ObservableObject, ITabViewModel
 
     public string Header => Model.FileName;
 
+    public string Id => this.GetType().FullName + "." + Model.FilePath;
+
     private bool _configurationSubscribed;
 
 
-    public FileTabViewModel(FileTabModel model, IFileService fileService, IDialogService dialogService, IClipboardService clipboardService)
+    public FileTabViewModel(
+        FileTabModel model,
+        IFileService fileService,
+        IClipboardService clipboardService,
+        IMediaInfoAnalyzer mediaInfoAnalyzer)
     {
         _fileService = fileService ?? throw new System.ArgumentNullException(nameof(fileService));
-        _dialogService = dialogService ?? throw new System.ArgumentNullException(nameof(dialogService));
         _clipboardService = clipboardService ?? throw new System.ArgumentNullException(nameof(clipboardService));
+        _mediaInfoAnalyzer = mediaInfoAnalyzer ?? throw new System.ArgumentNullException(nameof(mediaInfoAnalyzer));
         _model = model ?? throw new ArgumentNullException(nameof(model));
     }
 
@@ -63,28 +69,20 @@ public partial class FileTabViewModel : ObservableObject, ITabViewModel
 
         try
         {
-            await Task.Run(() =>
+#if DEBUG
+            var sw = Stopwatch.StartNew();
+#endif
+            Model.MediaInfo = await _mediaInfoAnalyzer.AnalyzeFileAsync(Model.FilePath, configuration.ShowCover);
+
+            if (Model.MediaInfo != null)
             {
-#if DEBUG
-                var sw = Stopwatch.StartNew();
-#endif
-                var builder = SharpMediaInfo.MediaInfoBuilder.FromFile(Model.FilePath)
-                    .WithCoverData(configuration.ShowCover)
-                    .WithReports();
-
-                Model.MediaInfo = builder.Build();
-
-                if (Model.MediaInfo != null)
-                {
-                    ApplyReports(configuration);
-                }
+                ApplyReports(configuration);
+            }
 
 #if DEBUG
-                sw.Stop();
-                Debug.WriteLine($"File: {Model.FilePath} - Analysis time: {sw.ElapsedMilliseconds}ms");
+            sw.Stop();
+            Debug.WriteLine($"File: {Model.FilePath} - Analysis time: {sw.ElapsedMilliseconds}ms");
 #endif
-            });
-
             Model.IsReady = true;
 
             // Auto-save report if enabled
@@ -133,16 +131,12 @@ public partial class FileTabViewModel : ObservableObject, ITabViewModel
         if (Model.MediaInfo == null || Configuration == null)
             return;
 
-        await Task.Run(() =>
+        Model.MediaInfo = await _mediaInfoAnalyzer.AnalyzeFileAsync(Model.FilePath, Configuration.ShowCover);
+
+        if (Model.MediaInfo != null)
         {
-            var builder = SharpMediaInfo.MediaInfoBuilder.FromFile(Model.FilePath)
-                .WithCoverData(Configuration.ShowCover)
-                .WithReports();
-
-            Model.MediaInfo = builder.Build();
-        });
-
-        ApplyReports(Configuration);
+            ApplyReports(Configuration);
+        }
     }
 
     private void ApplyReports(AppConfiguration configuration)

@@ -21,7 +21,7 @@ public class TrackToTreeConverter
     /// <summary>
     /// Converts all tracks to tree nodes
     /// </summary>
-    public List<TreeNode> Convert(MediaInfo mediaInfo)
+    public List<TreeNode> Convert(IMediaInfo mediaInfo)
     {
         var nodes = new List<TreeNode>();
 
@@ -86,7 +86,7 @@ public class TrackToTreeConverter
         return nodes;
     }
 
-    private TreeNode ConvertGeneral(GeneralTrack general, MediaInfo mediaInfo)
+    private TreeNode ConvertGeneral(GeneralTrack general, IMediaInfo mediaInfo)
     {
         var children = new List<TreeNode>();
 
