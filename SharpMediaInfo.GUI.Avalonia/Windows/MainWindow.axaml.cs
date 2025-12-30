@@ -18,6 +18,7 @@ public partial class MainWindow : Window
     // Drag & drop state
     private Point? _dragStartPosition;
     private bool _isDragging;
+    private bool _isDraggingTag;
     private ITabViewModel? _draggedTab;
     private Control? _draggedTabControl;
 
@@ -28,7 +29,7 @@ public partial class MainWindow : Window
 
     static MainWindow()
     {
-        customFormat = DataFormat.CreateStringApplicationFormat("SharpMediaInfo.TabTransfer");
+        customFormat = DataFormat.CreateStringPlatformFormat("SharpMediaInfo.TabTransfer");
         tabFormat = DataFormat.CreateStringApplicationFormat("SharpMediaInfo.FileTabViewModel");
     }
 
@@ -48,18 +49,45 @@ public partial class MainWindow : Window
 
     #region File Drag & Drop from Explorer
 
+    private static bool TryExtractFilePathFromCustomFormat(
+    string? rawValue,
+    out string filePath)
+    {
+        filePath = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(rawValue))
+            return false;
+
+        const string prefix = "SharpMediaInfo.GUI.ViewModels.";
+
+        if (!rawValue.StartsWith(prefix))
+            return false;
+
+        var payload = rawValue.Substring(prefix.Length);
+
+        var typePrefix = nameof(FileTabViewModel) + ".";
+        if (!payload.StartsWith(typePrefix))
+            return false;
+
+        filePath = payload.Substring(typePrefix.Length);
+
+        return !string.IsNullOrWhiteSpace(filePath)
+               && File.Exists(filePath);
+    }
+
+
     private async void Window_Drop(object? sender, DragEventArgs e)
     {
         // Priority 1: Check for SharpMediaInfo custom format
-        var filePath = e.DataTransfer.TryGetValue(customFormat);
-        if (filePath != null)
+        var rawValue = e.DataTransfer.TryGetValue(customFormat);
+
+        if (TryExtractFilePathFromCustomFormat(rawValue, out var filePath) &&
+            DataContext is MainViewModel viewModel)
         {
-            if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath) && DataContext is MainViewModel viewModel)
-            {
-                await viewModel.AddFilesFromDropAsync(new[] { filePath });
-                e.Handled = true;
-                return;
-            }
+            await viewModel.AddFilesFromDropAsync(new[] { filePath });
+                    e.Handled = true;
+                    return;
+                
         }
 
         // Priority 2: Internal tab drag (reordering within same window)
@@ -76,18 +104,21 @@ public partial class MainWindow : Window
                 .ToArray();
         if (files?.Any() ?? false)
         {
-            if (files != null && files.Length > 0 && DataContext is MainViewModel viewModel)
+            if (files != null && files.Length > 0 && DataContext is MainViewModel vm)
             {
-                await viewModel.AddFilesFromDropAsync(files);
+                await vm.AddFilesFromDropAsync(files);
             }
 
             e.Handled = true;
+            return;
         }
     }
 
     private void Window_DragOver(object? sender, DragEventArgs e)
     {
-        if (e.DataTransfer.Contains(customFormat))
+        var rawValue = e.DataTransfer.TryGetValue(customFormat); 
+
+        if (e.DataTransfer.Contains(customFormat) && _isDragging == false && TryExtractFilePathFromCustomFormat(rawValue, out _ ))
         {
             e.DragEffects = DragDropEffects.Move;
         }
@@ -118,6 +149,7 @@ public partial class MainWindow : Window
             _draggedTab = tabViewModel;
             _draggedTabControl = control;
             _isDragging = false;
+            _isDraggingTag = false;
             
             e.Handled = true;
         }
@@ -156,6 +188,7 @@ public partial class MainWindow : Window
         _draggedTab = null;
         _draggedTabControl = null;
         _isDragging = false;
+        _isDraggingTag = false;
     }
 
     /// <summary>
@@ -167,6 +200,7 @@ public partial class MainWindow : Window
             return;
 
         _isDragging = true;
+        _isDraggingTag = false;
 
         try
         {
@@ -183,6 +217,15 @@ public partial class MainWindow : Window
             var result = await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Move);
             
             // Drag completed
+            if(_isDraggingTag == false && result == DragDropEffects.Move)
+            {
+                var sourceTabValue = _viewModel?.Tabs.IndexOf(_draggedTab);
+
+                if (sourceTabValue.HasValue && sourceTabValue.Value >= 0)
+                {
+                    _viewModel?.Tabs.RemoveAt(sourceTabValue.Value);
+                }
+            }
             System.Diagnostics.Debug.WriteLine($"Tab drag completed with result: {result}");
         }
         catch (System.Exception ex)
@@ -191,6 +234,7 @@ public partial class MainWindow : Window
         }
         finally
         {
+            _isDraggingTag = false;
             _isDragging = false;
             _dragStartPosition = null;
             _draggedTab = null;
@@ -262,6 +306,7 @@ public partial class MainWindow : Window
                 }
 
                 e.Handled = true;
+                _isDraggingTag = true;
             }
         }
     }

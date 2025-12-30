@@ -12,7 +12,6 @@ public class FileTabViewModelConstructorTests
         await Assert.That(() => new FileTabViewModel(
             null!,
             new Mock<IFileService>().Object,
-            new Mock<IDialogService>().Object,
             new Mock<IClipboardService>().Object,
             new Mock<IMediaInfoAnalyzer>().Object))
             .Throws<ArgumentNullException>()
@@ -26,25 +25,10 @@ public class FileTabViewModelConstructorTests
         await Assert.That(() => new FileTabViewModel(
             new FileTabModel(),
             null!,
-            new Mock<IDialogService>().Object,
             new Mock<IClipboardService>().Object,
             new Mock<IMediaInfoAnalyzer>().Object))
             .Throws<ArgumentNullException>()
             .WithParameterName("fileService");
-    }
-
-    [Test]
-    public async Task Constructor_NullDialogService_ThrowsArgumentNullException()
-    {
-        // Arrange & Act & Assert
-        await Assert.That(() => new FileTabViewModel(
-            new FileTabModel(),
-            new Mock<IFileService>().Object,
-            null!,
-            new Mock<IClipboardService>().Object,
-            new Mock<IMediaInfoAnalyzer>().Object))
-            .Throws<ArgumentNullException>()
-            .WithParameterName("dialogService");
     }
 
     [Test]
@@ -54,7 +38,6 @@ public class FileTabViewModelConstructorTests
         await Assert.That(() => new FileTabViewModel(
             new FileTabModel(),
             new Mock<IFileService>().Object,
-            new Mock<IDialogService>().Object,
             null!,
             new Mock<IMediaInfoAnalyzer>().Object))
             .Throws<ArgumentNullException>()
@@ -68,7 +51,6 @@ public class FileTabViewModelConstructorTests
         await Assert.That(() => new FileTabViewModel(
             new FileTabModel(),
             new Mock<IFileService>().Object,
-            new Mock<IDialogService>().Object,
             new Mock<IClipboardService>().Object,
             null!))
             .Throws<ArgumentNullException>()
