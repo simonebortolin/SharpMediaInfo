@@ -130,6 +130,7 @@ public partial class MainWindow : Window
         {
             e.DragEffects = DragDropEffects.None;
         }
+        e.Handled = true;
     }
 
     #endregion
@@ -252,10 +253,6 @@ public partial class MainWindow : Window
         {
             e.DragEffects = DragDropEffects.Move;
             e.Handled = true;
-        }
-        else
-        {
-            e.DragEffects = DragDropEffects.None;
         }
     }
 
