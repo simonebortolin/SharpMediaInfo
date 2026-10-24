@@ -12,6 +12,7 @@ namespace SharpMediaInfo.GUI.ViewModels
         private readonly IConfigurationService _configurationService;
         private readonly IContextMenuService? _contextMenuService;
         private readonly IDialogService? _dialogService;
+        private readonly IFontService? _fontService;
 
         [ObservableProperty]
         private AppConfiguration _configuration;
@@ -23,16 +24,18 @@ namespace SharpMediaInfo.GUI.ViewModels
         private bool _isCheckingContextMenu;
 
         public SettingTabViewModel(
-            IConfigurationService configurationService, 
+            IConfigurationService configurationService,
             AppConfiguration configuration,
             IContextMenuService? contextMenuService,
-            IDialogService? dialogService)
+            IDialogService? dialogService,
+            IFontService? fontService = null)
         {
             _configurationService = configurationService;
             _configuration = configuration;
             _contextMenuService = contextMenuService;
             _dialogService = dialogService;
-            
+            _fontService = fontService;
+
             _configuration.PropertyChanged += Configuration_PropertyChanged;
 
             // Check context menu status on load
@@ -57,6 +60,14 @@ namespace SharpMediaInfo.GUI.ViewModels
 
         private async void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            // When the report font changes, derive justification removal from it: MediaInfo
+            // output is space-aligned and only looks right in a monospaced font, so strip the
+            // justification for proportional fonts and keep it for monospaced ones.
+            if (e.PropertyName == nameof(AppConfiguration.ReportFontFamily) && _fontService != null)
+            {
+                Configuration.RemoveJustification = !_fontService.IsMonospace(Configuration.ReportFontFamily);
+            }
+
             try
             {
                 await _configurationService.SaveConfigurationAsync(Configuration);

@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -7,7 +9,7 @@ namespace SharpMediaInfo.GUI.Services
 {
     public class RecentFilesService : IRecentFilesService
     {
-        private const string RecentFilesPath = "recent_files.json";
+        private const string RecentFilesFileName = "recent_files.json";
         private readonly IFileService _fileService;
 
         public RecentFilesService(IFileService fileService)
@@ -15,14 +17,23 @@ namespace SharpMediaInfo.GUI.Services
             _fileService = fileService;
         }
 
+        // Stored per-user (alongside the app configuration), never in the working directory.
+        private static string GetRecentFilesPath()
+        {
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SharpMediaInfo");
+            Directory.CreateDirectory(folder);
+            return Path.Combine(folder, RecentFilesFileName);
+        }
+
         public async Task<ObservableCollection<string>> LoadAsync(int maxItems)
         {
+            var path = GetRecentFilesPath();
             var files = new ObservableCollection<string>();
-            if (_fileService.FileExists(RecentFilesPath))
+            if (_fileService.FileExists(path))
             {
                 try
                 {
-                    var json = await _fileService.ReadTextFileAsync(RecentFilesPath);
+                    var json = await _fileService.ReadTextFileAsync(path);
                     files = JsonSerializer.Deserialize<ObservableCollection<string>>(json) ?? new ObservableCollection<string>();
                 }
                 catch
@@ -67,7 +78,7 @@ namespace SharpMediaInfo.GUI.Services
             try
             {
                 var json = JsonSerializer.Serialize(list);
-                await _fileService.WriteTextFileAsync(json, RecentFilesPath);
+                await _fileService.WriteTextFileAsync(json, GetRecentFilesPath());
             }
             catch (System.Exception e)
             {

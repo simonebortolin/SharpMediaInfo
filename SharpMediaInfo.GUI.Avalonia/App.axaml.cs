@@ -38,8 +38,17 @@ public partial class App : Application
                 var cfg = await cfgService.LoadConfigurationAsync();
                 cfgService.Attach(cfg);
 
+                // Make sure the configured report font exists here (the default "Cascadia Mono"
+                // is not installed on Linux) and keep justification removal in sync with it:
+                // column-aligned MediaInfo output only reads well in a monospaced font.
+                var fontService = new AvaloniaFontService();
+                if (!fontService.IsAvailable(cfg.ReportFontFamily))
+                    cfg.ReportFontFamily = fontService.GetDefaultReportFont();
+                cfg.RemoveJustification = !fontService.IsMonospace(cfg.ReportFontFamily);
+
                 // Register the loaded configuration as singleton
                 services.AddSingleton(cfg);
+                services.AddSingleton<IFontService>(fontService);
 
                 ConfigureServices(services);
                 _serviceProvider = services.BuildServiceProvider();

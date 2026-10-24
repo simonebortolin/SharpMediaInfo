@@ -1,146 +1,222 @@
-﻿using SharpMediaInfo.Native.Enum;
+using SharpMediaInfo.Native.Enum;
 using System;
 using System.Runtime.InteropServices;
 
 namespace SharpMediaInfo.Native.Interop
 {
     /// <summary>
-    /// Class that holds all native MediaInfoNativeMethods external methods
+    /// Holds all native MediaInfo entry points (generated with <see cref="LibraryImportAttribute"/>)
+    /// and the small wrappers that hide the platform string differences.
     /// </summary>
-    internal class MediaInfoNativeMethods
+    /// <remarks>
+    /// MediaInfo exposes two parallel C APIs: the wide <c>MediaInfo_*</c> functions use the
+    /// platform <c>wchar_t</c> (UTF-16 on Windows, but UTF-32 on Linux/macOS) and the narrow
+    /// <c>MediaInfoA_*</c> functions use 8-bit/UTF-8 strings. Marshalling UTF-16 on a 4-byte
+    /// <c>wchar_t</c> platform corrupts every string, so on non-Windows we use the narrow API
+    /// with UTF-8 marshalling, exactly as MediaArea's own wrapper does.
+    /// </remarks>
+    internal static partial class MediaInfoNativeMethods
     {
+        // Logical library name used by the imports. Resolved at runtime via SetDllImportResolver.
         private const string MEDIAINFO_LIB_FILENAME = "MediaInfo";
 
-        #region Handle management
-        /// <summary>
-        /// Creates a new MediaInfo handle.
-        /// </summary>
-        /// <returns>The MediaInfo handle</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_New")]
-        public static extern IntPtr CreateHandle();
+        // On Windows wchar_t is 2 bytes (UTF-16); elsewhere it is 4 bytes, so the wide API cannot
+        // be marshalled as UTF-16 and we route through the narrow (UTF-8) MediaInfoA_* functions.
+        private static readonly bool UseAnsi = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        /// <summary>
-        /// Deletes a Mediainfo handle.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_Delete")]
-        internal static extern void DeleteHandle(IntPtr Handle);
+        static MediaInfoNativeMethods()
+        {
+            // Resolve the native library path per OS at runtime
+            NativeLibrary.SetDllImportResolver(typeof(MediaInfoNativeMethods).Assembly, (libraryName, assembly, searchPath) =>
+            {
+                if (!string.Equals(libraryName, MEDIAINFO_LIB_FILENAME, StringComparison.OrdinalIgnoreCase))
+                    return IntPtr.Zero;
+
+                string libName;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    libName = "mediainfo.dll";
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    libName = "libmediainfo.so";
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    libName = "libmediainfo.dylib";
+                else
+                    return IntPtr.Zero;
+
+                var baseDir = AppContext.BaseDirectory;
+                string rid = GetRid();
+
+#if DEBUG
+                Console.WriteLine($"[MediaInfo] BaseDir: {baseDir}");
+                Console.WriteLine($"[MediaInfo] RID: {rid}");
+                Console.WriteLine($"[MediaInfo] Looking for: {libName}");
+#endif
+
+                var searchPaths = new[]
+                {
+                    System.IO.Path.Combine(baseDir, "runtimes", rid, "native"),
+                    baseDir
+                };
+
+                foreach (var dir in searchPaths)
+                {
+                    var path = System.IO.Path.Combine(dir, libName);
+#if DEBUG
+                    Console.WriteLine($"[MediaInfo] Checking: {path} (exists: {System.IO.File.Exists(path)})");
+#endif
+                    if (System.IO.File.Exists(path) && NativeLibrary.TryLoad(path, out var handle))
+                    {
+#if DEBUG
+                        Console.WriteLine($"[MediaInfo] Loaded successfully from: {path}");
+#endif
+                        return handle;
+                    }
+                }
+
+                // Let default resolution try (e.g., system PATH, LD_LIBRARY_PATH)
+                return IntPtr.Zero;
+
+                static string GetRid()
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        if (RuntimeInformation.ProcessArchitecture == Architecture.X86) return "win-x86";
+                        if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64) return "win-arm64";
+                        return "win-x64";
+                    }
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64) return "linux-arm64";
+                        return "linux-x64";
+                    }
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64) return "osx-arm64";
+                        return "osx-x64";
+                    }
+                    return string.Empty;
+                }
+            });
+        }
+
+        // Marshal a native string pointer back using the encoding that matches the API in use.
+        private static string PtrToString(IntPtr value) =>
+            (UseAnsi ? Marshal.PtrToStringUTF8(value) : Marshal.PtrToStringUni(value)) ?? string.Empty;
+
+        #region Native imports (size_t parameters are modelled as nint/nuint)
+
+        // --- Handle management (no strings) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_New")]
+        private static partial IntPtr New();
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Delete")]
+        private static partial void Delete(IntPtr handle);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Close")]
+        private static partial void CloseNative(IntPtr handle);
+
+        // --- Open file (string) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open", StringMarshalling = StringMarshalling.Utf16)]
+        private static partial nint OpenW(IntPtr handle, string fileName);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfoA_Open", StringMarshalling = StringMarshalling.Utf8)]
+        private static partial nint OpenA(IntPtr handle, string fileName);
+
+        // --- Buffer (raw bytes, no strings) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Init")]
+        private static partial nint OpenBufferInit(IntPtr handle, long fileSize, long fileOffset);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Continue")]
+        private static partial nint OpenBufferContinue(IntPtr handle, IntPtr buffer, nuint bufferSize);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Finalize")]
+        private static partial nint OpenBufferFinalize(IntPtr handle);
+
+        // --- Counts ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Count_Get")]
+        private static partial nint CountGet(IntPtr handle, nuint streamKind, nint streamNumber);
+
+        // --- Option (string in / string out) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Option", StringMarshalling = StringMarshalling.Utf16)]
+        private static partial IntPtr OptionW(IntPtr handle, string option, string value);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfoA_Option", StringMarshalling = StringMarshalling.Utf8)]
+        private static partial IntPtr OptionA(IntPtr handle, string option, string value);
+
+        // --- Get by parameter name (string in / string out) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Get", StringMarshalling = StringMarshalling.Utf16)]
+        private static partial IntPtr GetW(IntPtr handle, nuint streamKind, nuint streamNumber, string parameter, nuint kindOfInfo, nuint kindOfSearch);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfoA_Get", StringMarshalling = StringMarshalling.Utf8)]
+        private static partial IntPtr GetA(IntPtr handle, nuint streamKind, nuint streamNumber, string parameter, nuint kindOfInfo, nuint kindOfSearch);
+
+        // --- Get by parameter index (string out only) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_GetI")]
+        private static partial IntPtr GetIW(IntPtr handle, nuint streamKind, nuint streamNumber, nuint parameter, nuint kindOfInfo);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfoA_GetI")]
+        private static partial IntPtr GetIA(IntPtr handle, nuint streamKind, nuint streamNumber, nuint parameter, nuint kindOfInfo);
+
+        // --- Inform (string out only) ---
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Inform")]
+        private static partial IntPtr InformW(IntPtr handle, nuint reserved);
+
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfoA_Inform")]
+        private static partial IntPtr InformA(IntPtr handle, nuint reserved);
+
         #endregion
 
-        #region Configuration
-        /// <summary>
-        /// Configures the MediaInfoLib.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="Option">The name of the option</param>
-        /// <param name="Value">The value of the option</param>
-        /// <returns>Empty string, if it fails; otherwise some additional information depending on the configured option</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, CharSet = CharSet.Unicode, EntryPoint = "MediaInfo_Option")]
-        public static extern IntPtr SetOption(IntPtr Handle, string Option, string Value);
-        #endregion
+        #region Managed wrappers (platform-aware)
 
-        #region File
-        /// <summary>
-        /// Opens a file in the specified path.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="FileName">The full name of the file</param>
-        /// <returns>True, if the file is correctly opened; otherwise false.</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, CharSet = CharSet.Unicode, EntryPoint = "MediaInfo_Open")]
-        public static extern bool OpenFile(IntPtr Handle, string FileName);
+        /// <summary>Creates a new MediaInfo handle.</summary>
+        public static IntPtr CreateHandle() => New();
 
-        /// <summary>
-        /// Close a file.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        [DllImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Close")]
-        public static extern void CloseFile(IntPtr Handle);
-        #endregion
+        /// <summary>Deletes a MediaInfo handle.</summary>
+        public static void DeleteHandle(IntPtr handle) => Delete(handle);
 
-        #region Buffer
-        /// <summary>
-        /// Prepares the MediaInfoLib to accept a buffer.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="FileSize">The estimated file size</param>
-        /// <param name="FileOffset">The initial offset to seek the beginning of the file (if the file beginning is unknown)</param>
-        /// <returns>True, if the operation is successful; otherwise false</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Init")]
-        public static extern bool InitializeBuffer(IntPtr Handle, long FileSize, long FileOffset);
+        /// <summary>Closes the currently open file.</summary>
+        public static void CloseFile(IntPtr handle) => CloseNative(handle);
 
-        /// <summary>
-        /// Opens a stream.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="Buffer">The pointer of the buffer</param>
-        /// <param name="BufferSize">The buffer size</param>
-        /// <returns>
-        /// A bitfield:
-        /// <para />bit 0: Is Accepted (format is known)
-        /// <para />bit 1: Is Filled (main data is collected)
-        /// <para />bit 2: Is Updated (some data have beed updated, example: duration for a real time MPEG-TS stream)
-        /// <para />bit 3: Is Finalized (No more data is needed, will not use further data)
-        /// <para />bit 4-15: Reserved
-        /// <para />bit 16-31: User defined
-        /// </returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Continue")]
-        public static extern IntPtr ReadBuffer(IntPtr Handle, IntPtr Buffer, UIntPtr BufferSize);
+        /// <summary>Opens a file by path. Returns true if the file was accepted.</summary>
+        public static bool OpenFile(IntPtr handle, string fileName) =>
+            (UseAnsi ? OpenA(handle, fileName) : OpenW(handle, fileName)) != 0;
 
-        /// <summary>
-        /// Closes a stream.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <returns>True, if the stream is correctly closed; otherwise false.</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Finalize")]
-        public static extern bool FinalizeBuffer(IntPtr Handle);
-        #endregion
+        /// <summary>Prepares the library to accept a buffer.</summary>
+        public static bool InitializeBuffer(IntPtr handle, long fileSize, long fileOffset) =>
+            OpenBufferInit(handle, fileSize, fileOffset) != 0;
 
-        #region Information
-        /// <summary>
-        /// Count of streams of a stream kind (StreamNumber not filled), or count of piece of information in this stream.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="StreamKind">The stream kind</param>
-        /// <param name="StreamNumber">The stream index</param>
-        /// <returns>The count of fields for this stream kind / stream number if stream number is provided, else the count of streams for this stream kind</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Count_Get")]
-        public static extern int GetStreamCount(IntPtr Handle, [MarshalAs(UnmanagedType.U4)] StreamKind StreamKind, int StreamNumber);
+        /// <summary>Feeds a buffer to the library. Returns the status bitfield.</summary>
+        public static nint ReadBuffer(IntPtr handle, IntPtr buffer, nuint bufferSize) =>
+            OpenBufferContinue(handle, buffer, bufferSize);
 
-        /// <summary>
-        /// Get a piece of specific information about a file.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="StreamKind">The stream kind</param>
-        /// <param name="StreamNumber">The stream index</param>
-        /// <param name="Parameter">The parameter identifier</param>
-        /// <param name="KindOfInfo">The kind of information about the parameter</param>
-        /// <param name="KindOfSearch">Where to look for the parameter</param>
-        /// <returns>The pointer to a memory location that contains a string with the requested information that can be empty if an error has occurred</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, CharSet = CharSet.Unicode, EntryPoint = "MediaInfo_Get")]
-        public static extern IntPtr GetParameter(IntPtr Handle, [MarshalAs(UnmanagedType.U4)] StreamKind StreamKind, uint StreamNumber,
-            string Parameter, [MarshalAs(UnmanagedType.U4)] InfoKind KindOfInfo, [MarshalAs(UnmanagedType.U4)] InfoKind KindOfSearch);
+        /// <summary>Finalizes a buffered stream. Returns true on success.</summary>
+        public static bool FinalizeBuffer(IntPtr handle) => OpenBufferFinalize(handle) != 0;
 
-        /// <summary>
-        /// Get a piece of information about a file
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="StreamKind">The stream kind</param>
-        /// <param name="StreamNumber">The stream index</param>
-        /// <param name="Parameter">The parameter identifier</param>
-        /// <param name="KindOfInfo">The kind of information about the parameter</param>
-        /// <returns>The pointer to a memory location that contains a string with the requested information that can be empty if an error has occurred.</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, CharSet = CharSet.Unicode, EntryPoint = "MediaInfo_GetI")]
-        public static extern IntPtr GetParameter(IntPtr Handle, [MarshalAs(UnmanagedType.U4)] StreamKind StreamKind, uint StreamNumber,
-            uint Parameter, [MarshalAs(UnmanagedType.U4)] InfoKind KindOfInfo);
+        /// <summary>Gets the stream count for a kind (pass -1 as streamNumber for the kind total).</summary>
+        public static int GetStreamCount(IntPtr handle, StreamKind streamKind, int streamNumber) =>
+            (int)CountGet(handle, (nuint)(uint)streamKind, streamNumber);
 
-        /// <summary>
-        /// Get all details about a file.
-        /// </summary>
-        /// <param name="Handle">The MediaInfo handle</param>
-        /// <param name="Reserved">Reserved parameter (do not use)</param>
-        /// <returns>The pointer to a memory location that contains a string with the requested information that can be empty if an error has occurred.</returns>
-        [DllImport(MEDIAINFO_LIB_FILENAME, CharSet = CharSet.Unicode, EntryPoint = "MediaInfo_Inform")]
-        public static extern IntPtr Inform(IntPtr Handle, [MarshalAs(UnmanagedType.U4)] uint Reserved);
+        /// <summary>Configures the library / reads library information; returns the result string.</summary>
+        public static string SetOption(IntPtr handle, string option, string value) =>
+            PtrToString(UseAnsi ? OptionA(handle, option, value) : OptionW(handle, option, value));
+
+        /// <summary>Gets a parameter value by name.</summary>
+        public static string GetParameter(IntPtr handle, StreamKind streamKind, uint streamNumber,
+            string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch) =>
+            PtrToString(UseAnsi
+                ? GetA(handle, (nuint)(uint)streamKind, streamNumber, parameter, (nuint)(uint)kindOfInfo, (nuint)(uint)kindOfSearch)
+                : GetW(handle, (nuint)(uint)streamKind, streamNumber, parameter, (nuint)(uint)kindOfInfo, (nuint)(uint)kindOfSearch));
+
+        /// <summary>Gets a parameter value by index.</summary>
+        public static string GetParameter(IntPtr handle, StreamKind streamKind, uint streamNumber,
+            uint parameter, InfoKind kindOfInfo) =>
+            PtrToString(UseAnsi
+                ? GetIA(handle, (nuint)(uint)streamKind, streamNumber, parameter, (nuint)(uint)kindOfInfo)
+                : GetIW(handle, (nuint)(uint)streamKind, streamNumber, parameter, (nuint)(uint)kindOfInfo));
+
+        /// <summary>Gets the full report (standard or complete, per the current options).</summary>
+        public static string Inform(IntPtr handle) =>
+            PtrToString(UseAnsi ? InformA(handle, 0) : InformW(handle, 0));
+
         #endregion
     }
 }

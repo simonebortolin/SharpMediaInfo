@@ -3,7 +3,6 @@ using SharpMediaInfo.Native.Enum;
 using SharpMediaInfo.Native.Exception;
 using SharpMediaInfo.Native.Interop;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace SharpMediaInfo.Native
 {
@@ -11,8 +10,6 @@ namespace SharpMediaInfo.Native
     /// Initializes a new instance of the MediaInfoNative class using the specified handle and an option to parse
     /// cover data.
     /// </summary>
-    /// <param name="handle">The handle to the native MediaInfo resource to be used by this instance. Must be a valid, initialized
-    /// handle.</param>
     /// <param name="parseCoverData">true to enable parsing of embedded cover image data; otherwise, false. The default is false.</param>
     internal sealed class MediaInfoNative(bool parseCoverData = false) : IMediaInfoNative
     {
@@ -24,8 +21,7 @@ namespace SharpMediaInfo.Native
         /// </summary>
         internal static string GetLibraryInfoStatic(string option, string value)
         {
-            var ptr = MediaInfoNativeMethods.SetOption(IntPtr.Zero, option, value);
-            return Marshal.PtrToStringUni(ptr) ?? string.Empty;
+            return MediaInfoNativeMethods.SetOption(IntPtr.Zero, option, value);
         }
 
         /// <summary>
@@ -39,15 +35,13 @@ namespace SharpMediaInfo.Native
         /// </returns>
         public string GetParameter(StreamKind kind, int trackIndex, string parameterName)
         {
-            var ptr = MediaInfoNativeMethods.GetParameter(
+            return MediaInfoNativeMethods.GetParameter(
                 handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(),
                 kind,
                 (uint)trackIndex,
                 parameterName,
                 InfoKind.Text,
                 InfoKind.Name);
-
-            return ParseOutput(ptr);
         }
 
         /// <summary>
@@ -55,8 +49,8 @@ namespace SharpMediaInfo.Native
         /// </summary>
         /// <param name="kind">The kind of stream</param>
         /// <param name="trackIndex">The track index</param>
-        /// <param name="parameterName">The name of parameter</param>
-        /// <param name="informationKind">the information kind</param>
+        /// <param name="parameterIndex">The parameter index</param>
+        /// <param name="infoKind">the information kind</param>
         /// <returns>A string containing the parameter's value or an empty string in case of problems.</returns>
         public string GetSpecificParameter(
             StreamKind kind,
@@ -64,14 +58,12 @@ namespace SharpMediaInfo.Native
             int parameterIndex,
             InfoKind infoKind)
         {
-            var ptr = MediaInfoNativeMethods.GetParameter(
+            return MediaInfoNativeMethods.GetParameter(
                 handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(),
                 kind,
                 (uint)trackIndex,
                 (uint)parameterIndex,
                 infoKind);
-
-            return ParseOutput(ptr);
         }
 
         /// <summary>
@@ -89,40 +81,6 @@ namespace SharpMediaInfo.Native
                 handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(),
                 "Cover_Data",
                 value);
-
-           
-        }
-
-        /// <summary>
-        /// Parses the mediainfo library output. The reading is performed using a buffer of 8192 chars.
-        /// </summary>
-        /// <param name="pointer">The pointer to the memory area when the informations are stored.</param>
-        /// <returns>The parsed string from the memory area referred to the input pointer.</returns>
-        private unsafe string ParseOutput(IntPtr pointer)
-        {
-            var sb = new StringBuilder();
-
-            int len = 8192;
-            int index = 0;
-            char* ptr = (char*)pointer.ToPointer();
-            char[] buffer = new char[len];
-
-            while (*ptr != '\0')
-            {
-                if (index == len)
-                {
-                    sb.Append(buffer);
-                    index = 0;
-                }
-                buffer[index] = *ptr;
-                ++ptr;
-                index++;
-            }
-
-            buffer[index] = '\0';
-            sb.Append(buffer, 0, index);
-
-            return sb.ToString();
         }
 
         /// <summary>
@@ -131,7 +89,7 @@ namespace SharpMediaInfo.Native
         /// <returns>The string that represents the formatted list of Mediainfo library capacities.</returns>
         public static string? Capacities()
         {
-            return Marshal.PtrToStringUni(MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Capacities", ""));
+            return MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Capacities", "");
         }
 
         /// <summary>
@@ -140,7 +98,7 @@ namespace SharpMediaInfo.Native
         /// <returns>The string that represents the formatted list of all available parameters.</returns>
         public static string? ParametersList(bool csvFormat = false)
         {
-            return Marshal.PtrToStringUni(MediaInfoNativeMethods.SetOption(IntPtr.Zero, csvFormat ? "Info_Parameters_CSV" : "Info_Parameters", ""));
+            return MediaInfoNativeMethods.SetOption(IntPtr.Zero, csvFormat ? "Info_Parameters_CSV" : "Info_Parameters", "");
         }
 
         /// <summary>
@@ -149,7 +107,7 @@ namespace SharpMediaInfo.Native
         /// <returns>The string that represents the formatted list of all supported codecs</returns>
         public static string? KnownCodecs()
         {
-            return Marshal.PtrToStringUni(MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Codecs", ""));
+            return MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Codecs", "");
         }
 
         /// <summary>
@@ -158,7 +116,7 @@ namespace SharpMediaInfo.Native
         /// <returns>The library version</returns>
         public static string? LibraryVersion()
         {
-            return Marshal.PtrToStringUni(MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Version", ""));
+            return MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Version", "");
         }
 
         /// <summary>
@@ -167,7 +125,7 @@ namespace SharpMediaInfo.Native
         /// <returns>The library url</returns>
         public static string? LibraryUrl()
         {
-            return Marshal.PtrToStringUni(MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Url", ""));
+            return MediaInfoNativeMethods.SetOption(IntPtr.Zero, "Info_Url", "");
         }
 
         /// <summary>
@@ -187,9 +145,9 @@ namespace SharpMediaInfo.Native
         {
             MediaInfoNativeMethods.SetOption(handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(), "Complete", "1");
             SetCoverDataParsing(false);
-            var @string = Marshal.PtrToStringUni(MediaInfoNativeMethods.Inform(handle.DangerousGetHandle(), 0));
+            var report = MediaInfoNativeMethods.Inform(handle.DangerousGetHandle());
             SetCoverDataParsing(parseCoverData);
-            return @string;
+            return report;
         }
 
         /// <summary>
@@ -199,9 +157,9 @@ namespace SharpMediaInfo.Native
         {
             MediaInfoNativeMethods.SetOption(handle?.DangerousGetHandle() ?? throw new MediaInfoNativeNotOpenException(), "Complete", "");
             SetCoverDataParsing(false);
-            var @string = Marshal.PtrToStringUni(MediaInfoNativeMethods.Inform(handle.DangerousGetHandle(), 0));
+            var report = MediaInfoNativeMethods.Inform(handle.DangerousGetHandle());
             SetCoverDataParsing(parseCoverData);
-            return @string;
+            return report;
         }
 
         public void Close()
@@ -249,7 +207,7 @@ namespace SharpMediaInfo.Native
                     {
                         throw new MediaInfoNativeOpenException("Unable to open the stream.");
                     }
-                    MediaInfoNativeMethods.ReadBuffer(handle.DangerousGetHandle(), pointer, (UIntPtr)memoryStream.Length);
+                    MediaInfoNativeMethods.ReadBuffer(handle.DangerousGetHandle(), pointer, (nuint)memoryStream.Length);
                     if (!MediaInfoNativeMethods.FinalizeBuffer(handle.DangerousGetHandle()))
                     {
                         throw new MediaInfoNativeFinalizeException("Unable to finalize the stream.");
