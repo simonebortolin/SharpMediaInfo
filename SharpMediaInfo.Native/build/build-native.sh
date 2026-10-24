@@ -42,13 +42,22 @@ fi
 build_dir="$mediainfolib/Project/CMake/build-$rid"
 mkdir -p "$build_dir"
 
+# On macOS build exactly the requested architecture, so osx-x64 can be cross-compiled
+# on an Apple Silicon host (and vice versa) without needing an Intel machine.
+extra_args=()
+case "$rid" in
+  osx-x64)   extra_args+=("-DCMAKE_OSX_ARCHITECTURES=x86_64") ;;
+  osx-arm64) extra_args+=("-DCMAKE_OSX_ARCHITECTURES=arm64") ;;
+esac
+
 # ZenLib is bundled statically from the sibling submodule; zlib is taken from the
 # system (zlib1g-dev) to avoid the bundled-zlib ALIAS-target CMake issue. CURL and
 # TinyXML are optional/runtime and may be reported as "not found".
 cmake -S "$mediainfolib/Project/CMake" -B "$build_dir" \
   -DBUILD_ZENLIB=1 -DBUILD_SHARED_LIBS=ON \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  ${extra_args[@]+"${extra_args[@]}"}
 
 jobs="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 cmake --build "$build_dir" --config Release -j"$jobs"
