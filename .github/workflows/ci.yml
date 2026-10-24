@@ -79,9 +79,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # win-arm64 is not built: the pinned ZenLib MSVC project has no ARM64 configuration.
           - rid: win-x64
-            os: windows-latest
-          - rid: win-arm64
             os: windows-latest
           - rid: linux-x64
             os: ubuntu-latest
