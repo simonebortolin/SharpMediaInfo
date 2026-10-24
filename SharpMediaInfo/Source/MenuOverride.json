@@ -1,6 +1,12 @@
-[
+﻿[
+
   {
-    
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
+  {
+
     "OverrideType": "Field",
     "CsvName": "Status",
     "Skip": true
@@ -12,7 +18,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Disabled",
     "Type": "bool?",
@@ -108,7 +114,7 @@
   },
 
   {
-    
+
     "OverrideType": "Merge",
     "Name": "FrameRate",
     "Type": "FrameRate?",
@@ -126,7 +132,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Language",
     "Type": "Language",
@@ -159,7 +165,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Chapters_Pos_Begin",
     "Type": "int?",

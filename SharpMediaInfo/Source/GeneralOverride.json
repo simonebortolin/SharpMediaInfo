@@ -1,6 +1,12 @@
-[
+﻿[
+
   {
-    
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
+  {
+
     "OverrideType": "Field",
     "CsvName": "Status",
     "Skip": true
@@ -164,7 +170,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "FileSize",
     "Type": "ByteSize",
@@ -202,7 +208,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Proportion",
     "Type": "double?",
@@ -250,7 +256,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Demuxed",
     "Type": "ByteSize",
@@ -288,7 +294,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "OverallBitRate",
     "Type": "BitRate",
@@ -301,7 +307,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "OverallBitRate_Minimum",
     "Type": "BitRate",
@@ -314,7 +320,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "OverallBitRate_Nominal",
     "Type": "BitRate",
@@ -327,7 +333,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "OverallBitRate_Maximum",
     "Type": "BitRate",
@@ -340,7 +346,7 @@
   },
 
   {
-    
+
     "OverrideType": "Merge",
     "Name": "FrameRate",
     "Type": "FrameRate?",
@@ -358,7 +364,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Cover",
     "Type": "bool?",

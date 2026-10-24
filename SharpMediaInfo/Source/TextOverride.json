@@ -1,6 +1,12 @@
-[
+﻿[
+
   {
-    
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
+  {
+
     "OverrideType": "Field",
     "CsvName": "Status",
     "Skip": true
@@ -12,7 +18,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Disabled",
     "Type": "bool?",
@@ -564,7 +570,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "BitRate",
     "Type": "BitRate",
@@ -577,7 +583,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "BitRate_Minimum",
     "Type": "BitRate",
@@ -590,7 +596,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "BitRate_Nominal",
     "Type": "BitRate",
@@ -603,7 +609,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "BitRate_Maximum",
     "Type": "BitRate",
@@ -616,7 +622,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "BitRate_Encoded",
     "Type": "BitRate",
@@ -629,7 +635,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Width",
     "Type": "FrameSize",
@@ -642,7 +648,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Height",
     "Type": "FrameSize",
@@ -655,7 +661,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "DisplayAspectRatio",
     "Type": "AspectRatio",
@@ -668,7 +674,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "DisplayAspectRatio_Original",
     "Type": "AspectRatio",
@@ -681,7 +687,7 @@
   },
 
   {
-    
+
     "OverrideType": "Merge",
     "Name": "FrameRate",
     "Type": "FrameRate?",
@@ -699,7 +705,7 @@
   },
 
   {
-    
+
     "OverrideType": "Merge",
     "Name": "FrameRate_Minimum",
     "Type": "FrameRate?",
@@ -715,7 +721,7 @@
   },
 
   {
-    
+
     "OverrideType": "Merge",
     "Name": "FrameRate_Nominal",
     "Type": "FrameRate?",
@@ -731,7 +737,7 @@
   },
 
   {
-    
+
     "OverrideType": "Merge",
     "Name": "FrameRate_Original",
     "Type": "FrameRate?",
@@ -749,7 +755,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Proportion",
     "Type": "double?",
@@ -797,7 +803,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Demuxed",
     "Type": "ByteSize",
@@ -835,7 +841,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Source_StreamSize_Proportion",
     "Type": "double?",
@@ -883,7 +889,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Encoded_Proportion",
     "Type": "double?",
@@ -931,7 +937,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Source_StreamSize_Encoded_Proportion",
     "Type": "double?",
@@ -979,7 +985,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Language",
     "Type": "Language",

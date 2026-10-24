@@ -138,30 +138,37 @@ namespace SharpMediaInfo
 #if DEBUG
                 System.Diagnostics.Debug.WriteLine($"MediaInfoBuilder.Build() - parseCoverData: {_parseCoverData}, filePath: {_filePath}");
 #endif
-                // NOW create and open MediaInfoNative with correct parseCoverData value
-                _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
-                
-                if (_filePath != null)
+                // When building from a copy there is no file or stream to open: the data has
+                // already been populated, so we must not touch the native library (creating a
+                // handle without opening anything would both throw on Close() and overwrite the
+                // copied stream counts with zeros).
+                if (_filePath != null || _stream != null)
                 {
-                    _mediaInfoNative.OpenFile(_filePath);
-                }
-                else if (_stream != null)
-                {
-                    _mediaInfoNative.OpenStream(_stream);
-                }
+                    // NOW create and open MediaInfoNative with correct parseCoverData value
+                    _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
 
-                // Parse all stream information
-                GetStreamCount();
-                ParseAllStreams();
+                    if (_filePath != null)
+                    {
+                        _mediaInfoNative.OpenFile(_filePath);
+                    }
+                    else if (_stream != null)
+                    {
+                        _mediaInfoNative.OpenStream(_stream);
+                    }
 
-                // Parse reports if requested
-                if (_parseCompleteReport)
-                {
-                    GetCompleteReport();
-                }
-                if (_parseStandardReport)
-                {
-                    GetStandardReport();
+                    // Parse all stream information
+                    GetStreamCount();
+                    ParseAllStreams();
+
+                    // Parse reports if requested
+                    if (_parseCompleteReport)
+                    {
+                        GetCompleteReport();
+                    }
+                    if (_parseStandardReport)
+                    {
+                        GetStandardReport();
+                    }
                 }
 
                 _isBuilt = true;

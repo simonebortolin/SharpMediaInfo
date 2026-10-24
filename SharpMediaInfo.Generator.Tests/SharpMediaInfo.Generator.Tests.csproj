@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>$(DotNetTfm)</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -15,6 +15,25 @@
 
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AdditionalFiles Include="Source\Audio.csv" />
+	  <AdditionalFiles Include="Source\AudioOverride.json" />
+	  <AdditionalFiles Include="Source\General.csv" />
+	  <AdditionalFiles Include="Source\GeneralOverride.json" />
+	  <AdditionalFiles Include="Source\Image.csv" />
+	  <AdditionalFiles Include="Source\InternalTest.csv" />
+	  <AdditionalFiles Include="Source\InternalTestOverride.json" />
+	  <AdditionalFiles Include="Source\Menu.csv" />
+	  <AdditionalFiles Include="Source\MenuOverride.json" />
+	  <AdditionalFiles Include="Source\Other.csv" />
+	  <AdditionalFiles Include="Source\Text.csv" />
+	  <AdditionalFiles Include="Source\TextOverride.json" />
+	  <AdditionalFiles Include="Source\Video.csv" />
+	  <AdditionalFiles Include="Source\VideoOverride.json" />
+      <AdditionalFiles Include="Source\InternalTest.csv" />
+	  <AdditionalFiles Include="Source\InternalTestOverride.json" />
 	</ItemGroup>
 
 	<ItemGroup>

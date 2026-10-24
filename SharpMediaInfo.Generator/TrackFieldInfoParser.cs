@@ -11,11 +11,9 @@ namespace SharpMediaInfo.Generator
             var fields = new List<TrackFieldInfo>();
             var lines = csvFile.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
-            // Salta eventuale header
-
-            for (int i = 1; i < lines.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
-                var columns = lines[i].Split(';'); // i CSV MediaInfo sono separati da ';'
+                var columns = lines[i].Split(';'); // MediaInfo CSV are separated by ';'
                 if (columns.Length < 7) continue;
 
                 var field = new TrackFieldInfo(
@@ -40,21 +38,29 @@ namespace SharpMediaInfo.Generator
                 return string.Empty;
             }
 
-            // Split into tokens by any non-alphanumeric separator (e.g., spaces, underscores, slashes, punctuation)
+            // Use StringInfo to properly handle non-BMP Unicode characters (surrogate pairs)
+            var textElements = GetTextElements(rawName);
             var tokens = new List<string>();
             var current = new StringBuilder();
 
-            foreach (var ch in rawName)
+            for (int idx = 0; idx < textElements.Count; idx++)
             {
-                if (char.IsLetterOrDigit(ch))
+                var element = textElements[idx];
+
+                // Check if element contains only letters or digits (works with non-BMP characters)
+                bool isLetterOrDigit = element.All(char.IsLetterOrDigit);
+
+                if (isLetterOrDigit)
                 {
-                    if(char.IsUpper(ch) && current.Length > 0 && char.IsLower(current[current.Length - 1]))
+                    // Split before uppercase letter if previous char is lowercase
+                    if (current.Length > 0 && 
+                        char.IsUpper(element[0]) && 
+                        char.IsLower(current[current.Length - 1]))
                     {
-                        // Split before uppercase letter if previous is lowercase (e.g., "VideoCodec" -> "Video", "Codec")
                         tokens.Add(current.ToString());
                         current.Clear();
                     }
-                    current.Append(ch);
+                    current.Append(element);
                 }
                 else
                 {
@@ -62,6 +68,22 @@ namespace SharpMediaInfo.Generator
                     {
                         tokens.Add(current.ToString());
                         current.Clear();
+                    }
+                    // Special handling for decimal point: add "Dot" as a token only if surrounded by digits
+                    if (element == "." && 
+                        tokens.Count > 0 && 
+                        tokens[tokens.Count - 1].All(StringExtensions.IsDigitOrMinus) &&
+                        idx + 1 < textElements.Count && 
+                        textElements[idx + 1].All(StringExtensions.IsDigitOrMinus))
+                    {
+                        tokens.Add("Dot");
+                    }
+
+                    if (element == "-" &&
+                        idx + 1 < textElements.Count &&
+                        textElements[idx + 1].All(char.IsDigit))
+                    {
+                        current.Append(element);
                     }
                 }
             }
@@ -78,23 +100,54 @@ namespace SharpMediaInfo.Generator
 
             var first = tokens[0];
 
-            if (char.IsDigit(first[0]))
+            if (StringExtensions.IsDigitOrMinus(first[0]))
             {
+                int i = 1;
                 // Case: Purely numeric token (e.g. "10")
-                if (first.All(char.IsDigit))
+                if (first.All(StringExtensions.IsDigitOrMinus))
                 {
-                    tokens[0] = NumberToIdentifier.FromNumber(int.Parse(first)).ToTitleCase();
+                    var numberPart = NumberToIdentifier.FromNumber(int.Parse(first));
+                    tokens[0] = numberPart[0].ToTitleCase();
+                    for (; i< numberPart.Length; i++)
+                    {
+                        tokens.Insert(i, numberPart[i].ToTitleCase());
+                    }
                 }
                 else
                 {
                     // Case: 3D, 10bit
-                    var match = Regex.Match(first, @"^(\d+)(.*)");
+                    var match = Regex.Match(first, @"^(-?\d+)(.*)");
                     if (match.Success)
                     {
-                        var numberPart = NumberToIdentifier.FromNumber(int.Parse(match.Groups[1].Value)).ToTitleCase();
+                        var numberPart = NumberToIdentifier.FromNumber(int.Parse(match.Groups[1].Value));
 
-                        tokens[0] = numberPart + match.Groups[2].Value;
+                        tokens[0] = numberPart[0].ToTitleCase();
+                        for (int j = 1; j < numberPart.Length; j++, i++)
+                        {
+                            tokens.Insert(i, numberPart[j].ToTitleCase());
+                        }
+                        tokens.Insert(i, match.Groups[2].Value);
                     }
+                }
+                for (; i < tokens.Count; i++)
+                {
+                    if (tokens[i].Any(StringExtensions.IsDigitOrMinus))
+                    {
+                        var number = int.Parse(tokens[i]); 
+                        var numberPart = NumberToIdentifier.FromNumber(number);
+
+                        tokens[i] = numberPart[0].ToTitleCase();
+                        for (int j = 1; j < numberPart.Length; j++, i++)
+                        {
+                            tokens.Insert(i, numberPart[j].ToTitleCase());
+                        }
+                        continue;
+                    }
+                    if (tokens[i] == "Dot" || tokens[i] == "Minus")
+                    {
+                        continue;
+                    }
+                    break;
                 }
             }
 
@@ -181,41 +234,57 @@ namespace SharpMediaInfo.Generator
             return type;
         }
 
+        /// <summary>
+        /// Extracts text elements from a string while properly handling non-BMP Unicode characters (surrogate pairs).
+        /// Uses StringInfo to ensure each element represents a complete grapheme cluster.
+        /// </summary>
+        private static List<string> GetTextElements(string input)
+        {
+            var elements = new List<string>();
+            var enumerator = StringInfo.GetTextElementEnumerator(input);
+
+            while (enumerator.MoveNext())
+            {
+                elements.Add((string)enumerator.Current);
+            }
+
+            return elements;
+        }
+
     }
 
     internal static class NumberToIdentifier
     {
         private static readonly string[] Units =
         {
-        "Zero", "One", "Two", "Three", "Four", "Five",
-        "Six", "Seven", "Eight", "Nine", "Ten",
-        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
-        "Sixteen", "Seventeen", "Eighteen", "Nineteen"
-    };
+            "Zero", "One", "Two", "Three", "Four", "Five",
+            "Six", "Seven", "Eight", "Nine", "Ten",
+            "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
+            "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+        };
 
         private static readonly string[] Tens =
         {
-        "", "", "Twenty", "Thirty", "Forty",
-        "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
-    };
+            "", "", "Twenty", "Thirty", "Forty",
+            "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+        };
 
-        public static string FromNumber(int number)
+        public static string[] FromNumber(int number)
         {
             if (number < 0)
-                return "Minus" + FromNumber(-number);
+                return ["Minus", .. FromNumber(-number)];
 
             if (number < 20)
-                return Units[number];
+                return [Units[number]];
 
             if (number < 100)
-                return Tens[number / 10] +
-                       (number % 10 == 0 ? "" : Units[number % 10]);
+                return [Tens[number / 10] +
+                       (number % 10 == 0 ? "" : Units[number % 10])];
 
             if (number < 1000)
-                return Units[number / 100] + "Hundred" +
-                       (number % 100 == 0 ? "" : FromNumber(number % 100));
+                return [Units[number / 100],  "Hundred", ..(number % 100 == 0 ? [""] : FromNumber(number % 100))];
 
-            return "N" + number.ToString(CultureInfo.InvariantCulture);
+            return ["N", number.ToString(CultureInfo.InvariantCulture)];
         }
     }
 
@@ -245,5 +314,11 @@ namespace SharpMediaInfo.Generator
 
             return sb.ToString();
         }
+
+
+
+
+
+        public static bool IsDigitOrMinus(this char c) => char.IsDigit(c) || c == '-';
     }
 }

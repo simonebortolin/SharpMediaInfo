@@ -1,6 +1,12 @@
-[
+﻿[
+
   {
-    
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
+  {
+
     "OverrideType": "Field",
     "CsvName": "Status",
     "Skip": true
@@ -12,7 +18,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Disabled",
     "Type": "bool?",
@@ -32,7 +38,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Width",
     "Type": "FrameSize",
@@ -45,7 +51,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Width_Offset",
     "Type": "FrameSize",
@@ -58,7 +64,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Width_Original",
     "Type": "FrameSize",
@@ -71,7 +77,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Height",
     "Type": "FrameSize",
@@ -84,7 +90,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Height_Offset",
     "Type": "FrameSize",
@@ -97,7 +103,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Height_Original",
     "Type": "FrameSize",
@@ -110,7 +116,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Active_Width",
     "Type": "FrameSize",
@@ -123,7 +129,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Active_Height",
     "Type": "FrameSize",
@@ -136,7 +142,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "PixelAspectRatio",
     "Type": "AspectRatio",
@@ -149,7 +155,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "PixelAspectRatio_Original",
     "Type": "AspectRatio",
@@ -162,7 +168,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "DisplayAspectRatio",
     "Type": "AspectRatio",
@@ -175,7 +181,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "DisplayAspectRatio_Original",
     "Type": "AspectRatio",
@@ -188,7 +194,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Active_DisplayAspectRatio",
     "Type": "AspectRatio",
@@ -201,7 +207,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Proportion",
     "Type": "double?",
@@ -249,7 +255,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "StreamSize_Demuxed",
     "Type": "ByteSize",
@@ -287,7 +293,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "Language",
     "Type": "Language",
@@ -320,7 +326,7 @@
   },
 
   {
-    
+
     "OverrideType": "Field",
     "CsvName": "colour_description_present",
     "Type": "bool?",

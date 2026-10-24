@@ -1,0 +1,1076 @@
+﻿[
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Delay",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original",
+    "Type": "TimeSpan?",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay_Original/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Disabled",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Default",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Forced",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate",
+    "Type": "BitRate",
+    "ParseFunction": "GetBitRateValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Minimum",
+    "Type": "BitRate",
+    "ParseFunction": "GetBitRateValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Minimum/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Nominal",
+    "Type": "BitRate",
+    "ParseFunction": "GetBitRateValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Nominal/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Maximum",
+    "Type": "BitRate",
+    "ParseFunction": "GetBitRateValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Maximum/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Encoded",
+    "Type": "BitRate",
+    "ParseFunction": "GetBitRateValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitRate_Encoded/String",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Language",
+    "Type": "Language",
+    "ParseFunction": "GetLanguageValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language_More",
+    "Type": "Language",
+    "ParseFunction": "GetLanguageValue"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_LastFrame/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration_FirstFrame/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_LastFrame/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_Duration_FirstFrame/String3",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Width",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_Offset",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_Original",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_CleanAperture",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_Width",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Height",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_Offset",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_Original",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_CleanAperture",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_Height",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio/String",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_Original",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_Original/String",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_CleanAperture",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_CleanAperture/String",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio/String",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_Original",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_Original/String",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_CleanAperture",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_CleanAperture/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_DisplayAspectRatio",
+    "Type": "AspectRatio",
+    "ParseFunction": "GetAspectRatioValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_DisplayAspectRatio/String",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Rotation",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Proportion",
+    "Type": "double?",
+    "ParseFunction": "GetDoubleValueNullable"
+  },
+  {
+    "OverrideType": "Merge",
+    "Name": "StreamSize",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue",
+    "CsvNames": [
+      "StreamSize",
+      "StreamSize_Proportion"
+    ]
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Proportion",
+    "Type": "double?",
+    "ParseFunction": "GetDoubleValueNullable"
+  },
+  {
+    "OverrideType": "Merge",
+    "Name": "SourceStreamSize",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue",
+    "CsvNames": [
+      "Source_StreamSize",
+      "Source_StreamSize_Proportion"
+    ]
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded_Proportion",
+    "Type": "double?",
+    "ParseFunction": "GetDoubleValueNullable"
+  },
+  {
+    "OverrideType": "Merge",
+    "Name": "StreamSizeEncoded",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue",
+    "CsvNames": [
+      "StreamSize_Encoded",
+      "StreamSize_Encoded_Proportion"
+    ]
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded_Proportion",
+    "Type": "double?",
+    "ParseFunction": "GetDoubleValueNullable"
+  },
+  {
+    "OverrideType": "Merge",
+    "Name": "SourceStreamSizeEncoded",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue",
+    "CsvNames": [
+      "Source_StreamSize_Encoded",
+      "Source_StreamSize_Encoded_Proportion"
+    ]
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present_Source",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present_Original",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "colour_description_present_Original_Source",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Encoded/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Source_StreamSize_Encoded/String5",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Merge",
+    "Name": "FrameRate",
+    "Type": "FrameRate?",
+    "ParseFunction": "GetFrameRateValueNullable",
+    "CsvNames": [
+      "FrameRate",
+      "FrameRate_Num",
+      "FrameRate_Den"
+    ]
+  },
+  {
+    "OverrideType": "Merge",
+    "Name": "FrameRateOriginal",
+    "Type": "FrameRate?",
+    "ParseFunction": "GetFrameRateValueNullable",
+    "CsvNames": [
+      "FrameRate_Original",
+      "FrameRate_Original_Num",
+      "FrameRate_Original_Den"
+    ]
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate_Maximum/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_Offset/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_Original/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Width_CleanAperture/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_Offset/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_Original/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Height_CleanAperture/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_Original/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "PixelAspectRatio_CleanAperture/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_Original/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "DisplayAspectRatio_CleanAperture/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_Width/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Active_Height/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Rotation/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate_Minimum/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate_Nominal/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate_Original/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate_Real/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "BitDepth/String"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Disabled/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Default/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Forced/String",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame",
+    "Type": "TimeSpan",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "TimeStamp_FirstFrame/String5",
+    "Skip": true
+  },
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed",
+    "Type": "ByteSize",
+    "ParseFunction": "GetByteSizeValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "StreamSize_Demuxed/String5",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxCLL",
+    "Name": "MaximumContentLightLevel"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxCLL_Source",
+    "Name": "MaximumContentLightLevelSource"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxCLL_Original",
+    "Name": "MaximumContentLightLevelOriginal"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxCLL_Original_Source",
+    "Name": "MaximumContentLightLevelOriginalSource"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxFALL",
+    "Name": "MaximumFrameAverageLightLevel"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxFALL_Source",
+    "Name": "MaximumFrameAverageLightLevelSource"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxFALL_Original",
+    "Name": "MaximumFrameAverageLightLevelOriginal"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "MaxFALL_Original_Source",
+    "Name": "MaximumFrameAverageLightLevelOriginalSource"
+  }
+]

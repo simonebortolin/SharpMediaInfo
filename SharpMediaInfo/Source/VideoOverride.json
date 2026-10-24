@@ -1,4 +1,10 @@
-[
+﻿[
+
+  {
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
   {
     "OverrideType": "Field",
     "CsvName": "Duration",

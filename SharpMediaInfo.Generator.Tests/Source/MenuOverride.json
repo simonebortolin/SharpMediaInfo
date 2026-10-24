@@ -1,0 +1,184 @@
+﻿[
+  {
+    "OverrideType": "Field",
+    "CsvName": "Count",
+    "Skip": true
+  },
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Status",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Inform",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Disabled",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Default",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Forced",
+    "Type": "bool?",
+    "ParseFunction": "GetBoolValueNullable"
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Duration",
+    "Type": "TimeSpan",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Duration/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Delay",
+    "Type": "TimeSpan",
+    "ParseFunction": "GetTimeSpanValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String4",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Delay/String5",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Merge",
+    "Name": "FrameRate",
+    "Type": "FrameRate?",
+    "ParseFunction": "GetFrameRateValueNullable",
+    "CsvNames": [
+      "FrameRate",
+      "FrameRate_Num",
+      "FrameRate_Den"
+    ]
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "FrameRate/String",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Language",
+    "Type": "Language",
+    "ParseFunction": "GetLanguageValue"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String1",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String2",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String3",
+    "Skip": true
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Language/String4",
+    "Skip": true
+  },
+
+  {
+
+    "OverrideType": "Field",
+    "CsvName": "Chapters_Pos_Begin",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "Chapters_Pos_End",
+    "Type": "int?",
+    "ParseFunction": "GetIntValueNullable"
+  },
+  {
+    "OverrideType": "Field",
+    "CsvName": "List/String",
+    "Skip": true
+  }
+]

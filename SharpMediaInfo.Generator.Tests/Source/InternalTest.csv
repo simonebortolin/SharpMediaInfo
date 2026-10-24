@@ -1,0 +1,18 @@
+﻿-2D;;;N NT;;;Whether this stream is -2D
+Bits-(Pixel*Frame);;;Y NFN;;;Bits divided by Pixel multiplied by Frame
+;;;N NT;;;Empty name
+3D;;;N NT;;;Whether this stream is 3D (e.g. SBS, TAB, etc.)
+4D;;;N NT;;;Whether this stream is 4D
+5D;;;N NT;;;Whether this stream is 5D
+10bit;;;N NT;;;Whether this stream is 10bit
+100bit;;;N NT;;;Whether this stream is 100bit
+1000bit;;;N NT;;;Whether this stream is 1000bit
+99bit;;;N NT;;;Whether this stream is 99bit
+5.1;;;N NT;;;Whether this stream is 5.1
+2.1;;;N NT;;;Whether this stream is 2.1
+2.1.3;;;N NT;;;Whether this stream is 2.1.3
+-5.-1;;;N NT;;;Whether this stream is 5.1
+-2.-1;;;N NT;;;Whether this stream is 2.1
+-2.-1.-3;;;N NT;;;Whether this stream is 2.1.3
+DateTime;;;N ND;;;Date and time of the file creation
+BASE64;;;N NB;;;Infos encoded in BASE64
