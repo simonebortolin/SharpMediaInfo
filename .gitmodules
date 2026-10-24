@@ -1,0 +1,9 @@
+[submodule "extern/ZenLib"]
+	path = extern/ZenLib
+	url = https://github.com/MediaArea/ZenLib.git
+[submodule "extern/zlib"]
+	path = extern/zlib
+	url = https://github.com/MediaArea/zlib.git
+[submodule "extern/MediaInfoLib"]
+	path = extern/MediaInfoLib
+	url = https://github.com/MediaArea/MediaInfoLib.git

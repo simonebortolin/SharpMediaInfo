@@ -1,29 +1,65 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Versions are provided by Directory.Build.props -->
+    <!-- MediaInfo stream-parameter CSVs come straight from the pinned MediaInfoLib submodule -->
+    <MediaInfoCsvDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../extern/MediaInfoLib/Source/Resource/Text/Stream'))</MediaInfoCsvDir>
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Source\Audio.csv" />
-    <AdditionalFiles Include="Source\General.csv" />
     <AdditionalFiles Include="Source\AudioOverride.json" />
     <AdditionalFiles Include="Source\MenuOverride.json" />
     <AdditionalFiles Include="Source\TextOverride.json" />
     <AdditionalFiles Include="Source\VideoOverride.json" />
 	<AdditionalFiles Include="Source\GeneralOverride.json" />
-    <AdditionalFiles Include="Source\Image.csv" />
-    <AdditionalFiles Include="Source\Menu.csv" />
-    <AdditionalFiles Include="Source\Other.csv" />
-    <AdditionalFiles Include="Source\Text.csv" />
-    <AdditionalFiles Include="Source\Video.csv" />
+    <!-- CSVs consumed by the source generator, taken directly from the MediaInfoLib submodule -->
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\General.csv" Link="Source\General.csv" />
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\Audio.csv" Link="Source\Audio.csv" />
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\Video.csv" Link="Source\Video.csv" />
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\Text.csv" Link="Source\Text.csv" />
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\Image.csv" Link="Source\Image.csv" />
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\Menu.csv" Link="Source\Menu.csv" />
+    <AdditionalFiles Include="$(MediaInfoCsvDir)\Other.csv" Link="Source\Other.csv" />
   </ItemGroup>
+
+  <!-- Fail fast with a clear message if the submodule holding the CSVs is not initialised -->
+  <Target Name="EnsureMediaInfoCsvs" BeforeTargets="CoreCompile">
+    <Error Condition="!Exists('$(MediaInfoCsvDir)\General.csv')"
+           Text="MediaInfoLib submodule CSVs not found at $(MediaInfoCsvDir). Run: git submodule update --init --recursive" />
+  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\SharpMediaInfo.Generator\SharpMediaInfo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\SharpMediaInfo.Native\SharpMediaInfo.Native.csproj" />
   </ItemGroup>
+
+  <!-- Shared RID detection properties -->
+  <Import Project="$(MSBuildThisFileDirectory)..\SharpMediaInfo.Native\build\SharpMediaInfo.Native.props" />
+
+  <!-- Align this project's version to the native DLL version from SharpMediaInfo.Native -->
+  <Target Name="SyncVersionWithNativeProject" BeforeTargets="GenerateAssemblyInfo">
+    <!-- On Windows, read from DLL file version; otherwise use VERSION.txt -->
+    <GetFileVersionTask FilePath="$(NativePath)" Condition="'$(IsWindowsRid)' == 'True' and Exists('$(NativePath)')">
+      <Output TaskParameter="Version" PropertyName="NativeBinVersion" />
+    </GetFileVersionTask>
+
+    <ReadLinesFromFile File="$(NativeVersionFile)" Condition="'$(IsWindowsRid)' != 'True' and Exists('$(NativeVersionFile)')">
+      <Output TaskParameter="Lines" ItemName="VersionLines" />
+    </ReadLinesFromFile>
+
+    <PropertyGroup>
+      <NativeBinVersion Condition="'$(NativeBinVersion)' == '' and '@(VersionLines)' != ''">@(VersionLines)</NativeBinVersion>
+      <NativeBinVersion Condition="'$(NativeBinVersion)' == ''">$(MediaInfoVersion)</NativeBinVersion>
+      <Version>$(NativeBinVersion)</Version>
+      <AssemblyVersion>$(NativeBinVersion)</AssemblyVersion>
+      <FileVersion>$(NativeBinVersion)</FileVersion>
+      <InformationalVersion>$(NativeBinVersion)</InformationalVersion>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="Syncing SharpMediaInfo version to native ($(EffectiveRid)) = $(NativeBinVersion)" />
+  </Target>
 
 </Project>

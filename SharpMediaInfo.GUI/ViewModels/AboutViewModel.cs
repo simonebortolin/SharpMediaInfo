@@ -63,7 +63,7 @@ public partial class AboutTabViewModel : ObservableObject, ITabViewModel
 
     public string Copyright => $"© {DateTime.Now.Year} SharpMediaInfo Contributors";
 
-    public string GitHubUrl => "https://gitlab.com/simonebortolin/get-media";
+    public string GitHubUrl => "https://github.com/simonebortolin/SharpMediaInfo";
 
     public string MediaInfoUrl => "https://mediaarea.net/MediaInfo";
 

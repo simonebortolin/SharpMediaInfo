@@ -1,0 +1,33 @@
+<Project>
+  <!-- Shared RID detection and native path properties -->
+  <!-- Import this at the top of targets that need native file paths -->
+
+  <PropertyGroup>
+    <!-- Get the raw RID from runtime or SDK -->
+    <RawRid Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</RawRid>
+    <RawRid Condition="'$(RawRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</RawRid>
+    <RawRid Condition="'$(RawRid)' == ''">win-x64</RawRid>
+    
+    <!-- Normalize distro-specific RIDs to generic ones (e.g., ubuntu.24.04-x64 -> linux-x64) -->
+    <EffectiveRid>$(RawRid)</EffectiveRid>
+    <!-- Linux distro normalization (ubuntu.XX-x64, debian.XX-x64, fedora.XX-x64, etc.) -->
+    <EffectiveRid Condition="$(RawRid.Contains('-x64')) and !$(RawRid.StartsWith('win')) and !$(RawRid.StartsWith('osx')) and !$(RawRid.StartsWith('linux'))">linux-x64</EffectiveRid>
+    <EffectiveRid Condition="$(RawRid.Contains('-arm64')) and !$(RawRid.StartsWith('win')) and !$(RawRid.StartsWith('osx')) and !$(RawRid.StartsWith('linux'))">linux-arm64</EffectiveRid>
+
+    <!-- Platform detection -->
+    <IsWindowsRid>$([System.String]::Copy($(EffectiveRid)).StartsWith('win'))</IsWindowsRid>
+    <IsLinuxRid>$([System.String]::Copy($(EffectiveRid)).StartsWith('linux'))</IsLinuxRid>
+    <IsOsxRid>$([System.String]::Copy($(EffectiveRid)).StartsWith('osx'))</IsOsxRid>
+
+    <!-- Native library file names per platform -->
+    <NativeFileName Condition="'$(IsWindowsRid)' == 'True'">mediainfo.dll</NativeFileName>
+    <NativeFileName Condition="'$(IsLinuxRid)' == 'True'">libmediainfo.so</NativeFileName>
+    <NativeFileName Condition="'$(IsOsxRid)' == 'True'">libmediainfo.dylib</NativeFileName>
+
+    <!-- Native root and paths -->
+    <NativeRoot Condition="'$(NativeRoot)' == ''">$(MSBuildThisFileDirectory)..\native</NativeRoot>
+    <NativeDir>$(NativeRoot)/$(EffectiveRid)</NativeDir>
+    <NativePath>$(NativeDir)/$(NativeFileName)</NativePath>
+    <NativeVersionFile>$(NativeDir)/VERSION.txt</NativeVersionFile>
+  </PropertyGroup>
+</Project>

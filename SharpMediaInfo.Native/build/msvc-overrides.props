@@ -1,0 +1,20 @@
+<!--
+  Injected into every MediaInfoLib/ZenLib/zlib vcxproj via MSBuild's
+  ForceImportAfterCppTargets so the submodule projects don't need editing.
+
+  The MediaInfo DLL/Lib projects enable /guard:ehcont (EH Continuation metadata) but the
+  ZenLib project does not, so ZenLib's objects lack that metadata and the DLL link fails with
+  LNK2047/LNK1386 on recent linkers. Turning the guard off uniformly makes the link
+  consistent. It only relaxes an opt-in hardening flag; the produced DLL is functionally
+  identical.
+-->
+<Project>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <GuardEHContMetadata>false</GuardEHContMetadata>
+    </ClCompile>
+    <Link>
+      <GuardEHContMetadata>false</GuardEHContMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

@@ -259,3 +259,15 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/nul
+# Native binaries are built per RID from the MediaInfoLib submodule (never committed)
+/SharpMediaInfo.Native/native/**/*.dll
+/SharpMediaInfo.Native/native/**/*.so
+/SharpMediaInfo.Native/native/**/*.dylib
+/SharpMediaInfo.Native/native/**/VERSION.txt
+# CMake build trees created inside the submodule by build-native.sh
+/extern/MediaInfoLib/Project/CMake/build-*/
+
+# Ignore build outputs
+/**/bin/
+/**/obj/

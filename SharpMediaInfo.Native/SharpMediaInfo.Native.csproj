@@ -1,11 +1,158 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
+
+    <!-- NuGet package configuration -->
+    <PackageId>SharpMediaInfo.Native</PackageId>
+    <Description>Cross-platform native MediaInfo library bindings for .NET, built from source (MediaInfoLib submodule).</Description>
+    <Authors>Simon Bortolin</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>mediainfo;media;video;audio;metadata;native</PackageTags>
+
+    <!-- Include native binaries in NuGet package -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
-	
+
+  <!-- Shared RID detection and native path properties -->
+  <!-- Provides: EffectiveRid, IsWindowsRid/IsLinuxRid/IsOsxRid, NativeFileName, NativeRoot, NativeDir, NativePath, NativeVersionFile -->
+  <Import Project="build/SharpMediaInfo.Native.props" />
+
+  <PropertyGroup>
+    <!-- Pinned MediaInfoLib sources (git submodule) -->
+    <MediaInfoLibDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../extern/MediaInfoLib'))</MediaInfoLibDir>
+    <NativeBuildScriptsDir>$(MSBuildProjectDirectory)/build</NativeBuildScriptsDir>
+  </PropertyGroup>
+
+  <!-- ===================================================================== -->
+  <!-- Build the native library for the current host RID from the submodule. -->
+  <!-- The real work lives in build/build-native.{ps1,sh} so the exact same  -->
+  <!-- CMake/MSVC logic is shared by local builds, WSL and CI. Only runs when -->
+  <!-- the binary for this RID is missing, so a second build is instant.      -->
+  <!-- ===================================================================== -->
+  <Target Name="BuildNativeForRid" BeforeTargets="Build" Condition="!Exists('$(NativePath)')">
+    <Error Condition="!Exists('$(MediaInfoLibDir)/Project/CMake/CMakeLists.txt')"
+           Text="MediaInfoLib submodule not found at $(MediaInfoLibDir). Run: git submodule update --init --recursive" />
+    <Message Importance="high" Text="Building MediaInfo native for $(EffectiveRid) from submodule $(MediaInfoLibDir)" />
+
+    <!-- Windows host: PowerShell driver (MSVC for win-*, WSL for linux-*/osx-*) -->
+    <Exec Condition="'$([MSBuild]::IsOSPlatform(Windows))'"
+          Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(NativeBuildScriptsDir)\build-native.ps1&quot; -Rid $(EffectiveRid)" />
+    <!-- Unix host: bash driver (CMake) -->
+    <Exec Condition="'$([MSBuild]::IsOSPlatform(Windows))' == 'false'"
+          Command="bash &quot;$(NativeBuildScriptsDir)/build-native.sh&quot; $(EffectiveRid)" />
+
+    <Error Condition="!Exists('$(NativePath)')"
+           Text="Native build finished but $(NativePath) was not produced." />
+    <WriteLinesToFile File="$(NativeDir)/VERSION.txt" Lines="$(MediaInfoVersion)" Overwrite="true" />
+    <Message Importance="high" Text="Native ready: $(NativePath)" />
+  </Target>
+
+  <!-- Manual: build the linux-x64 native (via WSL on Windows) regardless of host RID -->
+  <Target Name="BuildNativeLinux">
+    <Exec Condition="'$([MSBuild]::IsOSPlatform(Windows))'"
+          Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(NativeBuildScriptsDir)\build-native.ps1&quot; -Rid linux-x64" />
+    <Exec Condition="'$([MSBuild]::IsOSPlatform(Windows))' == 'false'"
+          Command="bash &quot;$(NativeBuildScriptsDir)/build-native.sh&quot; linux-x64" />
+    <WriteLinesToFile File="$(NativeRoot)/linux-x64/VERSION.txt" Lines="$(MediaInfoVersion)" Overwrite="true"
+                      Condition="Exists('$(NativeRoot)/linux-x64/libmediainfo.so')" />
+  </Target>
+
+  <!-- Manual target: force a rebuild of the native for the current RID -->
+  <Target Name="RebuildMediaInfoNative">
+    <Delete Files="$(NativePath)" />
+    <CallTarget Targets="BuildNativeForRid" />
+  </Target>
+
+  <!-- Fail fast if, after Build, the native for this RID is still missing -->
+  <Target Name="CheckNativeForRid" AfterTargets="Build">
+    <Error Condition="!Exists('$(NativePath)')"
+           Text="Native binary missing for RID $(EffectiveRid): $(NativePath)." />
+  </Target>
+
+  <!-- Sync project/package version with the built native binary version -->
+  <Target Name="SyncVersionWithNative" BeforeTargets="GenerateAssemblyInfo">
+    <ReadLinesFromFile File="$(NativeVersionFile)" Condition="Exists('$(NativeVersionFile)')">
+      <Output TaskParameter="Lines" ItemName="VersionLines" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <NativeBinVersion Condition="'@(VersionLines)' != ''">@(VersionLines)</NativeBinVersion>
+      <NativeBinVersion Condition="'$(NativeBinVersion)' == ''">$(MediaInfoVersion)</NativeBinVersion>
+      <Version>$(NativeBinVersion)</Version>
+      <AssemblyVersion>$(NativeBinVersion)</AssemblyVersion>
+      <FileVersion>$(NativeBinVersion)</FileVersion>
+      <InformationalVersion>$(NativeBinVersion)</InformationalVersion>
+    </PropertyGroup>
+    <Message Importance="high" Text="Syncing project version to MediaInfo ($(EffectiveRid)) = $(NativeBinVersion)" />
+  </Target>
+
+  <!-- ===================================================================== -->
+  <!-- Copy native binaries to referencing projects (runtimes/{rid}/native). -->
+  <!-- Each entry is guarded by Exists: whatever has been built is copied.    -->
+  <!-- ===================================================================== -->
+  <ItemGroup>
+    <Content Include="$(NativeRoot)/win-x64/mediainfo.dll" Condition="Exists('$(NativeRoot)/win-x64/mediainfo.dll')">
+      <Link>runtimes/win-x64/native/mediainfo.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(NativeRoot)/win-x86/mediainfo.dll" Condition="Exists('$(NativeRoot)/win-x86/mediainfo.dll')">
+      <Link>runtimes/win-x86/native/mediainfo.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(NativeRoot)/win-arm64/mediainfo.dll" Condition="Exists('$(NativeRoot)/win-arm64/mediainfo.dll')">
+      <Link>runtimes/win-arm64/native/mediainfo.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(NativeRoot)/linux-x64/libmediainfo.so" Condition="Exists('$(NativeRoot)/linux-x64/libmediainfo.so')">
+      <Link>runtimes/linux-x64/native/libmediainfo.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(NativeRoot)/linux-arm64/libmediainfo.so" Condition="Exists('$(NativeRoot)/linux-arm64/libmediainfo.so')">
+      <Link>runtimes/linux-arm64/native/libmediainfo.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(NativeRoot)/osx-x64/libmediainfo.dylib" Condition="Exists('$(NativeRoot)/osx-x64/libmediainfo.dylib')">
+      <Link>runtimes/osx-x64/native/libmediainfo.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(NativeRoot)/osx-arm64/libmediainfo.dylib" Condition="Exists('$(NativeRoot)/osx-arm64/libmediainfo.dylib')">
+      <Link>runtimes/osx-arm64/native/libmediainfo.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <!-- ===================================================================== -->
+  <!-- Include whatever native binaries are present in the NuGet package.    -->
+  <!-- CI collects all per-RID artifacts into native/ before packing.        -->
+  <!-- ===================================================================== -->
+  <ItemGroup>
+    <None Include="$(NativeRoot)/win-x64/mediainfo.dll" Pack="true" PackagePath="runtimes/win-x64/native" Visible="false" Condition="Exists('$(NativeRoot)/win-x64/mediainfo.dll')" />
+    <None Include="$(NativeRoot)/win-x86/mediainfo.dll" Pack="true" PackagePath="runtimes/win-x86/native" Visible="false" Condition="Exists('$(NativeRoot)/win-x86/mediainfo.dll')" />
+    <None Include="$(NativeRoot)/win-arm64/mediainfo.dll" Pack="true" PackagePath="runtimes/win-arm64/native" Visible="false" Condition="Exists('$(NativeRoot)/win-arm64/mediainfo.dll')" />
+    <None Include="$(NativeRoot)/linux-x64/libmediainfo.so" Pack="true" PackagePath="runtimes/linux-x64/native" Visible="false" Condition="Exists('$(NativeRoot)/linux-x64/libmediainfo.so')" />
+    <None Include="$(NativeRoot)/linux-arm64/libmediainfo.so" Pack="true" PackagePath="runtimes/linux-arm64/native" Visible="false" Condition="Exists('$(NativeRoot)/linux-arm64/libmediainfo.so')" />
+    <None Include="$(NativeRoot)/osx-x64/libmediainfo.dylib" Pack="true" PackagePath="runtimes/osx-x64/native" Visible="false" Condition="Exists('$(NativeRoot)/osx-x64/libmediainfo.dylib')" />
+    <None Include="$(NativeRoot)/osx-arm64/libmediainfo.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native" Visible="false" Condition="Exists('$(NativeRoot)/osx-arm64/libmediainfo.dylib')" />
+  </ItemGroup>
+
+  <!-- Warn if packing without the common desktop native present -->
+  <Target Name="WarnIfNativesMissing" BeforeTargets="Pack">
+    <Warning Condition="!Exists('$(NativeRoot)/win-x64/mediainfo.dll') and !Exists('$(NativeRoot)/linux-x64/libmediainfo.so')"
+             Text="No native binaries found in $(NativeRoot). Build them per RID (dotnet build) or let CI assemble them before packing." />
+  </Target>
 
 </Project>
