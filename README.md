@@ -1,357 +1,152 @@
-﻿# SharpMediaInfo GUI - Modern .NET Showcase
+﻿# SharpMediaInfo
 
-## 🌟 Modern .NET Architecture Showcase
+Cross-platform **.NET bindings and GUIs for [MediaInfo](https://mediaarea.net/MediaInfo)**, with the
+native library **built from source** (no runtime downloads), strongly-typed tracks generated at
+compile time, and desktop apps for Windows (WPF) and every platform (Avalonia).
 
-A **production-ready** MVVM application showcasing modern .NET development with best practices, cutting-edge technologies, and true cross-platform support.
-
-### 🎯 Technology Stack
-
-**Core:**
-- ✅ .NET 10 (WPF), .NET 8 (Avalonia, Libraries)
-- ✅ C# 12 with latest language features
-- ✅ WPF + Fluent Design (Windows native)
-- ✅ Avalonia UI 11.3 (cross-platform)
-- ✅ True cross-platform architecture (Windows/Linux/macOS)
-
-**Libraries:**
-- 🎯 **CommunityToolkit.Mvvm** - Source generators for MVVM (zero reflection!)
-- 🎯 **Polly** - Resilience & retry patterns for IPC
-- 🎯 **Microsoft.Extensions.DI** - Dependency injection
-- 🎯 **System.Text.Json** - Modern JSON serialization
-- 🎯 **MessageBox.Avalonia** - Cross-platform dialogs
-
-**Custom Technologies:**
-- 🔧 **SharpMediaInfo Source Generators** - Compile-time MediaInfo parsing
-- 🔧 **Named Pipes IPC** - Cross-platform inter-process communication
-- 🔧 **Polly Master Election** - Resilient single-instance management
-- 🔧 **DPI-aware positioning** - High-DPI monitor support
+Repository: <https://github.com/simonebortolin/SharpMediaInfo>
 
 ---
 
-## 🚀 Current Status - January 2025
+## Highlights
 
-### ✅ WPF Implementation - v1.1 COMPLETED
-
-**Full-featured Windows application with:**
-- ✅ All MediaInfo report types (Simple, Standard, Complete, Tree)
-- ✅ Cover image display and extraction
-- ✅ Advanced drag & drop (tabs between windows)
-- ✅ Single instance with Named Pipes IPC
-- ✅ Windows Explorer integration (context menu)
-- ✅ Theme support (Light/Dark/Auto)
-- ✅ Font customization
-- ✅ Recent files tracking
-- ✅ Configuration persistence
-
-### ✅ Avalonia Implementation - v0.95 (95% Complete!)
-
-**Cross-platform application with:**
-- ✅ All MediaInfo report types (Simple, Standard, Complete, Tree)
-- ✅ Cover image display and extraction
-- ✅ **File drag & drop from Explorer** ✨
-- ✅ **Tab reordering (internal)** ✨
-- ✅ **Live theme switching** (without restart!)
-- ✅ **System fonts enumeration** (all platforms)
-- ✅ Settings persistence
-- ✅ Recent files tracking
-- ✅ IPC support (Named Pipes)
-- ⚠️ Final testing in progress
-
-**What's Missing (5%):**
-- ⚠️ Comprehensive testing on all platforms
-- ⚠️ Minor bug fixes
-- ⚠️ Performance tuning
+- 🧩 **Native built from source** — `mediainfo.dll` / `libmediainfo.so` / `libmediainfo.dylib` are
+  compiled per RID from the pinned **MediaInfoLib** submodule (ZenLib statically bundled), so there
+  is no download step and the exact sources are reproducible.
+- 🪢 **Modern interop** — the P/Invoke layer uses `[LibraryImport]` and marshals strings correctly on
+  every OS (UTF‑16 wide API on Windows, UTF‑8 narrow API on Linux/macOS where `wchar_t` is 4 bytes).
+- 🏗️ **Source generators** — track classes are generated from MediaInfoLib's own CSV parameter
+  definitions (taken straight from the submodule), with JSON overrides for naming and typing.
+- 🖥️ **Two GUIs** — WPF (Windows, Fluent) and Avalonia (Windows/Linux/macOS), sharing one MVVM core.
+- ✅ **Tested** — unit + integration tests with [TUnit]; CI builds, tests and packs on
+  Windows, Linux and macOS.
+- 🎯 **.NET 10** everywhere (the Roslyn source generator targets `netstandard2.0`), with the target
+  framework centralized in a single `Directory.Build.props` property.
 
 ---
 
-## 📁 Project Structure
+## Project layout
 
-```
-SharpMediaInfo.Native/                # Native MediaInfo binaries
-SharpMediaInfo/                       # Core MediaInfo .NET bindings
-SharpMediaInfo.Generator/             # Source Generators for compile-time parsing
-
-SharpMediaInfo.GUI/                   # ✅ Shared project (ViewModels, Services)
-├── Models/                           # Domain models
-├── ViewModels/                       # Platform-agnostic ViewModels
-│   ├── MainViewModel.cs              # Main window logic
-│   ├── FileTabViewModel.cs           # File tab logic
-│   ├── SettingsTabViewModel.cs       # Settings logic
-│   └── AboutTabViewModel.cs          # About logic
-├── Services/                         # Service interfaces
-│   ├── IFileService.cs               # File operations
-│   ├── IDialogService.cs             # Dialogs
-│   ├── IClipboardService.cs          # Clipboard
-│   ├── IConfigurationService.cs      # Config persistence
-│   ├── IRecentFilesService.cs        # Recent files
-│   ├── ISingleInstanceService.cs     # IPC
-│   ├── IContextMenuService.cs        # OS integration
-│   ├── IProcessService.cs            # Process launching
-│   └── IMousePositionService.cs      # Mouse tracking
-└── Converters/                       # Business logic converters
-    ├── TrackToReportConverter.cs     # MediaInfo → Report
-    └── TrackToTreeConverter.cs       # MediaInfo → Tree
-
-SharpMediaInfo.GUI.WPF/               # ✅ WPF implementation (Windows)
-├── Services/                         # WPF-specific implementations
-├── Controls/                         # Custom controls
-│   ├── SimpleReportViewer.xaml       # Fluent Design report
-│   ├── TreeReportViewer.xaml         # TreeView report
-│   └── NumericUpDown.xaml            # Numeric input
-├── Views/                            # XAML views
-├── Windows/
-│   └── MainWindow.xaml               # Main window
-├── Converters/                       # UI converters
-└── App.xaml.cs                       # Bootstrap and DI
-
-SharpMediaInfo.GUI.Avalonia/          # ✅ Avalonia implementation (Cross-platform)
-├── Services/                         # Avalonia-specific implementations
-│   ├── AvaloniaFileService.cs        # StorageProvider API
-│   ├── AvaloniaDialogService.cs      # MessageBox.Avalonia
-│   ├── AvaloniaClipboardService.cs   # Cross-platform clipboard
-│   └── AvaloniaMousePositionService.cs
-├── Controls/                         # Custom controls
-│   ├── SimpleReportViewer.axaml      # Direct binding
-│   ├── TreeReportViewer.axaml        # TreeDataTemplate
-│   └── GenericMenuItem.cs            # Dynamic menus
-├── Converters/                       # UI converters (8 total)
-│   ├── BoolToFontWeightConverter.cs
-│   ├── ByteArrayToImageConverter.cs  # Avalonia.Media.Imaging
-│   └── IndentToMarginConverter.cs
-├── Views/                            # XAML views
-│   ├── SettingTabView.axaml          # Expander-based layout
-│   ├── AboutTabView.axaml
-│   └── FileTabView.axaml             # All 4 report types
-├── Windows/
-│   └── MainWindow.axaml              # Main window
-└── App.axaml.cs                      # Bootstrap, DI, theming
-
-SharpMediaInfo.GUI.Tests/             # ✅ Unit tests
-└── ViewModels/                       # ViewModel tests
-
-Setup/                                # Installation scripts (Windows)
-├── install-context-menu.ps1
-└── CONTEXT_MENU_GUIDE.md
-```
+| Project | Description | TFM |
+| --- | --- | --- |
+| `SharpMediaInfo.Native` | Native build + P/Invoke (`[LibraryImport]`) | net10.0 |
+| `SharpMediaInfo` | Immutable model, `MediaInfoBuilder`, typed tracks & value types | net10.0 |
+| `SharpMediaInfo.Generator` | Incremental source generator (CSV → tracks) | netstandard2.0 |
+| `SharpMediaInfo.GUI` | Shared MVVM (ViewModels, services) | net10.0 |
+| `SharpMediaInfo.GUI.WPF` | WPF desktop app (Windows) | net10.0-windows |
+| `SharpMediaInfo.GUI.Avalonia` | Avalonia desktop app (cross-platform) | net10.0 / net10.0-windows |
+| `SharpMediaInfo.*.Tests` | TUnit test suites | net10.0 |
+| `extern/MediaInfoLib`, `extern/ZenLib`, `extern/zlib` | Pinned native sources (submodules) | — |
 
 ---
 
-## 🏗️ Architecture Highlights
+## Getting started
 
-### MVVM Pattern with Source Generators
+### Prerequisites
 
-```csharp
-// ViewModel (CommunityToolkit.Mvvm)
-[ObservableProperty]
-private string _statusMessage = "Ready";
-// Auto-generates: public string StatusMessage { get; set; } + INotifyPropertyChanged
+- **.NET 10 SDK**
+- To build the **native** library (done automatically on first build, per host RID):
+  - **Windows**: Visual Studio with the *Desktop development with C++* workload (the build retargets
+    to whatever MSVC toolset is installed).
+  - **Linux/macOS**: `cmake` and a C++ toolchain (`build-essential` / Xcode CLT), plus `zlib` headers.
+  - **Windows → Linux**: a WSL distro with `build-essential cmake` (the build drives it automatically).
 
-[RelayCommand]
-private async Task OpenFileAsync() { }
-// Auto-generates: public IAsyncRelayCommand OpenFileCommand { get; }
-```
+### Clone (with submodules)
 
-### Service Abstraction for Cross-Platform
-
-```csharp
-// SharpMediaInfo.GUI (shared)
-public interface IFileService
-{
-    Task<string?> OpenFileAsync(FileType fileType);
-}
-
-// SharpMediaInfo.GUI.WPF (Windows)
-public class WpfFileService : IFileService { ... }
-
-// SharpMediaInfo.GUI.Avalonia (Cross-platform)
-public class AvaloniaFileService : IFileService { ... }
-```
-
-### Advanced Features
-
-**WPF-Specific:**
-- ✅ Tab drag & drop between windows (creates new instances)
-- ✅ Windows Explorer integration (context menu, no admin)
-- ✅ DPI-aware window positioning
-
-**Cross-Platform (Avalonia):**
-- ✅ File drag & drop from Explorer/Finder
-- ✅ Tab reordering within window
-- ✅ Named Pipes IPC (Windows/Linux/macOS)
-- ✅ Live theme switching
-- ✅ System font enumeration
-
----
-
-## 🚀 Build and Run
-
-### WPF (Windows)
 ```bash
-dotnet run --project SharpMediaInfo.GUI.WPF
+git clone --recurse-submodules https://github.com/simonebortolin/SharpMediaInfo.git
+# or, in an existing clone:
+git submodule update --init --recursive
 ```
 
-### Avalonia (Cross-Platform)
-```bash
-# Windows
-dotnet run --project SharpMediaInfo.GUI.Avalonia
+### Build
 
-# Linux
-dotnet run --project SharpMediaInfo.GUI.Avalonia
-
-# macOS
-dotnet run --project SharpMediaInfo.GUI.Avalonia
-```
-
-### Build All
 ```bash
 dotnet build
 ```
 
-### Run Tests
+The first build compiles the native library for your current RID from the submodule and caches it
+under `SharpMediaInfo.Native/native/<rid>/`; later builds are instant. To (re)build the Linux native
+from Windows via WSL:
+
 ```bash
-dotnet test
+dotnet msbuild SharpMediaInfo.Native -t:BuildNativeLinux
+```
+
+### Run the tests
+
+The test projects use [TUnit] (Microsoft.Testing.Platform), so run them with `dotnet run`:
+
+```bash
+dotnet run --project SharpMediaInfo.Tests
+dotnet run --project SharpMediaInfo.Native.Tests
+dotnet run --project SharpMediaInfo.GUI.Tests
+```
+
+### Run the apps
+
+```bash
+# WPF (Windows)
+dotnet run --project SharpMediaInfo.GUI.WPF
+
+# Avalonia (Windows / Linux / macOS)
+dotnet run --project SharpMediaInfo.GUI.Avalonia -f net10.0
 ```
 
 ---
 
-## 📚 Documentation
+## Library usage
 
-- [Migration Guide](MIGRATION_GUIDE.md) - Complete WPF refactoring journey
-- [Migration Checklist](MIGRATION_CHECKLIST.md) - Feature tracking
-- [Avalonia Migration Plan](MIGRATION_PLAN_AVALONIA.md) - Cross-platform roadmap
-- [Context Menu Guide](Setup/CONTEXT_MENU_GUIDE.md) - Windows Explorer integration
+```csharp
+using SharpMediaInfo;
 
----
+var media = MediaInfoBuilder.FromFile("movie.mkv")
+    .WithReports()
+    .Build();
 
-## 🎯 Key Achievements
+Console.WriteLine($"Format : {media.General[0].Format}");
+Console.WriteLine($"Video  : {media.VideoCount} track(s), Audio: {media.AudioCount} track(s)");
+if (media.Video.Count > 0)
+    Console.WriteLine($"Codec  : {media.Video[0].Format}");
 
-### Refactoring (5 days)
-- ✅ Monolithic → MVVM architecture
-- ✅ Code-behind → ViewModels + DI
-- ✅ Hard-coded → Configuration system
-- ✅ Windows Forms → WPF Fluent Design
+// Static library information
+Console.WriteLine(MediaInfo.LibraryVersion()); // "MediaInfoLib - v25.10"
+```
 
-### WPF v1.0 (5 days)
-- ✅ All report types with custom viewers
-- ✅ Cover image support
-- ✅ Theme system (Light/Dark/Auto)
-- ✅ Font customization
-- ✅ Configuration persistence
-
-### WPF v1.1 (5 days)
-- ✅ Advanced drag & drop system
-- ✅ IPC with Named Pipes + Polly
-- ✅ Windows Explorer integration
-- ✅ Centralized process management
-
-### Avalonia Migration (6 days)
-- ✅ 95% feature parity with WPF
-- ✅ Cross-platform architecture
-- ✅ Live theme switching
-- ✅ File & tab drag & drop
-- ✅ All report types working
-- ⚠️ Final testing in progress
-
-**Total Time**: ~21 days (from monolith to cross-platform!)
+A stream can be analyzed the same way with `MediaInfoBuilder.FromStream(stream)`.
 
 ---
 
-## 🎉 What Makes This Project Special
+## How the native build works
 
-### Modern .NET Showcase
-- ✅ **Source Generators** - Zero runtime reflection
-- ✅ **Polly Resilience** - Automatic failover with retry patterns
-- ✅ **Cross-Platform IPC** - Named Pipes on Windows/Linux/macOS
-- ✅ **MVVM Best Practices** - 100% testable ViewModels
-- ✅ **Clean Architecture** - Clear separation of concerns
+`SharpMediaInfo.Native` never downloads binaries. On build it runs
+`SharpMediaInfo.Native/build/build-native.ps1` (Windows) or `build-native.sh` (Linux/macOS), which
+compile MediaInfoLib from the submodule and drop a single self-contained shared library into
+`native/<rid>/`. The MSBuild targets then copy it to `runtimes/<rid>/native/` and the DLL-import
+resolver loads it at runtime. CI builds every RID on its own runner and assembles the full NuGet
+package.
 
-### Performance
-- ✅ Compile-time code generation (no reflection)
-- ✅ Async/await throughout
-- ✅ Efficient data binding
-- ✅ Minimal memory footprint
+| RID | Toolchain |
+| --- | --- |
+| `win-x64`, `win-x86`, `win-arm64` | MSVC solution (`.sln`/`.slnx`) |
+| `linux-x64`, `linux-arm64` | CMake (ZenLib bundled, system zlib) |
+| `osx-x64`, `osx-arm64` | CMake |
 
-### User Experience
-- ✅ Fluent Design (WPF)
-- ✅ Modern UI (Avalonia)
-- ✅ Drag & drop everywhere
-- ✅ Live theme switching
-- ✅ Keyboard shortcuts
-- ✅ Context menus
+Versions are pinned in `Directory.Build.props` (`MediaInfoVersion`, `LibZenVersion`); bumping them
+means updating the submodules to the matching tags.
 
 ---
 
-## 📊 Migration Statistics
+## Technology
 
-| Metric | Value |
-|--------|-------|
-| Lines of Code Refactored | ~15,000+ |
-| ViewModels Created | 4 |
-| Services Abstracted | 9 |
-| Custom Controls | 6 |
-| Converters | 10 |
-| Unit Tests | 50+ |
-| Platforms Supported | 3 (Windows, Linux, macOS) |
-| Days to Complete | 21 |
-| Code Reuse (WPF→Avalonia) | ~85% |
+- **MediaInfoLib** (native, MIT) built from source with ZenLib and zlib
+- **CommunityToolkit.Mvvm** — source-generated MVVM
+- **Avalonia UI** — cross-platform UI
+- **Polly** — resilient single-instance IPC
+- **TUnit** + **Verify** — testing and snapshot testing
 
----
+## License
 
-## 🎓 Technologies Demonstrated
+MIT. MediaInfoLib and ZenLib are © MediaArea.net and distributed under their own (BSD-style) licenses.
 
-- ✅ **MVVM Pattern** with CommunityToolkit.Mvvm
-- ✅ **Dependency Injection** with Microsoft.Extensions.DI
-- ✅ **Source Generators** for MediaInfo parsing
-- ✅ **Polly** for resilience patterns
-- ✅ **Named Pipes** for IPC
-- ✅ **Async/Await** throughout
-- ✅ **Unit Testing** with xUnit
-- ✅ **Cross-Platform UI** with Avalonia
-- ✅ **Configuration System** with JSON
-- ✅ **Process Management** centralized
-- ✅ **Theme System** with live switching
-
----
-
-## 🔮 Future Plans
-
-### v1.0 Final (ETA: 1-2 days)
-- ⚠️ Complete Avalonia testing
-- ⚠️ Bug fixes
-- ⚠️ Documentation polish
-
-### v1.1
-- [ ] Linux native builds
-- [ ] macOS native builds
-- [ ] Performance profiling
-- [ ] Accessibility improvements
-
-### v2.0
-- [ ] Plugin system
-- [ ] Batch processing
-- [ ] Export templates
-- [ ] Custom reports
-
----
-
-## 🙏 Credits
-
-Built with modern .NET technologies to showcase best practices in:
-- ✅ MVVM architecture with source generators
-- ✅ Cross-platform development
-- ✅ Dependency injection and service abstraction
-- ✅ Resilience patterns with Polly
-- ✅ Clean code and maintainability
-- ✅ Unit testing
-
-**Special Thanks:**
-- MediaInfo library for media analysis
-- Avalonia UI team for cross-platform framework
-- CommunityToolkit.Mvvm for MVVM source generators
-- Polly for resilience patterns
-- Microsoft for .NET and tooling
-
----
-
-**Status**: ✅ v1.0 WPF Complete | ⚠️ v0.95 Avalonia (95% - Final Testing)  
-**Last Updated**: January 2025
+[TUnit]: https://github.com/thomhurst/TUnit
