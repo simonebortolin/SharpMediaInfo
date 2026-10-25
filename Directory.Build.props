@@ -18,12 +18,19 @@
     <Product>SharpMediaInfo</Product>
     <Copyright>Copyright (c) Simone Bortolin</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <!-- Keep the product version clean ("25.10.1"), without the "+<commit sha>" SourceLink suffix. -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
+
+  <!-- Pack the repository README and LICENSE alongside every NuGet package. -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" Condition="Exists('$(MSBuildThisFileDirectory)README.md')" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="" Condition="Exists('$(MSBuildThisFileDirectory)LICENSE')" />
+  </ItemGroup>
 
   <!-- Optional: common UsingTask for reading file version (can be used by any project) -->
   <UsingTask TaskName="GetFileVersionTask" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
