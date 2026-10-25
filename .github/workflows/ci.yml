@@ -92,20 +92,42 @@ jobs:
           - rid: osx-arm64
             os: macos-latest
     steps:
+      # Submodules are fetched only on a cache miss (see below).
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
           persist-credentials: false
 
+      # The native depends only on the pinned submodule commits and the build scripts,
+      # so key the cache on those and skip checkout + build when nothing changed.
+      - name: Compute native cache key
+        id: key
+        shell: bash
+        run: |
+          SUBMODULES=$(git ls-tree HEAD extern/ | sha256sum | cut -c1-16)
+          echo "submodules=$SUBMODULES" >> "$GITHUB_OUTPUT"
+
+      - name: Restore native cache
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: SharpMediaInfo.Native/native/${{ matrix.rid }}
+          key: native-${{ matrix.rid }}-${{ steps.key.outputs.submodules }}-${{ hashFiles('SharpMediaInfo.Native/build/build-native.*') }}
+
+      - name: Fetch submodules
+        if: steps.cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: git submodule update --init --recursive --depth 1
+
       - name: Install build tools (Linux)
-        if: runner.os == 'Linux'
+        if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake pkg-config zlib1g-dev
 
       - name: Install build tools (macOS)
-        if: runner.os == 'macOS'
+        if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
         run: brew install cmake
 
       - name: Build native (${{ matrix.rid }})
+        if: steps.cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
@@ -113,6 +135,13 @@ jobs:
           else
             bash SharpMediaInfo.Native/build/build-native.sh ${{ matrix.rid }}
           fi
+
+      - name: Save native cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: SharpMediaInfo.Native/native/${{ matrix.rid }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - name: Upload native artifact
         uses: actions/upload-artifact@v4
@@ -144,8 +173,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
           persist-credentials: false
+
+      # Only the MediaInfoLib CSVs are needed here; the native comes prebuilt.
+      - name: Fetch MediaInfoLib submodule
+        shell: bash
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -199,8 +232,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
           persist-credentials: false
+
+      # Only the MediaInfoLib CSVs are needed here; the native comes prebuilt.
+      - name: Fetch MediaInfoLib submodule
+        shell: bash
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
