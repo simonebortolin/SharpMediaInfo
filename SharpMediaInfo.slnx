@@ -1,0 +1,31 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path=".gitmodules" />
+    <File Path="Directory.Build.props" />
+    <File Path="README.md" />
+    <File Path="renovate.json" />
+  </Folder>
+  <Folder Name="/Solution Items/Pipeline/">
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/prerelease-cleanup.yml" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="SharpMediaInfo.Generator.Tests/SharpMediaInfo.Generator.Tests.csproj" />
+    <Project Path="SharpMediaInfo.GUI.Avalonia.Tests/SharpMediaInfo.GUI.Avalonia.Tests.csproj" />
+    <Project Path="SharpMediaInfo.GUI.Tests/SharpMediaInfo.GUI.Tests.csproj" />
+    <Project Path="SharpMediaInfo.Native.Tests/SharpMediaInfo.Native.Tests.csproj" />
+    <Project Path="SharpMediaInfo.Tests/SharpMediaInfo.Tests.csproj" />
+  </Folder>
+  <Project Path="SharpMediaInfo.Generator/SharpMediaInfo.Generator.csproj" />
+  <Project Path="SharpMediaInfo.GUI.Avalonia/SharpMediaInfo.GUI.Avalonia.csproj" />
+  <Project Path="SharpMediaInfo.GUI.WPF/SharpMediaInfo.GUI.WPF.csproj" />
+  <Project Path="SharpMediaInfo.GUI/SharpMediaInfo.GUI.csproj" />
+  <Project Path="SharpMediaInfo.Native/SharpMediaInfo.Native.csproj" />
+  <Project Path="SharpMediaInfo/SharpMediaInfo.csproj" />
+</Solution>
