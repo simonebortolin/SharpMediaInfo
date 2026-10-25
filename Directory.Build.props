@@ -1,15 +1,15 @@
 <Project>
   <Import Project="BuildVersion.props" />
 
-<PropertyGroup>
-  <!-- Central shared versions -->
-  <MediaInfoVersion>25.10</MediaInfoVersion>
-  <LibZenVersion>0.4.41</LibZenVersion>
-  <!-- Single source of truth for the .NET target framework used across the solution.
-       Projects compose it (e.g. $(DotNetTfm)-windows); the source generator stays on
-       netstandard2.0 as Roslyn requires. -->
-  <DotNetTfm>net10.0</DotNetTfm>
-</PropertyGroup>
+  <PropertyGroup>
+    <!-- Central shared versions -->
+    <MediaInfoVersion>25.10</MediaInfoVersion>
+    <LibZenVersion>0.4.41</LibZenVersion>
+    <!-- Single source of truth for the .NET target framework used across the solution.
+         Projects compose it (e.g. $(DotNetTfm)-windows); the source generator stays on
+         netstandard2.0 as Roslyn requires. -->
+    <DotNetTfm>net10.0</DotNetTfm>
+  </PropertyGroup>
 
   <!-- Assembly metadata shared by every project (PE file properties, NuGet packages). -->
   <PropertyGroup>
@@ -17,7 +17,11 @@
     <Company>Simone Bortolin</Company>
     <Product>SharpMediaInfo</Product>
     <Copyright>Copyright (c) Simone Bortolin</Copyright>
-    <!-- Keep the product version clean ("25.10.0"), without the "+<commit sha>" SourceLink suffix. -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!-- Keep the product version clean ("25.10.1"), without the "+<commit sha>" SourceLink suffix. -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
@@ -31,14 +35,14 @@
       <Code Type="Fragment" Language="cs"><![CDATA[
         try
         {
-            var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(FilePath);
-            Version = info.FileVersion ?? info.ProductVersion ?? "0.0.0";
-            return true;
+          var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(FilePath);
+          Version = info.FileVersion ?? info.ProductVersion ?? "0.0.0";
+          return true;
         }
         catch
         {
-            Version = "0.0.0";
-            return false;
+          Version = "0.0.0";
+          return false;
         }
       ]]></Code>
     </Task>
