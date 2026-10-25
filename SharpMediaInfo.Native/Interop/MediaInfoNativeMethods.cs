@@ -196,8 +196,20 @@ namespace SharpMediaInfo.Native.Interop
             (int)CountGet(handle, (nuint)(uint)streamKind, streamNumber);
 
         /// <summary>Configures the library / reads library information; returns the result string.</summary>
-        public static string SetOption(IntPtr handle, string option, string value) =>
-            PtrToString(UseAnsi ? OptionA(handle, option, value) : OptionW(handle, option, value));
+        /// <remarks>
+        /// Calls without a handle share one set of native conversion/result buffers, so concurrent
+        /// static calls would overwrite each other's option name or result; they are serialized.
+        /// </remarks>
+        public static string SetOption(IntPtr handle, string option, string value)
+        {
+            if (handle != IntPtr.Zero)
+                return PtrToString(UseAnsi ? OptionA(handle, option, value) : OptionW(handle, option, value));
+
+            lock (StaticOptionLock)
+                return PtrToString(UseAnsi ? OptionA(handle, option, value) : OptionW(handle, option, value));
+        }
+
+        private static readonly object StaticOptionLock = new();
 
         /// <summary>Gets a parameter value by name.</summary>
         public static string GetParameter(IntPtr handle, StreamKind streamKind, uint streamNumber,

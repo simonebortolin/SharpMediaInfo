@@ -53,10 +53,13 @@ esac
 # ZenLib is bundled statically from the sibling submodule; zlib is taken from the
 # system (zlib1g-dev) to avoid the bundled-zlib ALIAS-target CMake issue. CURL and
 # TinyXML are optional/runtime and may be reported as "not found".
+# CMP0077=NEW makes ZenLib's option(BUILD_SHARED_LIBS) honour the OFF that MediaInfoLib
+# sets for it; otherwise ZenLib becomes a separate libzen shared library we don't ship.
 cmake -S "$mediainfolib/Project/CMake" -B "$build_dir" \
   -DBUILD_ZENLIB=1 -DBUILD_SHARED_LIBS=ON \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DCMAKE_POLICY_DEFAULT_CMP0077=NEW \
   ${extra_args[@]+"${extra_args[@]}"}
 
 jobs="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
