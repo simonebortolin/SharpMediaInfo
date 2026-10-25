@@ -127,6 +127,11 @@ resolver loads it at runtime. CI builds every RID on its own runner (macOS: one 
 split into `osx-arm64` and `osx-x64`), caches each native by the pinned submodule commits, and
 assembles the full NuGet package.
 
+Every release on `master` (and every pull request, as a `pr-<N>-…` pre-release that is replaced on
+each push and deleted when the PR closes) ships the NuGet packages plus self-contained desktop apps:
+Avalonia for `win-x64`, `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64`, and WPF for `win-x64`.
+Dependabot keeps the GitHub Actions current and Renovate the NuGet dependencies.
+
 | RID | Toolchain |
 | --- | --- |
 | `win-x64`, `win-x86`, `win-arm64` | MSVC solution (`.sln`/`.slnx`) |

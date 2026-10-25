@@ -26,19 +26,25 @@ env:
     SharpMediaInfo.Native/SharpMediaInfo.Native.csproj
     SharpMediaInfo/SharpMediaInfo.csproj
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  AVALONIA_PROJECT: SharpMediaInfo.GUI.Avalonia/SharpMediaInfo.GUI.Avalonia.csproj
+  WPF_PROJECT: SharpMediaInfo.GUI.WPF/SharpMediaInfo.GUI.WPF.csproj
 
-# Stages: Version -> Native (per RID, from the MediaInfoLib submodule) -> Test / Pack
+# Stages: Version -> Native (per RID, from the MediaInfoLib submodule) -> Test / Pack / Build GUI
 #         -> Release (master) / Pre-release (PR) -> Publish (GitHub Packages, nuget.org)
 jobs:
   version:
     name: Resolve Version
     runs-on: ubuntu-latest
     outputs:
+      # Full version stamped into the build and artifact names: "25.10.0" on master,
+      # "25.10.0-pr.12.34" (PR number, workflow run number) on a pull request.
       version: ${{ steps.resolve.outputs.version }}
+      version_prefix: ${{ steps.resolve.outputs.version_prefix }}
       version_suffix: ${{ steps.resolve.outputs.version_suffix }}
       tag_exists: ${{ steps.resolve.outputs.tag_exists }}
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -54,6 +60,7 @@ jobs:
             echo "::error file=Directory.Build.props::No <Version> found"
             exit 1
           fi
+
           if [ -n "$PR_NUMBER" ]; then
             SUFFIX="pr.${PR_NUMBER}.${RUN_NUMBER}"
             VERSION="${PREFIX}-${SUFFIX}"
@@ -61,15 +68,25 @@ jobs:
             SUFFIX=""
             VERSION="$PREFIX"
           fi
+
           {
             echo "version=$VERSION"
+            echo "version_prefix=$PREFIX"
             echo "version_suffix=$SUFFIX"
           } >> "$GITHUB_OUTPUT"
+
           if git ls-remote --exit-code --tags origin "refs/tags/v$PREFIX" >/dev/null 2>&1; then
             echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+            if [ -n "$PR_NUMBER" ]; then
+              # Merging as-is wouldn't publish anything - say so while it's still cheap to fix.
+              echo "::warning file=Directory.Build.props::v$PREFIX is already released - bump <Version> before merging, or master won't publish a new release."
+            else
+              echo "::notice::Tag v$PREFIX already present - skip"
+            fi
           else
             echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
+
           echo "### Version \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
 
   native:
@@ -96,7 +113,7 @@ jobs:
             os: macos-latest
     steps:
       # Submodules are fetched only on a cache miss (see below).
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -111,7 +128,7 @@ jobs:
 
       - name: Restore native cache
         id: cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: SharpMediaInfo.Native/native
           key: native-${{ matrix.rid }}-${{ steps.key.outputs.submodules }}-${{ hashFiles('SharpMediaInfo.Native/build/build-native.*') }}
@@ -141,7 +158,7 @@ jobs:
 
       - name: Save native cache
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: SharpMediaInfo.Native/native
           key: ${{ steps.cache.outputs.cache-primary-key }}
@@ -149,7 +166,7 @@ jobs:
       # The whole native/ folder holds only this job's <rid>/ folder(s), so the artifact
       # keeps them and Test/Pack can download straight into native/.
       - name: Upload native artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
           path: SharpMediaInfo.Native/native
@@ -179,7 +196,7 @@ jobs:
             os: macos-latest
             native: osx
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -189,12 +206,13 @@ jobs:
         run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.NUGET_PACKAGES }}
           key: nuget-test-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
@@ -202,7 +220,7 @@ jobs:
 
       # The prebuilt native for this RID, so the test host does not need a C++ toolchain.
       - name: Download native (${{ matrix.rid }})
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: native-${{ matrix.native }}
           path: SharpMediaInfo.Native/native
@@ -238,7 +256,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.rid }}
           path: |
@@ -253,7 +271,7 @@ jobs:
     env:
       VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -263,12 +281,13 @@ jobs:
         run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.NUGET_PACKAGES }}
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
@@ -277,7 +296,7 @@ jobs:
       # Collect every per-RID native into SharpMediaInfo.Native/native/<rid>/ so the
       # package ships runtimes for all platforms (merge-multiple keeps the <rid> folders).
       - name: Download all native artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-*
           path: SharpMediaInfo.Native/native
@@ -298,7 +317,7 @@ jobs:
           ls -lh artifacts
 
       - name: Upload NuGet artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nupkg
           path: |
@@ -306,29 +325,368 @@ jobs:
             artifacts/*.snupkg
           if-no-files-found: error
 
+  # Desktop GUIs, self-contained single-file per RID. Each RID ships only its own MediaInfo
+  # native (runtimes/<rid>/native/ next to the executable), taken from the Native job.
+  build-windows:
+    name: Build Windows (${{ matrix.rid }})
+    runs-on: windows-latest
+    needs: [version, native]
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [win-x64]
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Only the MediaInfoLib CSVs are needed here; the native comes prebuilt.
+      - name: Fetch MediaInfoLib submodule
+        shell: bash
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-gui-${{ runner.os }}-
+
+      - name: Download native
+        uses: actions/download-artifact@v8
+        with:
+          name: native-${{ matrix.rid }}
+          path: SharpMediaInfo.Native/native
+
+      - name: Publish desktop apps
+        shell: bash
+        run: |
+          TFM=$(dotnet msbuild "$AVALONIA_PROJECT" -getProperty:DotNetTfm | tr -d '\r')
+          publish() {
+            dotnet publish "$1" \
+              -c Release \
+              -r ${{ matrix.rid }} \
+              --self-contained true \
+              -p:VersionSuffix="$VERSION_SUFFIX" \
+              -p:PublishSingleFile=true \
+              -p:IncludeNativeLibrariesForSelfExtract=true \
+              -p:EnableCompressionInSingleFile=true \
+              -p:DebugType=embedded \
+              -p:ContinuousIntegrationBuild=true \
+              -o "$2" "${@:3}"
+            test -f "$2/runtimes/${{ matrix.rid }}/native/mediainfo.dll" \
+              || { echo "::error::$2 was published without the MediaInfo native"; exit 1; }
+          }
+          publish "$AVALONIA_PROJECT" "artifacts/avalonia" -f "$TFM-windows"
+          publish "$WPF_PROJECT" "artifacts/wpf"
+
+      - name: Package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "artifacts/avalonia/*" `
+                           -DestinationPath "SharpMediaInfo-$env:VERSION-${{ matrix.rid }}.zip"
+          Compress-Archive -Path "artifacts/wpf/*" `
+                           -DestinationPath "SharpMediaInfo.WPF-$env:VERSION-${{ matrix.rid }}.zip"
+
+      - name: Upload desktop artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-${{ matrix.rid }}
+          path: '*.zip'
+          if-no-files-found: error
+
+  build-linux:
+    name: Build Linux (${{ matrix.rid }})
+    runs-on: ubuntu-latest
+    needs: [version, native]
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [linux-x64, linux-arm64]
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Fetch MediaInfoLib submodule
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-gui-${{ runner.os }}-
+
+      - name: Download native
+        uses: actions/download-artifact@v8
+        with:
+          name: native-${{ matrix.rid }}
+          path: SharpMediaInfo.Native/native
+
+      - name: Publish desktop app
+        run: |
+          dotnet publish "$AVALONIA_PROJECT" \
+            -c Release \
+            -f "$(dotnet msbuild "$AVALONIA_PROJECT" -getProperty:DotNetTfm | tr -d '\r')" \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:VersionSuffix="$VERSION_SUFFIX" \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:EnableCompressionInSingleFile=true \
+            -p:DebugType=embedded \
+            -p:ContinuousIntegrationBuild=true \
+            -p:EnableWindowsTargeting=true \
+            -o "artifacts/${{ matrix.rid }}"
+          test -f "artifacts/${{ matrix.rid }}/runtimes/${{ matrix.rid }}/native/libmediainfo.so" \
+            || { echo "::error::Published without the MediaInfo native"; exit 1; }
+
+      - name: Package
+        run: |
+          chmod +x "artifacts/${{ matrix.rid }}/SharpMediaInfo.GUI.Avalonia"
+          tar -C "artifacts/${{ matrix.rid }}" \
+              -czf "SharpMediaInfo-${VERSION}-${{ matrix.rid }}.tar.gz" .
+
+      - name: Upload desktop artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-${{ matrix.rid }}
+          path: '*.tar.gz'
+          if-no-files-found: error
+
+  # Both macOS RIDs on one runner, like the universal Native job: the apphost must be built
+  # (and ad-hoc signed) on macOS to start on Apple Silicon.
+  build-macos:
+    name: Build macOS (osx-arm64, osx-x64)
+    runs-on: macos-latest
+    needs: [version, native]
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Fetch MediaInfoLib submodule
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-gui-${{ runner.os }}-
+
+      - name: Download native
+        uses: actions/download-artifact@v8
+        with:
+          name: native-osx
+          path: native-osx
+
+      - name: Publish and package desktop app
+        run: |
+          TFM=$(dotnet msbuild "$AVALONIA_PROJECT" -getProperty:DotNetTfm | tr -d '\r')
+          for RID in osx-arm64 osx-x64; do
+            # Only this RID's native, so each archive carries a single dylib.
+            rm -rf SharpMediaInfo.Native/native && mkdir -p SharpMediaInfo.Native/native
+            cp -R "native-osx/$RID" SharpMediaInfo.Native/native/
+            dotnet publish "$AVALONIA_PROJECT" \
+              -c Release \
+              -f "$TFM" \
+              -r "$RID" \
+              --self-contained true \
+              -p:VersionSuffix="$VERSION_SUFFIX" \
+              -p:PublishSingleFile=true \
+              -p:IncludeNativeLibrariesForSelfExtract=true \
+              -p:EnableCompressionInSingleFile=true \
+              -p:DebugType=embedded \
+              -p:ContinuousIntegrationBuild=true \
+              -p:EnableWindowsTargeting=true \
+              -o "artifacts/$RID"
+            test -f "artifacts/$RID/runtimes/$RID/native/libmediainfo.dylib" \
+              || { echo "::error::$RID published without the MediaInfo native"; exit 1; }
+            chmod +x "artifacts/$RID/SharpMediaInfo.GUI.Avalonia"
+            tar -C "artifacts/$RID" -czf "SharpMediaInfo-${VERSION}-${RID}.tar.gz" .
+          done
+          ls -lh SharpMediaInfo-*.tar.gz
+
+      - name: Upload desktop artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-osx
+          path: '*.tar.gz'
+          if-no-files-found: error
+
+  prerelease:
+    name: PR Pre-release
+    runs-on: ubuntu-latest
+    needs: [version, test, pack, build-windows, build-linux, build-macos]
+    # Same-repository PRs only. A fork's pull_request run gets a read-only token, and this
+    # deliberately doesn't use pull_request_target: that would run untrusted fork code with a
+    # write token. Fork PRs still build and upload workflow artifacts, just no GitHub pre-release.
+    # Dependabot PRs are same-repo but GitHub also gives them a read-only token.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+      attestations: write
+    concurrency:
+      group: prerelease-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      VERSION: ${{ needs.version.outputs.version }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      BUILD_SHA: ${{ github.sha }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+
+      - name: Collect pre-release assets
+        run: |
+          mkdir -p release
+          find dist -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.nupkg' -o -name '*.snupkg' \) \
+            -exec cp {} release/ \;
+          cd release
+          sha256sum * > SHA256SUMS
+          ls -lh
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg'
+
+      # One pre-release per PR, replaced on every push so testers always have a single, current
+      # link. Each run gets its own tag (pr-<N>-<run>-<attempt>): with immutable releases a tag
+      # once used by one can never be reused, even after the release is deleted. The tag deliberately isn't "v..." so it can never be mistaken for a real
+      # release by the version job's tag check.
+      - name: Publish pre-release
+        run: |
+          TAG="pr-${PR_NUMBER}-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+          cat > notes.md <<NOTES
+          Automatic pre-release for #${PR_NUMBER}: ${PR_TITLE}
+
+          - Version: \`${VERSION}\`
+          - PR head: ${HEAD_SHA}
+          - Built from merge preview: ${BUILD_SHA}
+          - Workflow run: ${RUN_URL}
+
+          > [!WARNING]
+          > Untested build of an unmerged pull request. It's replaced on every push and deleted when the PR is closed.
+          NOTES
+
+          gh release create "$TAG" release/* \
+            --prerelease \
+            --latest=false \
+            --target "$HEAD_SHA" \
+            --title "PR #${PR_NUMBER} pre-release (${VERSION})" \
+            --notes-file notes.md
+
+          # Only now drop this PR's older pre-releases, so there's always one to link to.
+          # "pr-<N>-" can't match another PR's tags (pr-3- vs pr-30-).
+          gh release list --limit 1000 --json tagName \
+            --jq ".[].tagName | select(. == \"pr-${PR_NUMBER}\" or startswith(\"pr-${PR_NUMBER}-\")) | select(. != \"${TAG}\")" |
+          while read -r OLD; do
+            gh release delete "$OLD" --cleanup-tag --yes || echo "::warning::Could not delete $OLD"
+          done
+
+      - name: Comment on the pull request
+        run: |
+          MARKER='<!-- sharpmediainfo-prerelease -->'
+          URL="${{ github.server_url }}/${{ github.repository }}/releases/tag/${TAG}"
+          BODY="${MARKER}
+          **Pre-release \`${VERSION}\` is ready:** ${URL}
+
+          Windows, Linux and macOS desktop builds and NuGet packages of ${HEAD_SHA}. Updated on every push, deleted when this PR is closed."
+
+          COMMENT_ID=$(gh api "repos/${GH_REPO}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"${MARKER}\")) | .id" | head -1)
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/${GH_REPO}/issues/comments/${COMMENT_ID}" -f body="$BODY" >/dev/null
+          else
+            gh api -X POST "repos/${GH_REPO}/issues/${PR_NUMBER}/comments" -f body="$BODY" >/dev/null
+          fi
+
   release:
     name: Tag & Release
     runs-on: ubuntu-latest
-    needs: [version, test, pack]
+    needs: [version, test, pack, build-windows, build-linux, build-macos]
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     permissions:
       contents: write
+      statuses: write
+      id-token: write
+      attestations: write
     env:
       VERSION: ${{ needs.version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Download NuGet artifact
-        uses: actions/download-artifact@v4
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
         with:
-          name: nupkg
-          path: release
+          path: dist
+
+      - name: Collect release assets
+        run: |
+          mkdir -p release
+          find dist -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.nupkg' -o -name '*.snupkg' \) \
+            -exec cp {} release/ \;
+          ls -lh release
 
       - name: Checksums
         run: |
           cd release
           sha256sum * > SHA256SUMS
           cat SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg'
 
       - name: Tag release
         id: tag
@@ -340,13 +698,34 @@ jobs:
           git push origin "v$VERSION"
 
       - name: Create GitHub Release
+        id: gh_release
         if: steps.tag.outcome == 'success'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.VERSION }}
           name: v${{ env.VERSION }}
           generate_release_notes: true
           files: release/*
+
+      - name: Report release status
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ needs.version.outputs.tag_exists }}" = "true" ]; then
+            STATE=pending
+            DESCRIPTION="Version v$VERSION already released — bump <Version> in Directory.Build.props."
+          elif [ "${{ steps.gh_release.outcome }}" = "success" ]; then
+            STATE=success
+            DESCRIPTION="Released v$VERSION with desktop apps and NuGet packages."
+          else
+            STATE=failure
+            DESCRIPTION="Release failed with an unexpected error."
+          fi
+          gh api repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -f state="$STATE" \
+            -f description="$DESCRIPTION" \
+            -f context="release"
 
   publish-github:
     name: Publish to GitHub Packages
@@ -357,15 +736,16 @@ jobs:
       packages: write
     steps:
       - name: Download NuGet artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nupkg
           path: nupkg
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
 
       - name: Push to GitHub Packages
         run: |
@@ -399,16 +779,17 @@ jobs:
 
       - name: Download NuGet artifact
         if: steps.config.outputs.enabled == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nupkg
           path: nupkg
 
       - name: Setup .NET
         if: steps.config.outputs.enabled == 'true'
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
 
       - name: Log in to nuget.org
         id: login
