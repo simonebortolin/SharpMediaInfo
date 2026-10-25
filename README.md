@@ -110,7 +110,7 @@ if (media.Video.Count > 0)
     Console.WriteLine($"Codec  : {media.Video[0].Format}");
 
 // Static library information
-Console.WriteLine(MediaInfo.LibraryVersion()); // "MediaInfoLib - v25.10"
+Console.WriteLine(MediaInfo.LibraryVersion()); // "MediaInfoLib - v26.01"
 ```
 
 A stream can be analyzed the same way with `MediaInfoBuilder.FromStream(stream)`.
