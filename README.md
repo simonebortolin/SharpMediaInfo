@@ -155,6 +155,11 @@ pinned to the `master` commit current at the MediaInfoLib release (the MSVC2026 
 `Project/MSVC2026` projects). The release version is `VersionPrefix` in
 `BuildVersion.props`: bump it and merging to `master` tags and publishes `vX.Y.Z`.
 
+The **MediaInfo Bump** workflow (`.github/workflows/mediainfo-bump.yml`) does this automatically
+once a month: when MediaInfoLib has a newer `vYY.MM` release it opens a pull request that moves both
+submodules, `MediaInfoVersion`, `VersionPrefix` (`YY.M.0`) and the README, and starts CI on it.
+Run it by hand from *Actions → MediaInfo Bump → Run workflow* (tick *dry run* to only see the diff).
+
 ---
 
 ## Technology

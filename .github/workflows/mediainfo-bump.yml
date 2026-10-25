@@ -1,0 +1,164 @@
+name: MediaInfo Bump
+
+# Once a month, checks MediaArea/MediaInfoLib for a release newer than the pinned one and, if
+# there is one, opens a pull request that bumps it (submodules, MediaInfoVersion, VersionPrefix,
+# README) and starts ci.yml on that branch. Merging the pull request tags and publishes the
+# release as usual.
+#
+# The pull request is pushed and opened with GITHUB_TOKEN, which never triggers other workflows,
+# so ci.yml is started explicitly with workflow_dispatch (the one event GITHUB_TOKEN may trigger):
+# it runs the full build and tests, without the PR pre-release. For the same reason the bump never
+# edits files under .github/workflows (GITHUB_TOKEN cannot push them).
+#
+# On a pull request that changes this file, and with the dry_run input, it does the bump and
+# prints the diff, but pushes nothing.
+on:
+  schedule:
+    - cron: '17 6 1 * *' # monthly, on the 1st at 06:17 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Show the bump without pushing a branch or opening a pull request
+        type: boolean
+        default: false
+  pull_request:
+    branches:
+      - master
+    paths:
+      - .github/workflows/mediainfo-bump.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mediainfo-bump-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Bump MediaInfoLib
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # push the bump branch
+      pull-requests: write # open the pull request
+      actions: write       # start ci.yml on the bump branch
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      DRY_RUN: ${{ github.event_name == 'pull_request' || inputs.dry_run == true }}
+      UPSTREAM: https://github.com/MediaArea/MediaInfoLib.git
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Find the latest MediaInfoLib release
+        id: check
+        run: |
+          CURRENT=$(sed -n 's|.*<MediaInfoVersion>\(.*\)</MediaInfoVersion>.*|\1|p' Directory.Build.props | head -1)
+          # Release tags are vYY.MM; skip anything else (pre-releases, old naming).
+          LATEST=$(git ls-remote --tags --refs "$UPSTREAM" 'v*' \
+            | sed -n 's|.*refs/tags/v\([0-9][0-9]*\.[0-9][0-9]*\)$|\1|p' | sort -V | tail -1)
+          if [ -z "$CURRENT" ] || [ -z "$LATEST" ]; then
+            echo "::error::Could not resolve the versions (current '$CURRENT', latest '$LATEST')"
+            exit 1
+          fi
+          echo "Pinned MediaInfoLib v$CURRENT, latest release v$LATEST"
+
+          BRANCH="mediainfo/v$LATEST"
+          {
+            echo "current=$CURRENT"
+            echo "latest=$LATEST"
+            echo "branch=$BRANCH"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ "$(printf '%s\n' "$CURRENT" "$LATEST" | sort -V | tail -1)" = "$CURRENT" ]; then
+            echo "Already on the latest release - nothing to do"
+            echo "### MediaInfoLib v$CURRENT is the latest release" >> "$GITHUB_STEP_SUMMARY"
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          elif [ "$DRY_RUN" != "true" ] && \
+               [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" != "0" ]; then
+            echo "A pull request for v$LATEST is already open - nothing to do"
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump the submodules and versions
+        if: steps.check.outputs.needed == 'true'
+        id: bump
+        env:
+          CURRENT: ${{ steps.check.outputs.current }}
+          LATEST: ${{ steps.check.outputs.latest }}
+        run: |
+          git submodule update --init --depth 1 extern/MediaInfoLib
+          git -C extern/MediaInfoLib fetch --quiet --depth 1 origin "refs/tags/v$LATEST:refs/tags/v$LATEST"
+          git -C extern/MediaInfoLib checkout --quiet "v$LATEST"
+
+          # ZenLib has no release after v0.4.41: MediaArea builds it from master. Pin the master
+          # commit current at the MediaInfoLib release, which matches its MSVC projects.
+          TAG_DATE=$(git -C extern/MediaInfoLib log -1 --format=%cI "v$LATEST")
+          git submodule update --init extern/ZenLib
+          git -C extern/ZenLib fetch --quiet origin master
+          ZENLIB=$(git -C extern/ZenLib rev-list -1 --first-parent --before="$TAG_DATE" FETCH_HEAD)
+          git -C extern/ZenLib checkout --quiet "$ZENLIB"
+
+          # vYY.MM -> YY.M.0, the NuGet-normalized form of the MediaInfo version.
+          OLD_PREFIX=$(sed -n 's|.*<VersionPrefix>\(.*\)</VersionPrefix>.*|\1|p' BuildVersion.props | head -1)
+          NEW_PREFIX="${LATEST%%.*}.$((10#${LATEST#*.})).0"
+          esc() { printf '%s' "$1" | sed 's/[.]/\\./g'; }
+          OLD=$(esc "$CURRENT")
+          OLDP=$(esc "$OLD_PREFIX")
+
+          sed -i "s|<MediaInfoVersion>$OLD</MediaInfoVersion>|<MediaInfoVersion>$LATEST</MediaInfoVersion>|; s|(\"$OLDP\")|(\"$NEW_PREFIX\")|" Directory.Build.props
+          sed -i "s|$OLDP|$NEW_PREFIX|g" BuildVersion.props
+          sed -i "s|MediaInfoLib - v$OLD\"|MediaInfoLib - v$LATEST\"|; s|MediaInfoLib-v$OLD-|MediaInfoLib-v$LATEST-|; s|MediaInfoLib/releases/tag/v$OLD)|MediaInfoLib/releases/tag/v$LATEST)|" \
+            README.md SharpMediaInfo.Native.Tests/LibraryInfoTests.cs
+
+          grep -q "<MediaInfoVersion>$LATEST</MediaInfoVersion>" Directory.Build.props
+          grep -q "<VersionPrefix>$NEW_PREFIX</VersionPrefix>" BuildVersion.props
+
+          echo "zenlib=$(git -C extern/ZenLib rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "prefix=$NEW_PREFIX" >> "$GITHUB_OUTPUT"
+
+          git diff --submodule=short
+          {
+            echo "### MediaInfoLib v$CURRENT → v$LATEST (release v$NEW_PREFIX)"
+            echo
+            echo '```diff'
+            git diff --submodule=short
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Push the branch and open the pull request
+        if: steps.check.outputs.needed == 'true' && env.DRY_RUN != 'true'
+        env:
+          CURRENT: ${{ steps.check.outputs.current }}
+          LATEST: ${{ steps.check.outputs.latest }}
+          BRANCH: ${{ steps.check.outputs.branch }}
+          ZENLIB: ${{ steps.bump.outputs.zenlib }}
+          PREFIX: ${{ steps.bump.outputs.prefix }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH"
+          git add -A Directory.Build.props BuildVersion.props README.md \
+            SharpMediaInfo.Native.Tests/LibraryInfoTests.cs extern/MediaInfoLib extern/ZenLib
+          git commit -m "build: update MediaInfoLib to v$LATEST" \
+            -m "Bump the MediaInfoLib submodule from v$CURRENT to v$LATEST and align MediaInfoVersion ($LATEST) and the release VersionPrefix ($PREFIX). ZenLib moves to $ZENLIB, the master commit current at the MediaInfoLib v$LATEST release."
+          git push --force origin "HEAD:refs/heads/$BRANCH"
+
+          gh pr create --base master --head "$BRANCH" \
+            --title "build: update MediaInfoLib to v$LATEST" \
+            --body "Automated monthly bump of the native MediaInfoLib to [v$LATEST](https://github.com/MediaArea/MediaInfoLib/releases/tag/v$LATEST).
+
+          - \`extern/MediaInfoLib\`: v$CURRENT → v$LATEST
+          - \`extern/ZenLib\`: \`$ZENLIB\`, the ZenLib \`master\` commit current at the MediaInfoLib v$LATEST release
+          - \`MediaInfoVersion\` → $LATEST, \`VersionPrefix\` → $PREFIX (merging tags and publishes \`v$PREFIX\`)
+
+          This pull request was opened with \`GITHUB_TOKEN\`, so CI is started on the branch with \`workflow_dispatch\`: [CI runs for this branch](https://github.com/$GH_REPO/actions/workflows/ci.yml?query=branch%3A${BRANCH//\//%2F}). It builds and tests everything, without the PR pre-release."
+
+      - name: Start CI on the branch
+        if: steps.check.outputs.needed == 'true' && env.DRY_RUN != 'true'
+        env:
+          BRANCH: ${{ steps.check.outputs.branch }}
+        run: gh workflow run ci.yml --ref "$BRANCH"
