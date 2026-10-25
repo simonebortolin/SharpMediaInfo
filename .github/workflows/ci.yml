@@ -52,16 +52,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Read version from Directory.Build.props
+      - name: Read version from BuildVersion.props
         id: resolve
         shell: bash
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_NUMBER: ${{ github.run_number }}
         run: |
-          PREFIX=$(sed -n 's|.*<Version>\(.*\)</Version>.*|\1|p' Directory.Build.props | head -1)
+          PREFIX=$(sed -n 's|.*<VersionPrefix>\(.*\)</VersionPrefix>.*|\1|p' BuildVersion.props | head -1)
           if [ -z "$PREFIX" ]; then
-            echo "::error file=Directory.Build.props::No <Version> found"
+            echo "::error file=BuildVersion.props::No <VersionPrefix> found"
             exit 1
           fi
 
@@ -83,7 +83,7 @@ jobs:
             echo "tag_exists=true" >> "$GITHUB_OUTPUT"
             if [ -n "$PR_NUMBER" ]; then
               # Merging as-is wouldn't publish anything - say so while it's still cheap to fix.
-              echo "::warning file=Directory.Build.props::v$PREFIX is already released - bump <Version> before merging, or master won't publish a new release."
+              echo "::warning file=BuildVersion.props::v$PREFIX is already released - bump <VersionPrefix> before merging, or master won't publish a new release."
             else
               echo "::notice::Tag v$PREFIX already present - skip"
             fi
@@ -740,7 +740,7 @@ jobs:
         run: |
           if [ "${{ needs.version.outputs.tag_exists }}" = "true" ]; then
             STATE=pending
-            DESCRIPTION="Version v$VERSION already released — bump <Version> in Directory.Build.props."
+            DESCRIPTION="Version v$VERSION already released — bump <VersionPrefix> in BuildVersion.props."
           elif [ "${{ steps.gh_release.outcome }}" = "success" ]; then
             STATE=success
             DESCRIPTION="Released v$VERSION with the apps and the NuGet packages."

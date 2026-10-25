@@ -4,7 +4,7 @@
     <TargetFramework>$(DotNetTfm)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- Versions are provided by Directory.Build.props -->
+    <!-- Versions come from BuildVersion.props and are synced to the native MediaInfo version below -->
     <!-- MediaInfo stream-parameter CSVs come straight from the pinned MediaInfoLib submodule -->
     <MediaInfoCsvDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../extern/MediaInfoLib/Source/Resource/Text/Stream'))</MediaInfoCsvDir>
   </PropertyGroup>
@@ -54,9 +54,10 @@
       <NativeBinVersion Condition="'$(NativeBinVersion)' == '' and '@(VersionLines)' != ''">@(VersionLines)</NativeBinVersion>
       <NativeBinVersion Condition="'$(NativeBinVersion)' == ''">$(MediaInfoVersion)</NativeBinVersion>
       <Version>$(NativeBinVersion)</Version>
+      <Version Condition="'$(VersionSuffix)' != ''">$(NativeBinVersion)-$(VersionSuffix)</Version>
       <AssemblyVersion>$(NativeBinVersion)</AssemblyVersion>
       <FileVersion>$(NativeBinVersion)</FileVersion>
-      <InformationalVersion>$(NativeBinVersion)</InformationalVersion>
+      <InformationalVersion>$(Version)</InformationalVersion>
     </PropertyGroup>
 
     <Message Importance="High" Text="Syncing SharpMediaInfo version to native ($(EffectiveRid)) = $(NativeBinVersion)" />

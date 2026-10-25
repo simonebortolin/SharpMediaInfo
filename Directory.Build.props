@@ -1,15 +1,25 @@
 <Project>
+  <Import Project="BuildVersion.props" />
+
 <PropertyGroup>
   <!-- Central shared versions -->
   <MediaInfoVersion>25.10</MediaInfoVersion>
   <LibZenVersion>0.4.41</LibZenVersion>
-  <!-- Assembly/package version aligned to native/CSV version -->
-  <Version>25.10.0</Version>
   <!-- Single source of truth for the .NET target framework used across the solution.
        Projects compose it (e.g. $(DotNetTfm)-windows); the source generator stays on
        netstandard2.0 as Roslyn requires. -->
   <DotNetTfm>net10.0</DotNetTfm>
 </PropertyGroup>
+
+  <!-- Assembly metadata shared by every project (PE file properties, NuGet packages). -->
+  <PropertyGroup>
+    <Authors>Simone Bortolin</Authors>
+    <Company>Simone Bortolin</Company>
+    <Product>SharpMediaInfo</Product>
+    <Copyright>Copyright (c) Simone Bortolin</Copyright>
+    <!-- Keep the product version clean ("25.10.0"), without the "+<commit sha>" SourceLink suffix. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
 
   <!-- Optional: common UsingTask for reading file version (can be used by any project) -->
   <UsingTask TaskName="GetFileVersionTask" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">

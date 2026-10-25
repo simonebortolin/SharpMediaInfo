@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <!-- The release version: bump this, and merging to master tags and publishes vX.Y.Z.
+         CI passes a pre-release VersionSuffix for pull request builds (pr.12.34 -> 25.10.0-pr.12.34).
+         Keep it aligned with MediaInfoVersion: the libraries ship the MediaInfo version. -->
+    <VersionPrefix>25.10.0</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Composed here rather than left to the SDK, so every project body sees the final Version. -->
+    <Version Condition="'$(VersionSuffix)' == ''">$(VersionPrefix)</Version>
+    <Version Condition="'$(VersionSuffix)' != ''">$(VersionPrefix)-$(VersionSuffix)</Version>
+  </PropertyGroup>
+</Project>
