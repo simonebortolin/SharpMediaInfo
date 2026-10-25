@@ -341,8 +341,8 @@ jobs:
             artifacts/*.snupkg
           if-no-files-found: error
 
-  # Desktop GUIs, self-contained single-file per RID. Each RID ships only its own MediaInfo
-  # native (runtimes/<rid>/native/ next to the executable), taken from the Native job.
+  # Desktop GUIs, self-contained single-file per RID. Each archive ships only its own RID's
+  # MediaInfo native (runtimes/<rid>/native/ next to the executable), taken from the Native job.
   build-windows:
     name: Build Windows (${{ matrix.rid }})
     runs-on: windows-latest
@@ -454,11 +454,14 @@ jobs:
           key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
           restore-keys: nuget-gui-${{ runner.os }}-
 
-      - name: Download native
+      # Every Linux native: besides the target RID, SharpMediaInfo.Native also builds for the
+      # runner's own RID during publish.
+      - name: Download natives
         uses: actions/download-artifact@v8
         with:
-          name: native-${{ matrix.rid }}
+          pattern: native-linux-*
           path: SharpMediaInfo.Native/native
+          merge-multiple: true
 
       - name: Publish desktop app
         run: |
@@ -475,6 +478,8 @@ jobs:
             -p:ContinuousIntegrationBuild=true \
             -p:EnableWindowsTargeting=true \
             -o "artifacts/${{ matrix.rid }}"
+          # Ship only this RID's native.
+          find "artifacts/${{ matrix.rid }}/runtimes" -mindepth 1 -maxdepth 1 ! -name "${{ matrix.rid }}" -exec rm -rf {} +
           test -f "artifacts/${{ matrix.rid }}/runtimes/${{ matrix.rid }}/native/libmediainfo.so" \
             || { echo "::error::Published without the MediaInfo native"; exit 1; }
 
@@ -522,19 +527,18 @@ jobs:
           key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
           restore-keys: nuget-gui-${{ runner.os }}-
 
-      - name: Download native
+      # Both macOS natives: besides the target RID, SharpMediaInfo.Native also builds for the
+      # runner's own RID during publish.
+      - name: Download natives
         uses: actions/download-artifact@v8
         with:
           name: native-osx
-          path: native-osx
+          path: SharpMediaInfo.Native/native
 
       - name: Publish and package desktop app
         run: |
           TFM=$(dotnet msbuild "$AVALONIA_PROJECT" -getProperty:DotNetTfm | tr -d '\r')
           for RID in osx-arm64 osx-x64; do
-            # Only this RID's native, so each archive carries a single dylib.
-            rm -rf SharpMediaInfo.Native/native && mkdir -p SharpMediaInfo.Native/native
-            cp -R "native-osx/$RID" SharpMediaInfo.Native/native/
             dotnet publish "$AVALONIA_PROJECT" \
               -c Release \
               -f "$TFM" \
@@ -548,6 +552,8 @@ jobs:
               -p:ContinuousIntegrationBuild=true \
               -p:EnableWindowsTargeting=true \
               -o "artifacts/$RID"
+            # Ship only this RID's native.
+            find "artifacts/$RID/runtimes" -mindepth 1 -maxdepth 1 ! -name "$RID" -exec rm -rf {} +
             test -f "artifacts/$RID/runtimes/$RID/native/libmediainfo.dylib" \
               || { echo "::error::$RID published without the MediaInfo native"; exit 1; }
             chmod +x "artifacts/$RID/SharpMediaInfo.GUI.Avalonia"
