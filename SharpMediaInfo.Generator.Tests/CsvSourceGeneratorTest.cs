@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
+using VerifyTests;
 
 namespace SharpMediaInfo.Generator.Tests
 {
@@ -53,9 +54,9 @@ namespace SharpMediaInfo.Generator.Tests
 
             await Assert.That(result.Diagnostics.Count()).IsEqualTo(0);
             await Assert.That(result.GeneratedTrees.Count()).IsEqualTo(2);
-            await Assert.That(result.GeneratedTrees[0].FilePath).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.Tracks.{track}Track.g.cs");
-            await Assert.That(result.GeneratedTrees[1].FilePath).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.MediaInfoBuilder.{track}.g.cs");
-            await Verify(generatorResult.GeneratedSources);
+            await Assert.That(NormalizePath(result.GeneratedTrees[0].FilePath)).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.Tracks.{track}Track.g.cs");
+            await Assert.That(NormalizePath(result.GeneratedTrees[1].FilePath)).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.MediaInfoBuilder.{track}.g.cs");
+            await Verify(generatorResult.GeneratedSources, SnapshotSettings());
         }
 
         [Test]
@@ -89,9 +90,23 @@ namespace SharpMediaInfo.Generator.Tests
 
             await Assert.That(result.Diagnostics.Count()).IsEqualTo(0);
             await Assert.That(result.GeneratedTrees.Count()).IsEqualTo(2);
-            await Assert.That(result.GeneratedTrees[0].FilePath).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.Tracks.{track}Track.g.cs");
-            await Assert.That(result.GeneratedTrees[1].FilePath).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.MediaInfoBuilder.{track}.g.cs");
-            await Verify(generatorResult.GeneratedSources);
+            await Assert.That(NormalizePath(result.GeneratedTrees[0].FilePath)).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.Tracks.{track}Track.g.cs");
+            await Assert.That(NormalizePath(result.GeneratedTrees[1].FilePath)).IsEqualTo($"SharpMediaInfo.Generator\\SharpMediaInfo.Generator.CsvSourceGenerator\\SharpMediaInfo.MediaInfoBuilder.{track}.g.cs");
+            await Verify(generatorResult.GeneratedSources, SnapshotSettings());
+        }
+
+        // Roslyn builds generated file paths with the platform separator; the expected paths and
+        // snapshots use '\', so normalize to that to keep one set of snapshots for every OS.
+        private static string NormalizePath(string path) => path.Replace('/', '\\');
+
+        private static VerifySettings SnapshotSettings()
+        {
+            var settings = new VerifySettings();
+            settings.ScrubLinesWithReplace(line =>
+                line.TrimStart().StartsWith("FilePath: SharpMediaInfo.Generator", StringComparison.Ordinal)
+                    ? NormalizePath(line)
+                    : line);
+            return settings;
         }
 
         internal class InMemoryAdditionalText(string path, string content) : AdditionalText
