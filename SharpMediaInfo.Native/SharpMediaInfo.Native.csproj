@@ -96,41 +96,50 @@
   <!-- ===================================================================== -->
   <!-- Copy native binaries to referencing projects (runtimes/{rid}/native). -->
   <!-- Each entry is guarded by Exists: whatever has been built is copied.    -->
+  <!-- Kept out of single-file bundles: the DllImport resolver loads them     -->
+  <!-- from AppContext.BaseDirectory, i.e. next to the executable.            -->
   <!-- ===================================================================== -->
   <ItemGroup>
     <Content Include="$(NativeRoot)/win-x64/mediainfo.dll" Condition="Exists('$(NativeRoot)/win-x64/mediainfo.dll')">
       <Link>runtimes/win-x64/native/mediainfo.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
     <Content Include="$(NativeRoot)/win-x86/mediainfo.dll" Condition="Exists('$(NativeRoot)/win-x86/mediainfo.dll')">
       <Link>runtimes/win-x86/native/mediainfo.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
     <Content Include="$(NativeRoot)/win-arm64/mediainfo.dll" Condition="Exists('$(NativeRoot)/win-arm64/mediainfo.dll')">
       <Link>runtimes/win-arm64/native/mediainfo.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
     <Content Include="$(NativeRoot)/linux-x64/libmediainfo.so" Condition="Exists('$(NativeRoot)/linux-x64/libmediainfo.so')">
       <Link>runtimes/linux-x64/native/libmediainfo.so</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
     <Content Include="$(NativeRoot)/linux-arm64/libmediainfo.so" Condition="Exists('$(NativeRoot)/linux-arm64/libmediainfo.so')">
       <Link>runtimes/linux-arm64/native/libmediainfo.so</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
     <Content Include="$(NativeRoot)/osx-x64/libmediainfo.dylib" Condition="Exists('$(NativeRoot)/osx-x64/libmediainfo.dylib')">
       <Link>runtimes/osx-x64/native/libmediainfo.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
     <Content Include="$(NativeRoot)/osx-arm64/libmediainfo.dylib" Condition="Exists('$(NativeRoot)/osx-arm64/libmediainfo.dylib')">
       <Link>runtimes/osx-arm64/native/libmediainfo.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <Visible>false</Visible>
     </Content>
   </ItemGroup>
