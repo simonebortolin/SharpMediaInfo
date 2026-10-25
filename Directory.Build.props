@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <!-- Central shared versions -->
-    <MediaInfoVersion>25.10</MediaInfoVersion>
+    <MediaInfoVersion>26.01</MediaInfoVersion>
     <LibZenVersion>0.4.41</LibZenVersion>
     <!-- Single source of truth for the .NET target framework used across the solution.
          Projects compose it (e.g. $(DotNetTfm)-windows); the source generator stays on
@@ -22,7 +22,7 @@
     <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <!-- Keep the product version clean ("25.10.1"), without the "+<commit sha>" SourceLink suffix. -->
+    <!-- Keep the product version clean ("26.1.0"), without the "+<commit sha>" SourceLink suffix. -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
