@@ -123,14 +123,15 @@ A stream can be analyzed the same way with `MediaInfoBuilder.FromStream(stream)`
 `SharpMediaInfo.Native/build/build-native.ps1` (Windows) or `build-native.sh` (Linux/macOS), which
 compile MediaInfoLib from the submodule and drop a single self-contained shared library into
 `native/<rid>/`. The MSBuild targets then copy it to `runtimes/<rid>/native/` and the DLL-import
-resolver loads it at runtime. CI builds every RID on its own runner and assembles the full NuGet
-package.
+resolver loads it at runtime. CI builds every RID on its own runner (macOS: one universal build
+split into `osx-arm64` and `osx-x64`), caches each native by the pinned submodule commits, and
+assembles the full NuGet package.
 
 | RID | Toolchain |
 | --- | --- |
 | `win-x64`, `win-x86`, `win-arm64` | MSVC solution (`.sln`/`.slnx`) |
 | `linux-x64`, `linux-arm64` | CMake (ZenLib bundled, system zlib) |
-| `osx-x64`, `osx-arm64` | CMake |
+| `osx-x64`, `osx-arm64` | CMake (ZenLib bundled; `build-native.sh osx` builds both from one universal pass) |
 
 Versions are pinned in `Directory.Build.props` (`MediaInfoVersion`, `LibZenVersion`); bumping them
 means updating the submodules to the matching tags.

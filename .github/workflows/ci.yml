@@ -86,10 +86,9 @@ jobs:
             os: ubuntu-latest
           - rid: linux-arm64
             os: ubuntu-24.04-arm
-          # Cross-compiled on Apple Silicon (Intel macOS runner images are retired).
-          - rid: osx-x64
-            os: macos-latest
-          - rid: osx-arm64
+          # One universal build on Apple Silicon, split into osx-arm64 and osx-x64
+          # (Intel macOS runner images are retired).
+          - rid: osx
             os: macos-latest
     steps:
       # Submodules are fetched only on a cache miss (see below).
@@ -110,7 +109,7 @@ jobs:
         id: cache
         uses: actions/cache/restore@v4
         with:
-          path: SharpMediaInfo.Native/native/${{ matrix.rid }}
+          path: SharpMediaInfo.Native/native
           key: native-${{ matrix.rid }}-${{ steps.key.outputs.submodules }}-${{ hashFiles('SharpMediaInfo.Native/build/build-native.*') }}
 
       - name: Fetch submodules
@@ -140,18 +139,20 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: SharpMediaInfo.Native/native/${{ matrix.rid }}
+          path: SharpMediaInfo.Native/native
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
+      # The whole native/ folder holds only this job's <rid>/ folder(s), so the artifact
+      # keeps them and Test/Pack can download straight into native/.
       - name: Upload native artifact
         uses: actions/upload-artifact@v4
         with:
           name: native-${{ matrix.rid }}
-          path: SharpMediaInfo.Native/native/${{ matrix.rid }}
+          path: SharpMediaInfo.Native/native
           if-no-files-found: error
 
   test:
-    name: Test (${{ matrix.name }})
+    name: Test (${{ matrix.rid }})
     runs-on: ${{ matrix.os }}
     needs: [native]
     permissions:
@@ -161,15 +162,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Linux
+          - rid: linux-x64
             os: ubuntu-latest
-            rid: linux-x64
-          - name: Windows
+            native: linux-x64
+          - rid: win-x64
             os: windows-latest
-            rid: win-x64
-          - name: macOS
+            native: win-x64
+          - rid: osx-arm64
             os: macos-latest
-            rid: osx-arm64
+            native: osx
     steps:
       - uses: actions/checkout@v4
         with:
@@ -196,8 +197,8 @@ jobs:
       - name: Download native (${{ matrix.rid }})
         uses: actions/download-artifact@v4
         with:
-          name: native-${{ matrix.rid }}
-          path: SharpMediaInfo.Native/native/${{ matrix.rid }}
+          name: native-${{ matrix.native }}
+          path: SharpMediaInfo.Native/native
 
       - name: Run tests
         shell: bash
@@ -210,7 +211,7 @@ jobs:
             SharpMediaInfo.GUI.Tests ; do
             echo "::group::$proj"
             dotnet run --project "$proj" -c Release -- \
-              --report-trx --report-trx-filename "${{ matrix.name }}.$proj.trx" \
+              --report-trx --report-trx-filename "${{ matrix.rid }}.$proj.trx" \
               --results-directory "$GITHUB_WORKSPACE/TestResults"
             echo "::endgroup::"
           done
@@ -219,7 +220,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.name }}
+          name: test-results-${{ matrix.rid }}
           path: TestResults/*.trx
           if-no-files-found: warn
 

@@ -5,7 +5,9 @@
 # PowerShell script on Windows) and by CI.
 #
 # Usage: build-native.sh [rid]
-#   rid: linux-x64 | linux-arm64 | osx-x64 | osx-arm64   (default: autodetect)
+#   rid: linux-x64 | linux-arm64 | osx-x64 | osx-arm64 | osx   (default: autodetect)
+#   osx builds one universal (arm64 + x86_64) binary in a single pass and splits it
+#   into native/osx-arm64 and native/osx-x64, so CI needs only one macOS runner.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   # .../SharpMediaInfo.Native/build
@@ -30,7 +32,7 @@ fi
 
 case "$rid" in
   linux-*) libname="libmediainfo.so" ;;
-  osx-*)   libname="libmediainfo.dylib" ;;
+  osx|osx-*) libname="libmediainfo.dylib" ;;
   *) echo "build-native.sh only builds linux/osx RIDs (got: $rid)" >&2; exit 1 ;;
 esac
 
@@ -48,6 +50,7 @@ extra_args=()
 case "$rid" in
   osx-x64)   extra_args+=("-DCMAKE_OSX_ARCHITECTURES=x86_64") ;;
   osx-arm64) extra_args+=("-DCMAKE_OSX_ARCHITECTURES=arm64") ;;
+  osx)       extra_args+=("-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64") ;;
 esac
 
 # ZenLib is bundled statically from the sibling submodule; zlib is taken from the
@@ -72,6 +75,17 @@ src="$(find "$build_dir" -name "$libname" \( -type f -o -type l \) -not -path '*
 if [ -z "$src" ]; then
   echo "Build did not produce $libname under $build_dir" >&2
   exit 1
+fi
+
+if [ "$rid" = "osx" ]; then
+  # Split the universal binary into one thin library per RID.
+  for pair in arm64:osx-arm64 x86_64:osx-x64; do
+    out_dir="$native_proj/native/${pair#*:}"
+    mkdir -p "$out_dir"
+    lipo "$src" -thin "${pair%%:*}" -output "$out_dir/$libname"
+    echo "Native ready: $out_dir/$libname"
+  done
+  exit 0
 fi
 
 out_dir="$native_proj/native/$rid"
