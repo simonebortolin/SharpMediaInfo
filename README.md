@@ -1,5 +1,16 @@
 ﻿# SharpMediaInfo
 
+[![CI](https://github.com/simonebortolin/SharpMediaInfo/actions/workflows/ci.yml/badge.svg)](https://github.com/simonebortolin/SharpMediaInfo/actions/workflows/ci.yml)
+[![NuGet SharpMediaInfo](https://img.shields.io/nuget/v/SharpMediaInfo?label=SharpMediaInfo&logo=nuget)](https://www.nuget.org/packages/SharpMediaInfo)
+[![NuGet SharpMediaInfo.Native](https://img.shields.io/nuget/v/SharpMediaInfo.Native?label=SharpMediaInfo.Native&logo=nuget)](https://www.nuget.org/packages/SharpMediaInfo.Native)
+[![NuGet downloads](https://img.shields.io/nuget/dt/SharpMediaInfo?label=downloads&logo=nuget)](https://www.nuget.org/packages/SharpMediaInfo)
+[![GitHub release](https://img.shields.io/github/v/release/simonebortolin/SharpMediaInfo?logo=github)](https://github.com/simonebortolin/SharpMediaInfo/releases/latest)
+[![MediaInfoLib](https://img.shields.io/badge/MediaInfoLib-v26.01-orange)](https://github.com/MediaArea/MediaInfoLib/releases/tag/v26.01)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](#how-the-native-build-works)
+[![Made with Avalonia](https://img.shields.io/badge/made%20with-Avalonia-7c4dff)](https://avaloniaui.net/)
+
 Cross-platform **.NET bindings and GUIs for [MediaInfo](https://mediaarea.net/MediaInfo)**, with the
 native library **built from source** (no runtime downloads), strongly-typed tracks generated at
 compile time, and desktop apps for Windows (WPF) and every platform (Avalonia).
