@@ -29,8 +29,12 @@ env:
   AVALONIA_PROJECT: SharpMediaInfo.GUI.Avalonia/SharpMediaInfo.GUI.Avalonia.csproj
   WPF_PROJECT: SharpMediaInfo.GUI.WPF/SharpMediaInfo.GUI.WPF.csproj
 
-# Stages: Version -> Native (per RID, from the MediaInfoLib submodule) -> Test / Pack / Build GUI
-#         -> Release (master) / Pre-release (PR) -> Publish (GitHub Packages, nuget.org)
+# Stages: Resolve Version -> Native (per RID, from the MediaInfoLib submodule, cached)
+#                         -> Test (Linux, Windows, macOS) -> Pack NuGet
+#                         -> Build (Windows, Linux, macOS desktop apps)
+#         -> Pre-release (pull requests) / Tag & Release (master)
+#         -> on a new release: Publish to GitHub Packages, Publish to nuget.org
+# Pre-release and release need every test, package and app build to succeed.
 jobs:
   version:
     name: Resolve Version
@@ -178,7 +182,7 @@ jobs:
     needs: [native]
     permissions:
       contents: read
-      checks: write
+      checks: write # trx-parser publishes a check run per TRX file
     strategy:
       fail-fast: false
       matrix:
@@ -261,8 +265,20 @@ jobs:
           name: test-results-${{ matrix.rid }}
           path: |
             TestResults/*.trx
+            TestResults/*.html
             **/*.received.*
           if-no-files-found: warn
+
+      # A fork's pull request gets a read-only token, which can't create check runs.
+      - name: Publish test reports
+        if: >-
+          always() && hashFiles('TestResults/*.trx') != '' &&
+          (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: NasAmin/trx-parser@v0.8.1
+        with:
+          TRX_PATH: ${{ github.workspace }}/TestResults
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT_PREFIX: ${{ matrix.label }}
 
   pack:
     name: Pack NuGet
@@ -594,7 +610,7 @@ jobs:
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v4
         with:
-          subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg'
+          subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg, release/*.snupkg'
 
       # One pre-release per PR, replaced on every push so testers always have a single, current
       # link. Each run gets its own tag (pr-<N>-<run>-<attempt>): with immutable releases a tag
@@ -686,7 +702,7 @@ jobs:
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v4
         with:
-          subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg'
+          subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg, release/*.snupkg'
 
       - name: Tag release
         id: tag
@@ -717,7 +733,7 @@ jobs:
             DESCRIPTION="Version v$VERSION already released — bump <Version> in Directory.Build.props."
           elif [ "${{ steps.gh_release.outcome }}" = "success" ]; then
             STATE=success
-            DESCRIPTION="Released v$VERSION with desktop apps and NuGet packages."
+            DESCRIPTION="Released v$VERSION with the apps and the NuGet packages."
           else
             STATE=failure
             DESCRIPTION="Release failed with an unexpected error."
@@ -747,6 +763,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           dotnet-quality: 'ga'
 
+      # The same packages attested and attached in the release job.
       - name: Push to GitHub Packages
         run: |
           dotnet nuget push "nupkg/*.nupkg" \
@@ -754,16 +771,17 @@ jobs:
             --api-key "${{ secrets.GITHUB_TOKEN }}" \
             --skip-duplicate
 
-  # nuget.org via Trusted Publishing. Set the repository variable NUGET_USER to the
-  # nuget.org account that owns the trusted-publishing policy for this workflow; without
-  # it, this job is skipped.
+  # nuget.org with Trusted Publishing (https://www.nuget.org/account/trustedpublishing): the
+  # workflow's OIDC token is exchanged for a short-lived API key, so no key is ever stored. Set the
+  # repository variable NUGET_USER to the nuget.org account owning the trusted publishing policy
+  # for this workflow (ci.yml); without it, skip.
   publish-nuget:
     name: Publish to nuget.org
     runs-on: ubuntu-latest
     needs: [version, release]
     if: needs.version.outputs.tag_exists != 'true'
     permissions:
-      id-token: write
+      id-token: write # nuget.org Trusted Publishing
     env:
       NUGET_USER: ${{ vars.NUGET_USER }}
     steps:
@@ -773,7 +791,7 @@ jobs:
           if [ -n "$NUGET_USER" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::NUGET_USER repository variable not set - skipping nuget.org"
+            echo "::warning::The NUGET_USER repository variable isn't configured - skip nuget.org"
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -798,6 +816,7 @@ jobs:
         with:
           user: ${{ env.NUGET_USER }}
 
+      # The .snupkg symbol packages next to each .nupkg are pushed with it.
       - name: Push to nuget.org
         if: steps.config.outputs.enabled == 'true'
         env:
@@ -807,3 +826,4 @@ jobs:
             --source https://api.nuget.org/v3/index.json \
             --api-key "$API_KEY" \
             --skip-duplicate
+          echo "### nuget.org: pushed $(ls nupkg/*.nupkg | xargs -n1 basename | tr '\n' ' ')" >> "$GITHUB_STEP_SUMMARY"
