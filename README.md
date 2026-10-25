@@ -5,7 +5,7 @@
 [![NuGet SharpMediaInfo.Native](https://img.shields.io/nuget/v/SharpMediaInfo.Native?label=SharpMediaInfo.Native&logo=nuget)](https://www.nuget.org/packages/SharpMediaInfo.Native)
 [![NuGet downloads](https://img.shields.io/nuget/dt/SharpMediaInfo?label=downloads&logo=nuget)](https://www.nuget.org/packages/SharpMediaInfo)
 [![GitHub release](https://img.shields.io/github/v/release/simonebortolin/SharpMediaInfo?logo=github)](https://github.com/simonebortolin/SharpMediaInfo/releases/latest)
-[![MediaInfoLib](https://img.shields.io/badge/MediaInfoLib-v26.05-orange)](https://github.com/MediaArea/MediaInfoLib/releases/tag/v26.05)
+[![MediaInfoLib](https://img.shields.io/badge/MediaInfoLib-v26.10-orange)](https://github.com/MediaArea/MediaInfoLib/releases/tag/v26.10)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](#how-the-native-build-works)
@@ -121,7 +121,7 @@ if (media.Video.Count > 0)
     Console.WriteLine($"Codec  : {media.Video[0].Format}");
 
 // Static library information
-Console.WriteLine(MediaInfo.LibraryVersion()); // "MediaInfoLib - v26.05"
+Console.WriteLine(MediaInfo.LibraryVersion()); // "MediaInfoLib - v26.10"
 ```
 
 A stream can be analyzed the same way with `MediaInfoBuilder.FromStream(stream)`.

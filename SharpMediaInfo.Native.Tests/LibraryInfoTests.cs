@@ -13,7 +13,7 @@ public class LibraryInfoTests
 
         await Assert.That(version).IsNotNull();
         await Assert.That(version).IsNotEmpty();
-        // MediaInfo reports something like "MediaInfoLib - v26.05"
+        // MediaInfo reports something like "MediaInfoLib - v26.10"
         await Assert.That(version).Contains("MediaInfo");
     }
 
