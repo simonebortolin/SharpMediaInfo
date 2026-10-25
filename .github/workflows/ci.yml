@@ -73,7 +73,7 @@ jobs:
           echo "### Version \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
 
   native:
-    name: Native (${{ matrix.rid }})
+    name: Native (${{ matrix.label }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -81,14 +81,18 @@ jobs:
         include:
           # win-arm64 is not built: the pinned ZenLib MSVC project has no ARM64 configuration.
           - rid: win-x64
+            label: Windows x64
             os: windows-latest
           - rid: linux-x64
+            label: Linux x64
             os: ubuntu-latest
           - rid: linux-arm64
+            label: Linux arm64
             os: ubuntu-24.04-arm
           # One universal build on Apple Silicon, split into osx-arm64 and osx-x64
           # (Intel macOS runner images are retired).
           - rid: osx
+            label: macOS universal
             os: macos-latest
     steps:
       # Submodules are fetched only on a cache miss (see below).
@@ -152,7 +156,7 @@ jobs:
           if-no-files-found: error
 
   test:
-    name: Test (${{ matrix.rid }})
+    name: Test (${{ matrix.label }})
     runs-on: ${{ matrix.os }}
     needs: [native]
     permissions:
@@ -163,12 +167,15 @@ jobs:
       matrix:
         include:
           - rid: linux-x64
+            label: Linux x64
             os: ubuntu-latest
             native: linux-x64
           - rid: win-x64
+            label: Windows x64
             os: windows-latest
             native: win-x64
           - rid: osx-arm64
+            label: macOS arm64
             os: macos-latest
             native: osx
     steps:
