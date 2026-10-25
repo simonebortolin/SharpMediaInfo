@@ -223,12 +223,27 @@ jobs:
             echo "::endgroup::"
           done
 
+      # Verify writes *.received.* next to the snapshot it did not match; show the start of
+      # each diff in the log so a snapshot failure is readable without downloading artifacts.
+      - name: Show snapshot diffs
+        if: failure()
+        shell: bash
+        run: |
+          find . -name '*.received.*' -not -path './extern/*' | sort | head -n 3 | while read -r received; do
+            verified="${received/.received./.verified.}"
+            echo "::group::$received"
+            diff -u --strip-trailing-cr "$verified" "$received" | head -n 80 || true
+            echo "::endgroup::"
+          done
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.rid }}
-          path: TestResults/*.trx
+          path: |
+            TestResults/*.trx
+            **/*.received.*
           if-no-files-found: warn
 
   pack:
