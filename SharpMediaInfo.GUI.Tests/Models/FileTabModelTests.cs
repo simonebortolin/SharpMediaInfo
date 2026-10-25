@@ -1,4 +1,5 @@
 using SharpMediaInfo.GUI.Models;
+using SharpMediaInfo.GUI.Tests.TestHelpers;
 
 namespace SharpMediaInfo.GUI.Tests.Models;
 
@@ -30,7 +31,7 @@ public class FileTabModelTests
     {
         // Arrange
         var model = new FileTabModel();
-        var fullPath = @"C:\Videos\test.mp4";
+        var fullPath = TestPaths.Rooted("Videos", "test.mp4");
 
         // Act
         model.FilePath = fullPath;
@@ -46,8 +47,8 @@ public class FileTabModelTests
         // Arrange
         var model = new FileTabModel();
 
-        // Act & Assert - Windows path
-        model.FilePath = @"C:\Folder\SubFolder\video.mkv";
+        // Act & Assert - Native rooted path
+        model.FilePath = TestPaths.Rooted("Folder", "SubFolder", "video.mkv");
         await Assert.That(model.FileName).IsEqualTo("video.mkv");
 
         // Act & Assert - Unix path
@@ -55,7 +56,7 @@ public class FileTabModelTests
         await Assert.That(model.FileName).IsEqualTo("movie.avi");
 
         // Act & Assert - No extension
-        model.FilePath = @"C:\test";
+        model.FilePath = TestPaths.Rooted("test");
         await Assert.That(model.FileName).IsEqualTo("test");
     }
 

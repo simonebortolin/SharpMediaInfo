@@ -30,7 +30,7 @@ public class FileTabViewModelTests
         // Arrange & Act
         var viewModel = ViewModelTestHelper.CreateFileTabViewModel(
             configuration: _configuration,
-            filePath: @"C:\Test\sample.mp4");
+            filePath: TestPaths.Rooted("Test", "sample.mp4"));
 
         // Assert
         await Assert.That(viewModel.Model.FileName).IsEqualTo("sample.mp4");
@@ -57,7 +57,7 @@ public class FileTabViewModelTests
         // Arrange
         var viewModel = ViewModelTestHelper.CreateFileTabViewModel(
             configuration: _configuration,
-            filePath: @"C:\Test\video.mkv");
+            filePath: TestPaths.Rooted("Test", "video.mkv"));
 
         // Act
         var header = viewModel.Header;

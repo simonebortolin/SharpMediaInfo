@@ -279,7 +279,7 @@ public class MainViewModelTests
         var tab = ViewModelTestHelper.CreateFileTabViewModel(
             fileService: _fileServiceMock,
             configuration: _configuration,
-            filePath: @"C:\Videos\test.mp4");
+            filePath: TestPaths.Rooted("Videos", "test.mp4"));
         tab.Model.StandardReport = "Test Report Content";
         tab.Model.IsReady = true;
         _viewModel.Tabs.Add(tab);
@@ -311,7 +311,7 @@ public class MainViewModelTests
         var tab = ViewModelTestHelper.CreateFileTabViewModel(
             fileService: _fileServiceMock,
             configuration: _configuration,
-            filePath: @"C:\Videos\movie.mkv");
+            filePath: TestPaths.Rooted("Videos", "movie.mkv"));
         tab.Model.CompleteReport = "Complete Report Content";
         tab.Model.IsReady = true;
         _viewModel.Tabs.Add(tab);
@@ -344,7 +344,7 @@ public class MainViewModelTests
         var tab = ViewModelTestHelper.CreateFileTabViewModel(
             fileService: _fileServiceMock,
             configuration: _configuration,
-            filePath: @"C:\Music\song.mp3");
+            filePath: TestPaths.Rooted("Music", "song.mp3"));
         tab.Model.CoverData = coverData;
         _viewModel.Tabs.Add(tab);
         _viewModel.SelectedTab = tab;
