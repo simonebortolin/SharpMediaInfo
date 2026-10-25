@@ -17,7 +17,7 @@
     <Company>Simone Bortolin</Company>
     <Product>SharpMediaInfo</Product>
     <Copyright>Copyright (c) Simone Bortolin</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
