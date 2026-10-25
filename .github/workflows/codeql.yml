@@ -1,0 +1,92 @@
+name: CodeQL
+
+# Advanced setup: the default setup scans C# without building it (build-mode none), so the
+# code produced at build time (source generator, XAML) is missing and the analysis quality
+# drops below the thresholds. Build the solution instead.
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '27 4 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 'true'
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows, so the WPF GUI builds as well
+          - language: csharp
+            build-mode: manual
+            os: windows-latest
+          - language: actions
+            build-mode: none
+            os: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Only the MediaInfoLib CSVs are needed (source generator input).
+      - name: Fetch MediaInfoLib submodule
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
+
+      - name: Setup .NET
+        if: matrix.build-mode == 'manual'
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
+
+      # The analysis needs only the managed code: a placeholder native skips the
+      # MediaInfoLib C++ build that SharpMediaInfo.Native runs when the binary is missing.
+      - name: Placeholder native
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: |
+          mkdir -p SharpMediaInfo.Native/native/win-x64
+          touch SharpMediaInfo.Native/native/win-x64/mediainfo.dll
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - name: Build
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: dotnet build SharpMediaInfo.slnx -c Release
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
