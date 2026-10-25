@@ -10,7 +10,6 @@
     <!-- NuGet package configuration -->
     <PackageId>SharpMediaInfo.Native</PackageId>
     <Description>Cross-platform native MediaInfo library bindings for .NET, built from source (MediaInfoLib submodule).</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
