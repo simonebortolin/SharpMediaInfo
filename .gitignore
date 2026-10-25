@@ -271,3 +271,6 @@ __pycache__/
 # Ignore build outputs
 /**/bin/
 /**/obj/
+
+# Local Claude Code settings
+.claude/settings.local.json
