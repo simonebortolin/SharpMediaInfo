@@ -57,8 +57,17 @@ $msbuild = (& $vswhere -latest -requires Microsoft.Component.MSBuild -find "MSBu
             Select-Object -First 1)
 if (-not $msbuild) { throw "VS MSBuild not found. Install the 'Desktop development with C++' workload." }
 
+# Newest MSVC solution: .slnx (VS 2026+) preferred, otherwise classic .sln
+$solution = Get-ChildItem -Path "$mediaInfoLib/Project/MSVC*/MediaInfoLib.slnx" -ErrorAction SilentlyContinue |
+            Sort-Object FullName | Select-Object -Last 1
+if (-not $solution) {
+    $solution = Get-ChildItem -Path "$mediaInfoLib/Project/MSVC*/MediaInfoLib.sln" -ErrorAction SilentlyContinue |
+                Sort-Object FullName | Select-Object -Last 1
+}
+if (-not $solution) { throw "No MediaInfoLib MSVC solution found under $mediaInfoLib/Project." }
+
 # Pick the platform toolset. The MediaInfoLib MSVC solution targets a specific toolset
-# (e.g. v143 for MSVC2022); that toolset is the most compatible with its pinned sources
+# (e.g. v143 for MSVC2022, v145 for MSVC2026); that toolset is the most compatible with its pinned sources
 # (notably bundled {fmt}), so use it when installed. Only when it is missing do we retarget
 # to the newest toolset available, so the build still works on a machine that only ships a
 # newer one.
@@ -69,9 +78,10 @@ $installedToolsets = Get-ChildItem "$vsRoot\MSBuild\Microsoft\VC\*\Platforms\x64
                      Where-Object { $_ -match '^v\d+$' }
 
 $wantedToolset = $null
-$libVcxproj = Get-ChildItem "$mediaInfoLib/Project/MSVC*/Library/MediaInfoLib.vcxproj" -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($libVcxproj) {
-    $m = Select-String -Path $libVcxproj.FullName -Pattern '<PlatformToolset>(v\d+)</PlatformToolset>' | Select-Object -First 1
+# Read it from the library project next to the chosen solution, not from an older MSVC folder.
+$libVcxproj = Join-Path $solution.Directory.FullName "Library/MediaInfoLib.vcxproj"
+if (Test-Path $libVcxproj) {
+    $m = Select-String -Path $libVcxproj -Pattern '<PlatformToolset>(v\d+)</PlatformToolset>' | Select-Object -First 1
     if ($m) { $wantedToolset = $m.Matches[0].Groups[1].Value }
 }
 
@@ -82,15 +92,6 @@ if ($wantedToolset -and ($installedToolsets -contains $wantedToolset)) {
     $toolset = $installedToolsets | Sort-Object { [int]($_ -replace '[^0-9]', '') } | Select-Object -Last 1
     if ($toolset) { $toolsetArg = @("-p:PlatformToolset=$toolset") }
 }
-
-# Newest MSVC solution: .slnx (VS 2026+) preferred, otherwise classic .sln
-$solution = Get-ChildItem -Path "$mediaInfoLib/Project/MSVC*/MediaInfoLib.slnx" -ErrorAction SilentlyContinue |
-            Sort-Object FullName | Select-Object -Last 1
-if (-not $solution) {
-    $solution = Get-ChildItem -Path "$mediaInfoLib/Project/MSVC*/MediaInfoLib.sln" -ErrorAction SilentlyContinue |
-                Sort-Object FullName | Select-Object -Last 1
-}
-if (-not $solution) { throw "No MediaInfoLib MSVC solution found under $mediaInfoLib/Project." }
 
 # Relax the /guard:ehcont mismatch between the MediaInfo DLL and the ZenLib submodule
 # (see msvc-overrides.props) without editing the submodule projects.

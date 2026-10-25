@@ -139,7 +139,9 @@ Dependabot keeps the GitHub Actions current and Renovate the NuGet dependencies.
 | `osx-x64`, `osx-arm64` | CMake (ZenLib bundled; `build-native.sh osx` builds both from one universal pass) |
 
 Versions are pinned in `Directory.Build.props` (`MediaInfoVersion`, `LibZenVersion`); bumping them
-means updating the submodules to the matching tags. The release version is `VersionPrefix` in
+means updating the submodules to the matching tags. ZenLib has no release after v0.4.41, so it is
+pinned to the `master` commit current at the MediaInfoLib release (the MSVC2026 solution needs its
+`Project/MSVC2026` projects). The release version is `VersionPrefix` in
 `BuildVersion.props`: bump it and merging to `master` tags and publishes `vX.Y.Z`.
 
 ---
