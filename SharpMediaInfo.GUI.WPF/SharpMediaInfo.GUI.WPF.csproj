@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>$(DotNetTfm)-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>1.0.0</Version>
+    <AssemblyTitle>SharpMediaInfo (WPF)</AssemblyTitle>
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>

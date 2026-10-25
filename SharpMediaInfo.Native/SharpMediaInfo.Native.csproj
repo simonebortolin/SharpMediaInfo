@@ -10,7 +10,6 @@
     <!-- NuGet package configuration -->
     <PackageId>SharpMediaInfo.Native</PackageId>
     <Description>Cross-platform native MediaInfo library bindings for .NET, built from source (MediaInfoLib submodule).</Description>
-    <Authors>Simon Bortolin</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/simonebortolin/SharpMediaInfo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/simonebortolin/SharpMediaInfo</RepositoryUrl>
@@ -86,9 +85,10 @@
       <NativeBinVersion Condition="'@(VersionLines)' != ''">@(VersionLines)</NativeBinVersion>
       <NativeBinVersion Condition="'$(NativeBinVersion)' == ''">$(MediaInfoVersion)</NativeBinVersion>
       <Version>$(NativeBinVersion)</Version>
+      <Version Condition="'$(VersionSuffix)' != ''">$(NativeBinVersion)-$(VersionSuffix)</Version>
       <AssemblyVersion>$(NativeBinVersion)</AssemblyVersion>
       <FileVersion>$(NativeBinVersion)</FileVersion>
-      <InformationalVersion>$(NativeBinVersion)</InformationalVersion>
+      <InformationalVersion>$(Version)</InformationalVersion>
     </PropertyGroup>
     <Message Importance="high" Text="Syncing project version to MediaInfo ($(EffectiveRid)) = $(NativeBinVersion)" />
   </Target>
