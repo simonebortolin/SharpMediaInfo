@@ -48,11 +48,11 @@ namespace SharpMediaInfo.Generator
 
                     var trackResult = GenerateTrackClass(nameAndContent.name, nameAndContent.csvContent, overrideFields);
                     if (trackResult != null)
-                        spc.AddSource($"SharpMediaInfo.Tracks.{nameAndContent.name}Track.g.cs", trackResult);
+                        spc.AddSource($"SharpMediaInfo.Tracks.{nameAndContent.name}Track.g.cs", NormalizeNewLines(trackResult));
 
                     var helperResult = GeneratePopulateMethodForBuilder(nameAndContent.name, nameAndContent.csvContent, overrideFields);
                     if (helperResult != null)
-                        spc.AddSource($"SharpMediaInfo.MediaInfoBuilder.{nameAndContent.name}.g.cs", helperResult);
+                        spc.AddSource($"SharpMediaInfo.MediaInfoBuilder.{nameAndContent.name}.g.cs", NormalizeNewLines(helperResult));
                 }
                 catch (Exception ex)
                 {
@@ -67,6 +67,11 @@ namespace SharpMediaInfo.Generator
                 }
             });
         }
+
+        // StringBuilder.AppendLine emits Environment.NewLine, so normalize to CRLF to make the
+        // generated sources identical on every OS.
+        private static string NormalizeNewLines(string source) =>
+            source.Replace("\r\n", "\n").Replace("\n", "\r\n");
 
         private IEnumerable<TrackFieldInfo> CalculateOverrideFields(List<TrackFieldInfo> fromCsv, IOverridableField[]? @override = null)
         {
