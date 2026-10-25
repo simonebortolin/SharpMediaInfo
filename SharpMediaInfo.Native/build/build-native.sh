@@ -62,8 +62,10 @@ cmake -S "$mediainfolib/Project/CMake" -B "$build_dir" \
 jobs="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 cmake --build "$build_dir" --config Release -j"$jobs"
 
-# Resolve the real shared library (ignore version symlinks) and copy it out.
-src="$(find "$build_dir" -name "${libname}*" -type f -print 2>/dev/null | head -n1)"
+# Locate the unversioned library name. It is usually a symlink to the versioned file
+# (libmediainfo.so -> libmediainfo.so.0.0.0 on Linux, libmediainfo.dylib ->
+# libmediainfo.0.dylib on macOS); cp -L copies the real file behind it.
+src="$(find "$build_dir" -name "$libname" \( -type f -o -type l \) -not -path '*/CMakeFiles/*' -print 2>/dev/null | head -n1)"
 if [ -z "$src" ]; then
   echo "Build did not produce $libname under $build_dir" >&2
   exit 1
@@ -71,5 +73,5 @@ fi
 
 out_dir="$native_proj/native/$rid"
 mkdir -p "$out_dir"
-cp -f "$src" "$out_dir/$libname"
+cp -fL "$src" "$out_dir/$libname"
 echo "Native ready: $out_dir/$libname"
