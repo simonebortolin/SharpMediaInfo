@@ -613,7 +613,9 @@ jobs:
           sha256sum * > SHA256SUMS
           ls -lh
 
+      # GitHub only stores attestations for public (or organization) repositories.
       - name: Attest build provenance
+        if: ${{ !github.event.repository.private }}
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg, release/*.snupkg'
@@ -705,7 +707,9 @@ jobs:
           sha256sum * > SHA256SUMS
           cat SHA256SUMS
 
+      # GitHub only stores attestations for public (or organization) repositories.
       - name: Attest build provenance
+        if: ${{ !github.event.repository.private }}
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: 'release/*.zip, release/*.tar.gz, release/*.nupkg, release/*.snupkg'
