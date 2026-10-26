@@ -53,11 +53,14 @@ jobs:
         with:
           persist-credentials: false
 
-      # Only the MediaInfoLib CSVs are needed (source generator input).
+      # Only the MediaInfoLib CSVs are needed (source generator input): a sparse checkout keeps
+      # the rest of the submodule (its sample projects, C# bindings, Web.config files) out of the scan.
       - name: Fetch MediaInfoLib submodule
         if: matrix.build-mode == 'manual'
         shell: bash
-        run: git submodule update --init --depth 1 extern/MediaInfoLib
+        run: |
+          git submodule update --init --depth 1 extern/MediaInfoLib
+          git -C extern/MediaInfoLib sparse-checkout set Source/Resource/Text/Stream
 
       - name: Setup .NET
         if: matrix.build-mode == 'manual'
