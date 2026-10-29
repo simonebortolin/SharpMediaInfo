@@ -1,7 +1,8 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+﻿<cascadia:CascadiaWindow xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cascadia="https://github.com/simonebortolin/CascadiaUI"
         xmlns:converters="clr-namespace:SharpMediaInfo.GUI.Avalonia.Converters"
         xmlns:controls="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
         xmlns:views="clr-namespace:SharpMediaInfo.GUI.Avalonia.Views"
@@ -12,6 +13,7 @@
         Title="SharpMediaInfo GUI" 
         Height="600" 
         Width="900"
+        ExtendContentIntoTitleBar="True"
         DragDrop.AllowDrop="True">
     
     <Window.KeyBindings>
@@ -22,113 +24,102 @@
         <KeyBinding Gesture="Ctrl+X" Command="{Binding CloseAllFilesCommand}" />
     </Window.KeyBindings>
 
-    <Grid RowDefinitions="Auto,*,Auto">
-
-        <!-- Menu -->
-        <Menu Grid.Row="0">
-            <MenuItem Header="_File" x:Name="RecentFilesMenuItem">
-                <MenuItem Header="Open _Multiple Files" 
-                          Command="{Binding OpenFilesCommand}" 
-                          HotKey="Ctrl+O"/>
-                <MenuItem Header="Open F_older" 
-                          Command="{Binding OpenFolderCommand}" 
-                          HotKey="Ctrl+Shift+O"/>
-                <MenuItem Header="_Close All Files" 
-                          Command="{Binding CloseAllFilesCommand}" 
-                          HotKey="Ctrl+X"/>
-                <controls:GenericMenuItem Header="Open Recent"
-                          Childrens="{Binding RecentFiles}" 
-                          ChildrenCommand="{Binding OpenRecentFileCommand}" />
-                <Separator/>
-                <MenuItem Header="E_xit" Click="Exit_Click"/>
-            </MenuItem>
-            <MenuItem Header="_Selection">
-                <MenuItem Header="Save _Standard Report" 
-                          Command="{Binding SaveStandardReportCommand}" 
-                          HotKey="Ctrl+S"/>
-                <MenuItem Header="Save _Complete Report" 
-                          Command="{Binding SaveCompleteReportCommand}" 
-                          HotKey="Ctrl+Shift+S"/>
-                <MenuItem Header="Save C_over" 
-                          Command="{Binding SaveCoverCommand}"/>
-            </MenuItem>
-            <MenuItem Header="_Tools">
-                <MenuItem Header="_Settings" 
-                          Command="{Binding OpenSettingCommand}"/>
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About" 
-                          Command="{Binding OpenAboutCommand}"/>
-            </MenuItem>
-        </Menu>
-
-        <!-- Main Content -->
-        <TabControl Grid.Row="1" 
-                    ItemsSource="{Binding Tabs}"
-                    SelectedItem="{Binding SelectedTab}"
-                    Margin="5"
-                    x:Name="MainTabControl"
-                    DragDrop.AllowDrop="True">
-            
-            <TabControl.DataTemplates>
-                <DataTemplate DataType="vm:FileTabViewModel">
-                    <views:FileTabView />
-                </DataTemplate>
-
-                <DataTemplate DataType="vm:SettingTabViewModel">
-                    <views:SettingTabView />
-                </DataTemplate>
-
-                <DataTemplate DataType="vm:AboutTabViewModel">
-                    <views:AboutTabView />
-                </DataTemplate>
-            </TabControl.DataTemplates>
-            
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <!-- Tab header con drag & drop support -->
-                    <StackPanel Orientation="Horizontal" 
-                                DragDrop.AllowDrop="True"
-                                PointerPressed="TabHeader_PointerPressed"
-                                PointerMoved="TabHeader_PointerMoved"
-                                PointerReleased="TabHeader_PointerReleased"
-                                DragDrop.DragOver="TabHeader_DragOver"
-                                DragDrop.Drop="TabHeader_Drop">
-                        <TextBlock Text="{Binding Header}" 
-                                   VerticalAlignment="Center" 
-                                   Margin="0,0,10,0"/>
-                        <Button Content="✕" 
-                                Width="16" 
-                                Height="16"
-                                FontSize="10"
-                                Padding="0"
-                                Margin="0"
-                                VerticalAlignment="Center"
-                                Command="{Binding $parent[TabControl].DataContext.CloseTabCommand}" 
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="Close"
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                BorderThickness="0"
-                                Cursor="Hand"/>
-                    </StackPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <ContentControl Content="{Binding}" />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
-
+    <DockPanel>
         <!-- Status Bar -->
-        <Border Grid.Row="2" 
-                BorderThickness="0,1,0,0"
-                BorderBrush="{DynamicResource SystemControlBackgroundBaseLowBrush}"
-                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-                Padding="8,4">
+        <Border DockPanel.Dock="Bottom" Classes="statusbar">
             <TextBlock Text="{Binding StatusMessage}"/>
         </Border>
-    </Grid>
-</Window>
+
+        <Panel>
+            <!-- Tabs live in the title bar, Windows Terminal style: closable (× / middle
+                 click), reorderable by dragging, + opens files. Dragging a tab off the strip
+                 hands it to another SharpMediaInfo window (see TabStrip_TabDraggedOut). -->
+            <cascadia:CascadiaTabControl x:Name="MainTabControl"
+                                         IsInTitleBar="True"
+                                         CanCloseTabs="True"
+                                         ShowAddButton="True"
+                                         ItemsSource="{Binding Tabs}"
+                                         SelectedItem="{Binding SelectedTab}"
+                                         AddTabCommand="{Binding OpenFilesCommand}"
+                                         CloseTabCommand="{Binding CloseTabCommand}"
+                                         TabDraggedOut="TabStrip_TabDraggedOut"
+                                         DragDrop.AllowDrop="True">
+                <cascadia:CascadiaTabControl.StripHeader>
+                    <Menu>
+                        <MenuItem Header="_File" x:Name="RecentFilesMenuItem">
+                            <MenuItem Header="Open _Multiple Files" 
+                                      Command="{Binding OpenFilesCommand}" 
+                                      HotKey="Ctrl+O"/>
+                            <MenuItem Header="Open F_older" 
+                                      Command="{Binding OpenFolderCommand}" 
+                                      HotKey="Ctrl+Shift+O"/>
+                            <MenuItem Header="_Close All Files" 
+                                      Command="{Binding CloseAllFilesCommand}" 
+                                      HotKey="Ctrl+X"/>
+                            <controls:GenericMenuItem Header="Open Recent"
+                                      Childrens="{Binding RecentFiles}" 
+                                      ChildrenCommand="{Binding OpenRecentFileCommand}" />
+                            <Separator/>
+                            <MenuItem Header="E_xit" Click="Exit_Click"/>
+                        </MenuItem>
+                        <MenuItem Header="_Selection">
+                            <MenuItem Header="Save _Standard Report" 
+                                      Command="{Binding SaveStandardReportCommand}" 
+                                      HotKey="Ctrl+S"/>
+                            <MenuItem Header="Save _Complete Report" 
+                                      Command="{Binding SaveCompleteReportCommand}" 
+                                      HotKey="Ctrl+Shift+S"/>
+                            <MenuItem Header="Save C_over" 
+                                      Command="{Binding SaveCoverCommand}"/>
+                        </MenuItem>
+                        <MenuItem Header="_Tools">
+                            <MenuItem Header="_Settings" 
+                                      Command="{Binding OpenSettingCommand}"/>
+                        </MenuItem>
+                        <MenuItem Header="_Help">
+                            <MenuItem Header="_About" 
+                                      Command="{Binding OpenAboutCommand}"/>
+                        </MenuItem>
+                    </Menu>
+                </cascadia:CascadiaTabControl.StripHeader>
+
+                <TabControl.DataTemplates>
+                    <DataTemplate DataType="vm:FileTabViewModel">
+                        <views:FileTabView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="vm:SettingTabViewModel">
+                        <views:SettingTabView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="vm:AboutTabViewModel">
+                        <views:AboutTabView />
+                    </DataTemplate>
+                </TabControl.DataTemplates>
+
+                <TabControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ITabViewModel">
+                        <TextBlock Text="{Binding Header}" ToolTip.Tip="{Binding Header}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{Binding}" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </cascadia:CascadiaTabControl>
+
+            <!-- Empty state: shown until the first file (or settings/about) tab opens -->
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0,42,0,0"
+                        Spacing="6"
+                        IsHitTestVisible="False"
+                        IsVisible="{Binding !Tabs.Count}">
+                <TextBlock Classes="h2" HorizontalAlignment="Center" Text="Drop media files here"/>
+                <TextBlock Classes="secondary" HorizontalAlignment="Center" Text="or use File → Open (Ctrl+O), or the + button above"/>
+            </StackPanel>
+        </Panel>
+    </DockPanel>
+</cascadia:CascadiaWindow>

@@ -48,11 +48,14 @@ namespace SharpMediaInfo.GUI.Avalonia.Services
                 var glyphTypeface = new Typeface(new FontFamily(fontFamily)).GlyphTypeface;
 
                 // Compare the advance of a narrow and a wide glyph; equal => monospaced.
-                if (!glyphTypeface.TryGetGlyph('i', out var narrow) ||
-                    !glyphTypeface.TryGetGlyph('W', out var wide))
+                var glyphs = glyphTypeface.CharacterToGlyphMap;
+                if (!glyphs.TryGetGlyph('i', out var narrow) ||
+                    !glyphs.TryGetGlyph('W', out var wide) ||
+                    !glyphTypeface.TryGetHorizontalGlyphAdvance(narrow, out var narrowAdvance) ||
+                    !glyphTypeface.TryGetHorizontalGlyphAdvance(wide, out var wideAdvance))
                     return false;
 
-                return glyphTypeface.GetGlyphAdvance(narrow) == glyphTypeface.GetGlyphAdvance(wide);
+                return narrowAdvance == wideAdvance;
             }
             catch
             {

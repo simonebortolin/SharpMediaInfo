@@ -28,7 +28,7 @@ Repository: <https://github.com/simonebortolin/SharpMediaInfo>
   every OS (UTF‑16 wide API on Windows, UTF‑8 narrow API on Linux/macOS where `wchar_t` is 4 bytes).
 - 🏗️ **Source generators** — track classes are generated from MediaInfoLib's own CSV parameter
   definitions (taken straight from the submodule), with JSON overrides for naming and typing.
-- 🖥️ **Two GUIs** — WPF (Windows, Fluent) and Avalonia (Windows/Linux/macOS), sharing one MVVM core.
+- 🖥️ **Two GUIs** — WPF (Windows, Fluent) and Avalonia (Windows/Linux/macOS, [Avalonia Cascadia Theme](https://github.com/simonebortolin/CascadiaUI) with Windows Terminal-style tabs in the title bar), sharing one MVVM core.
 - ✅ **Tested** — unit + integration tests with [TUnit]; CI builds, tests and packs on
   Windows, Linux and macOS.
 - 🎯 **.NET 10** everywhere (the Roslyn source generator targets `netstandard2.0`), with the target
