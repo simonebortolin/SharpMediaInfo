@@ -36,6 +36,15 @@ Repository: <https://github.com/simonebortolin/SharpMediaInfo>
 
 ---
 
+## Screenshots
+
+The Avalonia GUI with the [Avalonia Cascadia Theme](https://github.com/simonebortolin/CascadiaUI): one tab per file in the title bar, the report views as segmented tabs.
+
+| Light | Dark |
+| --- | --- |
+| ![Report, light](docs/screenshots/avalonia-report-light.png) | ![Report, dark](docs/screenshots/avalonia-report-dark.png) |
+| ![Start page, light](docs/screenshots/avalonia-empty-light.png) | ![Settings, dark](docs/screenshots/avalonia-settings-dark.png) |
+
 ## Project layout
 
 | Project | Description | TFM |
