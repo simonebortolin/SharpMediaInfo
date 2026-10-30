@@ -127,7 +127,7 @@ jobs:
         id: key
         shell: bash
         run: |
-          SUBMODULES=$(git ls-tree HEAD extern/MediaInfoLib extern/ZenLib extern/zlib | sha256sum | cut -c1-16)
+          SUBMODULES=$(git ls-tree HEAD extern/ | sha256sum | cut -c1-16)
           echo "submodules=$SUBMODULES" >> "$GITHUB_OUTPUT"
 
       - name: Restore native cache
@@ -140,7 +140,7 @@ jobs:
       - name: Fetch submodules
         if: steps.cache.outputs.cache-hit != 'true'
         shell: bash
-        run: git submodule update --init --recursive --depth 1 extern/MediaInfoLib extern/ZenLib extern/zlib
+        run: git submodule update --init --recursive --depth 1
 
       - name: Install build tools (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
@@ -205,9 +205,9 @@ jobs:
           persist-credentials: false
 
       # Only the MediaInfoLib CSVs are needed here; the native comes prebuilt.
-      - name: Fetch MediaInfoLib and CascadiaUI submodules
+      - name: Fetch MediaInfoLib submodule
         shell: bash
-        run: git submodule update --init --depth 1 extern/MediaInfoLib extern/CascadiaUI
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -361,9 +361,9 @@ jobs:
           persist-credentials: false
 
       # Only the MediaInfoLib CSVs are needed here; the native comes prebuilt.
-      - name: Fetch MediaInfoLib and CascadiaUI submodules
+      - name: Fetch MediaInfoLib submodule
         shell: bash
-        run: git submodule update --init --depth 1 extern/MediaInfoLib extern/CascadiaUI
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -438,8 +438,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Fetch MediaInfoLib and CascadiaUI submodules
-        run: git submodule update --init --depth 1 extern/MediaInfoLib extern/CascadiaUI
+      - name: Fetch MediaInfoLib submodule
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -511,8 +511,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Fetch MediaInfoLib and CascadiaUI submodules
-        run: git submodule update --init --depth 1 extern/MediaInfoLib extern/CascadiaUI
+      - name: Fetch MediaInfoLib submodule
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6

@@ -7,6 +7,3 @@
 [submodule "extern/MediaInfoLib"]
 	path = extern/MediaInfoLib
 	url = https://github.com/MediaArea/MediaInfoLib.git
-[submodule "extern/CascadiaUI"]
-	path = extern/CascadiaUI
-	url = https://github.com/simonebortolin/CascadiaUI.git

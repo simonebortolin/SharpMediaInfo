@@ -62,11 +62,6 @@ jobs:
           git submodule update --init --depth 1 extern/MediaInfoLib
           git -C extern/MediaInfoLib sparse-checkout set Source/Resource/Text/Stream
 
-      # The Avalonia GUI's theme (Avalonia Cascadia Theme) is built from source.
-      - name: Fetch CascadiaUI submodule
-        if: matrix.build-mode == 'manual'
-        run: git submodule update --init --depth 1 extern/CascadiaUI
-
       - name: Setup .NET
         if: matrix.build-mode == 'manual'
         uses: actions/setup-dotnet@v6
