@@ -45,6 +45,8 @@
                                          TabDraggedOut="TabStrip_TabDraggedOut"
                                          DragDrop.AllowDrop="True">
                 <cascadia:CascadiaTabControl.StripHeader>
+                    <!-- Two menus, to keep the title bar for the tabs: everything that acts on files
+                         (and the settings) under File, About under Help. -->
                     <Menu>
                         <MenuItem Header="_File" x:Name="RecentFilesMenuItem">
                             <MenuItem Header="Open _Multiple Files" 
@@ -53,16 +55,13 @@
                             <MenuItem Header="Open F_older" 
                                       Command="{Binding OpenFolderCommand}" 
                                       HotKey="Ctrl+Shift+O"/>
-                            <MenuItem Header="_Close All Files" 
-                                      Command="{Binding CloseAllFilesCommand}" 
-                                      HotKey="Ctrl+X"/>
                             <controls:GenericMenuItem Header="Open Recent"
                                       Childrens="{Binding RecentFiles}" 
                                       ChildrenCommand="{Binding OpenRecentFileCommand}" />
+                            <MenuItem Header="_Close All Files" 
+                                      Command="{Binding CloseAllFilesCommand}" 
+                                      HotKey="Ctrl+X"/>
                             <Separator/>
-                            <MenuItem Header="E_xit" Click="Exit_Click"/>
-                        </MenuItem>
-                        <MenuItem Header="_Selection">
                             <MenuItem Header="Save _Standard Report" 
                                       Command="{Binding SaveStandardReportCommand}" 
                                       HotKey="Ctrl+S"/>
@@ -71,10 +70,11 @@
                                       HotKey="Ctrl+Shift+S"/>
                             <MenuItem Header="Save C_over" 
                                       Command="{Binding SaveCoverCommand}"/>
-                        </MenuItem>
-                        <MenuItem Header="_Tools">
+                            <Separator/>
                             <MenuItem Header="_Settings" 
                                       Command="{Binding OpenSettingCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="E_xit" Click="Exit_Click"/>
                         </MenuItem>
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" 
