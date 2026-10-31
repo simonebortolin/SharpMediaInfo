@@ -45,8 +45,7 @@
                                          TabDraggedOut="TabStrip_TabDraggedOut"
                                          DragDrop.AllowDrop="True">
                 <cascadia:CascadiaTabControl.StripHeader>
-                    <!-- Two menus, to keep the title bar for the tabs: everything that acts on files
-                         (and the settings) under File, About under Help. -->
+                    <!-- A single File menu, to keep the title bar for the tabs. -->
                     <Menu>
                         <MenuItem Header="_File" x:Name="RecentFilesMenuItem">
                             <MenuItem Header="Open _Multiple Files" 
@@ -73,12 +72,10 @@
                             <Separator/>
                             <MenuItem Header="_Settings" 
                                       Command="{Binding OpenSettingCommand}"/>
-                            <Separator/>
-                            <MenuItem Header="E_xit" Click="Exit_Click"/>
-                        </MenuItem>
-                        <MenuItem Header="_Help">
                             <MenuItem Header="_About" 
                                       Command="{Binding OpenAboutCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="E_xit" Click="Exit_Click"/>
                         </MenuItem>
                     </Menu>
                 </cascadia:CascadiaTabControl.StripHeader>
