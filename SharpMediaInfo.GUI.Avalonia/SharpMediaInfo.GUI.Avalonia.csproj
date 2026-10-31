@@ -16,7 +16,7 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
 
     <!-- Avalonia Cascadia Theme (brings Avalonia.Themes.Fluent along) -->
-    <PackageReference Include="CascadiaUI" Version="0.1.0" />
+    <PackageReference Include="CascadiaUI" Version="0.1.1" />
 
     <!-- Avalonia developer tools (F12, Debug only) -->
     <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
