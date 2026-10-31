@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+using CascadiaUI.Controls;
 using SharpMediaInfo.GUI.ViewModels;
 using System;
 using System.IO;
@@ -11,16 +12,14 @@ using System.Linq;
 
 namespace SharpMediaInfo.GUI.Avalonia.Windows;
 
-public partial class MainWindow : Window
+public partial class MainWindow : CascadiaWindow
 {
     private MainViewModel? _viewModel;
     
-    // Drag & drop state
-    private Point? _dragStartPosition;
+    // Drag & drop state: a tab of ours is being dragged out (_isDragging), and it was dropped
+    // back on this same window (_isDraggingTag) - then it must not be closed.
     private bool _isDragging;
     private bool _isDraggingTag;
-    private ITabViewModel? _draggedTab;
-    private Control? _draggedTabControl;
 
     private static DataFormat<string> customFormat;
     private static DataFormat<string> tabFormat;
@@ -135,69 +134,16 @@ public partial class MainWindow : Window
 
     #endregion
 
-    #region Tab Reordering (Internal)
+    #region Tab tear-out (drag a tab to another SharpMediaInfo window)
 
     /// <summary>
-    /// Called when pointer is pressed on a tab header
+    /// The tab strip reorders tabs itself; once a tab is dragged off the strip it hands the
+    /// drag over to us, and we carry on as a cross-window drag-and-drop. Another instance that
+    /// accepts it (see <see cref="Window_Drop"/>) opens the file, and we close our copy.
     /// </summary>
-    private void TabHeader_PointerPressed(object? sender, PointerPressedEventArgs e)
+    private async void TabStrip_TabDraggedOut(object? sender, TabDraggedOutEventArgs e)
     {
-        if (sender is Control control && 
-            control.DataContext is ITabViewModel tabViewModel &&
-            e.GetCurrentPoint(control).Properties.IsLeftButtonPressed)
-        {
-            _dragStartPosition = e.GetPosition(this);
-            _draggedTab = tabViewModel;
-            _draggedTabControl = control;
-            _isDragging = false;
-            _isDraggingTag = false;
-            
-            e.Handled = true;
-        }
-    }
-
-    /// <summary>
-    /// Called when pointer moves over a tab header
-    /// </summary>
-    private void TabHeader_PointerMoved(object? sender, PointerEventArgs e)
-    {
-        if (_draggedTab == null || 
-            _dragStartPosition == null || 
-            _isDragging ||
-            !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-        {
-            return;
-        }
-
-        var currentPosition = e.GetPosition(this);
-        var diff = currentPosition - _dragStartPosition.Value;
-
-        // Check if drag threshold exceeded (5 pixels minimum)
-        if (Math.Abs(diff.X) > 5 || Math.Abs(diff.Y) > 5)
-        {
-            StartTabDrag(e);
-        }
-    }
-
-    /// <summary>
-    /// Called when pointer is released on a tab header
-    /// </summary>
-    private void TabHeader_PointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        // Reset drag state
-        _dragStartPosition = null;
-        _draggedTab = null;
-        _draggedTabControl = null;
-        _isDragging = false;
-        _isDraggingTag = false;
-    }
-
-    /// <summary>
-    /// Start the tab drag operation
-    /// </summary>
-    private async void StartTabDrag(PointerEventArgs e)
-    {
-        if (_draggedTab == null || _draggedTabControl == null)
+        if (e.Item is not ITabViewModel tab)
             return;
 
         _isDragging = true;
@@ -205,27 +151,19 @@ public partial class MainWindow : Window
 
         try
         {
-            // Create drag data with custom format
             var dragData = new DataTransfer();
             var tabItem = new DataTransferItem();
-            tabItem.Set(tabFormat, _draggedTab.Id);
+            tabItem.Set(tabFormat, tab.Id);
             dragData.Add(tabItem);
             var customItem = new DataTransferItem();
-            customItem.Set(customFormat, _draggedTab.Id);
+            customItem.Set(customFormat, tab.Id);
             dragData.Add(customItem);
 
-            // Start drag operation
-            var result = await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Move);
-            
-            // Drag completed
-            if(_isDraggingTag == false && result == DragDropEffects.Move)
-            {
-                var sourceTabValue = _viewModel?.Tabs.IndexOf(_draggedTab);
+            var result = await DragDrop.DoDragDropAsync(e.TriggerEvent, dragData, DragDropEffects.Move);
 
-                if (sourceTabValue.HasValue && sourceTabValue.Value >= 0)
-                {
-                    _viewModel?.Tabs.RemoveAt(sourceTabValue.Value);
-                }
+            if (_isDraggingTag == false && result == DragDropEffects.Move)
+            {
+                _viewModel?.Tabs.Remove(tab);
             }
             System.Diagnostics.Debug.WriteLine($"Tab drag completed with result: {result}");
         }
@@ -237,74 +175,6 @@ public partial class MainWindow : Window
         {
             _isDraggingTag = false;
             _isDragging = false;
-            _dragStartPosition = null;
-            _draggedTab = null;
-            _draggedTabControl = null;
-        }
-    }
-
-    /// <summary>
-    /// Called when something is dragged over a tab header (for drop feedback)
-    /// </summary>
-    private void TabHeader_DragOver(object? sender, DragEventArgs e)
-    {
-        // Check if this is a tab reorder operation
-        if (e.DataTransfer.Contains(tabFormat))
-        {
-            e.DragEffects = DragDropEffects.Move;
-            e.Handled = true;
-        }
-    }
-
-    /// <summary>
-    /// Called when something is dropped on a tab header (perform reorder)
-    /// </summary>
-    private void TabHeader_Drop(object? sender, DragEventArgs e)
-    {
-        if(e.DataTransfer.Contains(tabFormat))
-        {
-
-        }
-        if (sender is not Control targetControl || 
-            targetControl.DataContext is not ITabViewModel targetTab ||
-            DataContext is not MainViewModel viewModel)
-        {
-            return;
-        }
-
-        var targetTabName = targetTab.Id;
-
-        // Check if this is an internal tab reorder
-        if (e.DataTransfer.Contains(tabFormat))
-        {
-            var sourceTab = e.DataTransfer.TryGetValue(tabFormat);
-            if (sourceTab != null && sourceTab != targetTabName)
-            {
-                // Get indices
-                var sourceTabValue = viewModel.Tabs.FirstOrDefault(item => item.Id == sourceTab);
-                var sourceIndex = sourceTabValue != null ? viewModel.Tabs.IndexOf(sourceTabValue) : -2;
-                var targetIndex = viewModel.Tabs.IndexOf(targetTab);
-
-                if (sourceIndex >= 0 && targetIndex >= 0 && sourceIndex != targetIndex)
-                {
-                    // Remove from old position
-                    viewModel.Tabs.RemoveAt(sourceIndex);
-
-                    // Calculate insert index (adjust if moving forward)
-                    var insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex;
-                    
-                    // Insert at new position
-                    viewModel.Tabs.Insert(insertIndex, sourceTabValue!);
-
-                    // Keep selection
-                    viewModel.SelectedTab = sourceTabValue;
-
-                    System.Diagnostics.Debug.WriteLine($"Tab reordered from {sourceIndex} to {insertIndex}");
-                }
-
-                e.Handled = true;
-                _isDraggingTag = true;
-            }
         }
     }
 
