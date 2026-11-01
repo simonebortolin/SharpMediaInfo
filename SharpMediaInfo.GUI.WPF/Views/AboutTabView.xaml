@@ -118,31 +118,45 @@
 
             <Separator/>
 
-            <!-- Credits -->
+            <!-- Credits: one clickable row per used library (see AboutTabViewModel.Libraries) -->
             <StackPanel Margin="12">
-                <TextBlock Text="Credits" 
-                           FontSize="20" 
-                           FontWeight="SemiBold"/>
-                
-                <TextBlock TextWrapping="Wrap" FontSize="14">
-                    <Run Text="Made with &#x2764; and:" FontWeight="SemiBold"/>
-                    <LineBreak/>
-                    <Run Text="&#x2022; MediaInfo - Unified display of technical and tag data"/>
-                    <LineBreak/>
-                    <Run Text="&#x2022; WPF with Fluent Design"/>
-                    <LineBreak/>
-                    <Run Text="&#x2022; CommunityToolkit.Mvvm"/>
-                    <LineBreak/>
-                    <Run Text="&#x2022; .NET 10"/>
-                </TextBlock>
+                <TextBlock Text="Used libraries"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8"/>
+
+                <ItemsControl ItemsSource="{Binding Libraries}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,8">
+                                <TextBlock FontWeight="SemiBold">
+                                    <Hyperlink Command="{Binding DataContext.OpenUrlCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding Url}">
+                                        <Run Text="{Binding Name, Mode=OneWay}"/>
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Description}"
+                                           TextWrapping="Wrap"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
+
+            <TextBlock Text="Made with &#x2764;&#xFE0F; (and a lot of media files)"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       FontSize="12"
+                       Margin="0,16,0,0"/>
 
             <!-- Copyright -->
             <TextBlock Text="{Binding Copyright}"  
                        HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                        FontSize="12"
-                       Margin="0,24,0,0"/>
+                       Margin="0,8,0,0"/>
 
         </StackPanel>
     </ScrollViewer>

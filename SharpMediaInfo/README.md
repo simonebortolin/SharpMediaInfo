@@ -1,6 +1,6 @@
 # SharpMediaInfo
 
-A modern .NET 8 wrapper for the MediaInfo library with source-generated track models and immutable design patterns.
+A modern .NET 10 wrapper for the MediaInfo library with source-generated track models and immutable design patterns.
 
 ## Features
 
@@ -248,11 +248,11 @@ SharpMediaInfo.Generator/      # Source generator
 2. **Builder Pattern** - All construction logic isolated in `MediaInfoBuilder`
 3. **Source Generation** - Track models auto-generated from CSV definitions
 4. **Separation of Concerns** - Native interop isolated in separate project
-5. **Modern .NET** - Leverages .NET 8 features and nullable reference types
+5. **Modern .NET** - Leverages .NET 10 features and nullable reference types
 
 ## Requirements
 
-- .NET 8.0 or later
+- .NET 10.0 or later
 - MediaInfo native library (MediaInfo.dll on Windows, libmediainfo on Unix)
 
 ## Contributing
