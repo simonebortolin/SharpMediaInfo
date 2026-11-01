@@ -382,11 +382,14 @@ jobs:
           key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
           restore-keys: nuget-gui-${{ runner.os }}-
 
-      - name: Download native
+      # Every Windows native: besides the target RID, SharpMediaInfo.Native also builds for the
+      # runner's own RID (win-x64) during publish, so win-arm64 needs the win-x64 native too.
+      - name: Download natives
         uses: actions/download-artifact@v8
         with:
-          name: native-${{ matrix.rid }}
+          pattern: native-win-*
           path: SharpMediaInfo.Native/native
+          merge-multiple: true
 
       - name: Publish desktop apps
         shell: bash
@@ -404,6 +407,10 @@ jobs:
               -p:DebugType=embedded \
               -p:ContinuousIntegrationBuild=true \
               -o "$2" "${@:3}"
+            # Ship only this RID's native.
+            if [ -d "$2/runtimes" ]; then
+              find "$2/runtimes" -mindepth 1 -maxdepth 1 ! -name "${{ matrix.rid }}" -exec rm -rf {} +
+            fi
             test -f "$2/runtimes/${{ matrix.rid }}/native/mediainfo.dll" \
               || { echo "::error::$2 was published without the MediaInfo native"; exit 1; }
           }
