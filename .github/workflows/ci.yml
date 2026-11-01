@@ -100,9 +100,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # win-arm64 is not built: the pinned ZenLib MSVC project has no ARM64 configuration.
           - rid: win-x64
             label: Windows x64
+            os: windows-latest
+          # Cross-compiled with the MSVC ARM64 toolset on the x64 runner (the MSVC2026
+          # ZenLib/zlib/MediaInfoLib projects all have a Release|ARM64 configuration).
+          - rid: win-arm64
+            label: Windows arm64
             os: windows-latest
           - rid: linux-x64
             label: Linux x64
@@ -350,7 +354,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rid: [win-x64]
+        rid: [win-x64, win-arm64]
     env:
       VERSION: ${{ needs.version.outputs.version }}
       VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
@@ -378,11 +382,14 @@ jobs:
           key: nuget-gui-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
           restore-keys: nuget-gui-${{ runner.os }}-
 
-      - name: Download native
+      # Every Windows native: besides the target RID, SharpMediaInfo.Native also builds for the
+      # runner's own RID (win-x64) during publish, so win-arm64 needs the win-x64 native too.
+      - name: Download natives
         uses: actions/download-artifact@v8
         with:
-          name: native-${{ matrix.rid }}
+          pattern: native-win-*
           path: SharpMediaInfo.Native/native
+          merge-multiple: true
 
       - name: Publish desktop apps
         shell: bash
@@ -400,6 +407,10 @@ jobs:
               -p:DebugType=embedded \
               -p:ContinuousIntegrationBuild=true \
               -o "$2" "${@:3}"
+            # Ship only this RID's native.
+            if [ -d "$2/runtimes" ]; then
+              find "$2/runtimes" -mindepth 1 -maxdepth 1 ! -name "${{ matrix.rid }}" -exec rm -rf {} +
+            fi
             test -f "$2/runtimes/${{ matrix.rid }}/native/mediainfo.dll" \
               || { echo "::error::$2 was published without the MediaInfo native"; exit 1; }
           }
