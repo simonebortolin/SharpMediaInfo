@@ -34,8 +34,14 @@ namespace SharpMediaInfo.GUI.Avalonia.Controls
             ItemsSource = fonts;
 
             SelectionChanged += (_, _) => UpdateSelectedFontFamily();
-            this.GetObservable(SelectedFontFamilyProperty)
-                .Subscribe(_ => UpdateSelectedItem());
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == SelectedFontFamilyProperty)
+                UpdateSelectedItem();
         }
 
         private void UpdateSelectedItem()

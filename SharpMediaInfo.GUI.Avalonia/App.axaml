@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="SharpMediaInfo.GUI.Avalonia.App"
              xmlns:local="clr-namespace:SharpMediaInfo.GUI.Avalonia.Controls"
+             xmlns:cascadia="https://github.com/simonebortolin/CascadiaUI"
              RequestedThemeVariant="Default">
     <Application.Styles>
-        <FluentTheme />
-        
+        <!-- Avalonia Cascadia Theme (includes Fluent), desktop-dense like SourceGit -->
+        <cascadia:CascadiaTheme Density="Compact" />
     </Application.Styles>
 </Application>

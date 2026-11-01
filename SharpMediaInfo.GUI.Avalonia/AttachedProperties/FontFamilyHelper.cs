@@ -16,16 +16,16 @@ namespace SharpMediaInfo.GUI.Avalonia.AttachedProperties
 
         static FontFamilyHelper()
         {
-            FontFamilyStringProperty.Changed.Subscribe(e =>
+            FontFamilyStringProperty.Changed.AddClassHandler<Control>((sender, e) =>
             {
-                if (e.NewValue.Value is not string s)
+                if (e.GetNewValue<string?>() is not string s)
                 {
                     return;
                 }
 
-                if (e.Sender is TextBox tb) tb.FontFamily = new FontFamily(s);
-                else if (e.Sender is TextBlock tbl) tbl.FontFamily = new FontFamily(s);
-                else if (e.Sender is TreeView tr) tr.FontFamily = new FontFamily(s);
+                if (sender is TextBox tb) tb.FontFamily = new FontFamily(s);
+                else if (sender is TextBlock tbl) tbl.FontFamily = new FontFamily(s);
+                else if (sender is TreeView tr) tr.FontFamily = new FontFamily(s);
             });
         }
 
