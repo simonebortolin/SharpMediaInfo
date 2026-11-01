@@ -140,7 +140,8 @@ assembles the full NuGet package.
 
 Every release on `master` (and every pull request, as a `pr-<N>-…` pre-release that is replaced on
 each push and deleted when the PR closes) ships the NuGet packages plus self-contained desktop apps:
-Avalonia for `win-x64`, `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64`, and WPF for `win-x64`.
+Avalonia for `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64`, and WPF for
+`win-x64` and `win-arm64`.
 Dependabot keeps the GitHub Actions current and Renovate the NuGet dependencies.
 
 | RID | Toolchain |

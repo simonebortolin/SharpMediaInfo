@@ -100,9 +100,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # win-arm64 is not built: the pinned ZenLib MSVC project has no ARM64 configuration.
           - rid: win-x64
             label: Windows x64
+            os: windows-latest
+          # Cross-compiled with the MSVC ARM64 toolset on the x64 runner (the MSVC2026
+          # ZenLib/zlib/MediaInfoLib projects all have a Release|ARM64 configuration).
+          - rid: win-arm64
+            label: Windows arm64
             os: windows-latest
           - rid: linux-x64
             label: Linux x64
@@ -350,7 +354,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rid: [win-x64]
+        rid: [win-x64, win-arm64]
     env:
       VERSION: ${{ needs.version.outputs.version }}
       VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
