@@ -1,4 +1,4 @@
-using SharpMediaInfo.Native.Enum;
+﻿using SharpMediaInfo.Native.Enum;
 using System;
 using System.Runtime.InteropServices;
 
@@ -17,8 +17,12 @@ namespace SharpMediaInfo.Native.Interop
     /// </remarks>
     internal static partial class MediaInfoNativeMethods
     {
-        // Logical library name used by the imports. Resolved at runtime via SetDllImportResolver.
-        private const string MEDIAINFO_LIB_FILENAME = "MediaInfo";
+        // Logical library name used by the imports. On desktop it is resolved at runtime via
+        // SetDllImportResolver (mediainfo.dll / libmediainfo.so / libmediainfo.dylib). In the
+        // browser (browser-wasm) MediaInfoLib is linked statically into the runtime and the SDK
+        // binds imports by the archive's file name, so this must stay "libmediainfo" to match
+        // libmediainfo.a.
+        private const string MEDIAINFO_LIB_FILENAME = "libmediainfo";
 
         // On Windows wchar_t is 2 bytes (UTF-16); elsewhere it is 4 bytes, so the wide API cannot
         // be marshalled as UTF-16 and we route through the narrow (UTF-8) MediaInfoA_* functions.
@@ -128,6 +132,9 @@ namespace SharpMediaInfo.Native.Interop
         [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Continue")]
         private static partial nint OpenBufferContinue(IntPtr handle, IntPtr buffer, nuint bufferSize);
 
+        [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Continue_GoTo_Get")]
+        private static partial ulong OpenBufferContinueGoToGet(IntPtr handle);
+
         [LibraryImport(MEDIAINFO_LIB_FILENAME, EntryPoint = "MediaInfo_Open_Buffer_Finalize")]
         private static partial nint OpenBufferFinalize(IntPtr handle);
 
@@ -187,6 +194,16 @@ namespace SharpMediaInfo.Native.Interop
         /// <summary>Feeds a buffer to the library. Returns the status bitfield.</summary>
         public static nint ReadBuffer(IntPtr handle, IntPtr buffer, nuint bufferSize) =>
             OpenBufferContinue(handle, buffer, bufferSize);
+
+        /// <summary>
+        /// After <see cref="ReadBuffer"/>, the absolute offset the library wants the next buffer
+        /// to start from, or <c>null</c> to simply continue with the following bytes.
+        /// </summary>
+        public static long? GetBufferSeekRequest(IntPtr handle)
+        {
+            ulong offset = OpenBufferContinueGoToGet(handle);
+            return offset == ulong.MaxValue ? null : (long)offset;
+        }
 
         /// <summary>Finalizes a buffered stream. Returns true on success.</summary>
         public static bool FinalizeBuffer(IntPtr handle) => OpenBufferFinalize(handle) != 0;

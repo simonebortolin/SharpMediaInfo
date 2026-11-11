@@ -56,6 +56,7 @@ The Avalonia GUI with the [Avalonia Cascadia Theme](https://github.com/simonebor
 | `SharpMediaInfo.GUI.WPF` | WPF desktop app (Windows) | net10.0-windows |
 | `SharpMediaInfo.GUI.Avalonia` | Avalonia desktop app (cross-platform) | net10.0 / net10.0-windows |
 | `SharpMediaInfo.*.Tests` | TUnit test suites | net10.0 |
+| `SharpMediaInfo.Wasm.Smoke` | WebAssembly smoke test (MediaInfoLib linked into the .NET wasm runtime, run with Node) | net10.0 (browser-wasm) |
 | `extern/MediaInfoLib`, `extern/ZenLib`, `extern/zlib` | Pinned native sources (submodules) | — |
 
 ---
@@ -133,7 +134,24 @@ if (media.Video.Count > 0)
 Console.WriteLine(MediaInfo.LibraryVersion()); // "MediaInfoLib - v26.10"
 ```
 
-A stream can be analyzed the same way with `MediaInfoBuilder.FromStream(stream)`.
+A seekable stream can be analyzed the same way with `MediaInfoBuilder.FromStream(stream)`. The
+stream is read in 256 KB chunks, following MediaInfo's seek requests, so only the parts the parser
+needs are read (typically a few MB, whatever the file size) and nothing is copied in memory.
+`BuildAsync()` does the same with `Stream.ReadAsync`, for streams whose reads are truly
+asynchronous (browser files, network):
+
+```csharp
+await using var stream = await storageFile.OpenReadAsync();
+var media = await MediaInfoBuilder.FromStream(stream).WithReports().BuildAsync(cancellationToken);
+```
+
+### WebAssembly (browser-wasm)
+
+The packages also work in .NET WebAssembly apps (`Microsoft.NET.Sdk.WebAssembly`, Avalonia.Browser,
+Blazor WebAssembly). MediaInfoLib ships as a static archive (`runtimes/browser-wasm/native/libmediainfo.a`)
+that the package's `buildTransitive` targets hand to the WebAssembly SDK, which links it into
+`dotnet.native.wasm`. That needs the native build tools: `dotnet workload install wasm-tools`.
+In the browser there are no file paths, so use `FromStream(...).BuildAsync()`.
 
 ---
 
@@ -158,6 +176,18 @@ Dependabot keeps the GitHub Actions current and Renovate the NuGet dependencies.
 | `win-x64`, `win-x86`, `win-arm64` | MSVC solution (`.sln`/`.slnx`) |
 | `linux-x64`, `linux-arm64` | CMake (ZenLib bundled, system zlib) |
 | `osx-x64`, `osx-arm64` | CMake (ZenLib bundled; `build-native.sh osx` builds both from one universal pass) |
+| `browser-wasm` | CMake + Emscripten of the .NET `wasm-tools` workload (`build-native-wasm.sh`): static `libmediainfo.a` with ZenLib, zlib from the .NET runtime |
+
+`browser-wasm` is built with the same Emscripten (and the same `-fwasm-exceptions -msimd128` flags) the
+.NET runtime is linked with, so no separate emsdk is needed. The `SharpMediaInfo.Wasm.Smoke` app links
+it into a WebAssembly app and runs it under Node in CI:
+
+```bash
+dotnet workload install wasm-tools
+bash SharpMediaInfo.Native/build/build-native-wasm.sh          # -> native/browser-wasm/libmediainfo.a
+dotnet publish SharpMediaInfo.Wasm.Smoke -c Release -o artifacts/wasm-smoke
+cd artifacts/wasm-smoke/wwwroot && node main.mjs               # prints PASS/FAIL per check
+```
 
 Versions are pinned in `Directory.Build.props` (`MediaInfoVersion`, `LibZenVersion`); bumping them
 means updating the submodules to the matching tags. ZenLib has no release after v0.4.41, so it is

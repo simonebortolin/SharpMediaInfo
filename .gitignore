@@ -264,6 +264,7 @@ __pycache__/
 /SharpMediaInfo.Native/native/**/*.dll
 /SharpMediaInfo.Native/native/**/*.so
 /SharpMediaInfo.Native/native/**/*.dylib
+/SharpMediaInfo.Native/native/**/*.a
 /SharpMediaInfo.Native/native/**/VERSION.txt
 # CMake build trees created inside the submodule by build-native.sh
 /extern/MediaInfoLib/Project/CMake/build-*/

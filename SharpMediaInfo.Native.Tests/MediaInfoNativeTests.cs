@@ -1,4 +1,4 @@
-using SharpMediaInfo.Native.Exception;
+﻿using SharpMediaInfo.Native.Exception;
 using SharpMediaInfo.Native.Tests.Fixtures;
 
 namespace SharpMediaInfo.Native.Tests;
@@ -107,5 +107,79 @@ public class MediaInfoNativeTests
 
         native.Dispose();
         native.Dispose(); // must not throw
+    }
+
+    // 2 GB of PCM: far more than any chunked reader should touch. The title sits in a chunk
+    // after the data, so finding it requires following MediaInfo's seek request.
+    private const long LargeDataSize = 2L * 1024 * 1024 * 1024;
+    private const long MaxBytesRead = 16L * 1024 * 1024;
+    private const string TrailingTitle = "Chunked reader";
+
+    [Test]
+    public async Task OpenStream_LargeStream_FollowsSeeksAndReadsOnlyWhatItNeeds()
+    {
+        using var stream = new VirtualWavStream(LargeDataSize, title: TrailingTitle);
+        using var native = IMediaInfoNative.Create(parseCoverData: false);
+
+        native.OpenStream(stream);
+
+        await Assert.That(native.GetStreamCount(StreamKind.Audio)).IsEqualTo(1);
+        await Assert.That(native.GetParameter(StreamKind.General, 0, "FileSize")).IsEqualTo(stream.Length.ToString());
+        await Assert.That(native.GetParameter(StreamKind.General, 0, "Title")).IsEqualTo(TrailingTitle);
+        await Assert.That(stream.SeekCount).IsGreaterThanOrEqualTo(1);
+        await Assert.That(stream.BytesRead).IsLessThan(MaxBytesRead);
+    }
+
+    [Test]
+    public async Task OpenStreamAsync_LargeStream_FollowsSeeksWithAsyncReads()
+    {
+        using var stream = new VirtualWavStream(LargeDataSize, title: TrailingTitle);
+        using var native = IMediaInfoNative.Create(parseCoverData: false);
+
+        await native.OpenStreamAsync(stream);
+
+        await Assert.That(native.GetStreamCount(StreamKind.Audio)).IsEqualTo(1);
+        await Assert.That(native.GetParameter(StreamKind.Audio, 0, "Format")).IsEqualTo("PCM");
+        await Assert.That(native.GetParameter(StreamKind.General, 0, "Title")).IsEqualTo(TrailingTitle);
+        await Assert.That(stream.SeekCount).IsGreaterThanOrEqualTo(1);
+        await Assert.That(stream.AsyncReadCount).IsGreaterThanOrEqualTo(1);
+        await Assert.That(stream.BytesRead).IsLessThan(MaxBytesRead);
+    }
+
+    [Test]
+    public async Task OpenStreamAsync_SmallWav_MatchesOpenFile()
+    {
+        var path = WavFixture.CreateTempWavFile();
+        try
+        {
+            using var fromFile = IMediaInfoNative.Create(parseCoverData: false);
+            fromFile.OpenFile(path);
+
+            using var stream = new MemoryStream(WavFixture.CreatePcmWav());
+            using var fromStream = IMediaInfoNative.Create(parseCoverData: false);
+            await fromStream.OpenStreamAsync(stream);
+
+            foreach (var parameter in new[] { "Format", "Duration", "SamplingRate", "Channels", "BitDepth" })
+            {
+                await Assert.That(fromStream.GetParameter(StreamKind.Audio, 0, parameter))
+                    .IsEqualTo(fromFile.GetParameter(StreamKind.Audio, 0, parameter));
+            }
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Test]
+    public async Task OpenStreamAsync_Cancelled_Throws()
+    {
+        using var stream = new VirtualWavStream(LargeDataSize);
+        using var native = IMediaInfoNative.Create(parseCoverData: false);
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        await Assert.That(async () => await native.OpenStreamAsync(stream, cts.Token))
+            .Throws<OperationCanceledException>();
     }
 }

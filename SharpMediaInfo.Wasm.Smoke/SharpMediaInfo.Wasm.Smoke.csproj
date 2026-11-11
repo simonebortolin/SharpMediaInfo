@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <!--
+    Smoke test for the browser-wasm build: links MediaInfoLib (native/browser-wasm/libmediainfo.a,
+    produced by build/build-native-wasm.sh) into the .NET WebAssembly runtime and analyzes media
+    from managed streams. Run it with Node: see run-smoke.sh. Requires: dotnet workload install wasm-tools
+  -->
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharpMediaInfo\SharpMediaInfo.csproj" />
+  </ItemGroup>
+
+  <!-- Project references don't flow NuGet native assets: link the static archive explicitly. -->
+  <Import Project="..\SharpMediaInfo.Native\build\SharpMediaInfo.Native.Browser.targets" />
+</Project>

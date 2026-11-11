@@ -55,6 +55,18 @@ public class MediaInfoBuilderTests
     }
 
     [Test]
+    public async Task FromStream_BuildAsync_Parses()
+    {
+        using var stream = new MemoryStream(WavFixture.CreatePcmWav());
+
+        var media = await MediaInfoBuilder.FromStream(stream).WithReports().BuildAsync();
+
+        await Assert.That(media.AudioCount).IsEqualTo(1);
+        await Assert.That(media.InfoStandard).IsNotNull();
+        await Assert.That(media.InfoStandard!).Contains("Audio");
+    }
+
+    [Test]
     public async Task WithReports_PopulatesStandardReport()
     {
         var path = WavFixture.CreateTempWavFile();

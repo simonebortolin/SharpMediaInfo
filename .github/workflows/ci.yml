@@ -29,8 +29,8 @@ env:
   AVALONIA_PROJECT: SharpMediaInfo.GUI.Avalonia/SharpMediaInfo.GUI.Avalonia.csproj
   WPF_PROJECT: SharpMediaInfo.GUI.WPF/SharpMediaInfo.GUI.WPF.csproj
 
-# Stages: Resolve Version -> Native (per RID, from the MediaInfoLib submodule, cached)
-#                         -> Test (Linux, Windows, macOS) -> Pack NuGet
+# Stages: Resolve Version -> Native (per RID + browser-wasm, from the MediaInfoLib submodule, cached)
+#                         -> Test (Linux, Windows, macOS, WebAssembly) -> Pack NuGet
 #                         -> Build (Windows, Linux, macOS desktop apps)
 #         -> Pre-release (pull requests) / Tag & Release (master)
 #         -> on a new release: Publish to GitHub Packages, Publish to nuget.org
@@ -119,6 +119,11 @@ jobs:
           - rid: osx
             label: macOS universal
             os: macos-latest
+          # Static archive for .NET WebAssembly apps, compiled with the Emscripten SDK of the
+          # .NET wasm-tools workload (the same toolchain that links the runtime).
+          - rid: browser-wasm
+            label: WebAssembly
+            os: ubuntu-latest
     steps:
       # Submodules are fetched only on a cache miss (see below).
       - uses: actions/checkout@v7
@@ -139,7 +144,8 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: SharpMediaInfo.Native/native
-          key: native-${{ matrix.rid }}-${{ steps.key.outputs.submodules }}-${{ hashFiles('SharpMediaInfo.Native/build/build-native.*') }}
+          # browser-wasm also depends on the workload's Emscripten, i.e. on the .NET version.
+          key: native-${{ matrix.rid }}-${{ steps.key.outputs.submodules }}-${{ matrix.rid == 'browser-wasm' && format('{0}-{1}', env.DOTNET_VERSION, hashFiles('SharpMediaInfo.Native/build/build-native-wasm.sh')) || hashFiles('SharpMediaInfo.Native/build/build-native.*') }}
 
       - name: Fetch submodules
         if: steps.cache.outputs.cache-hit != 'true'
@@ -154,11 +160,24 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
         run: brew install cmake
 
+      - name: Setup .NET (WebAssembly)
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.rid == 'browser-wasm'
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
+
+      - name: Install wasm-tools workload
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.rid == 'browser-wasm'
+        run: dotnet workload install wasm-tools
+
       - name: Build native (${{ matrix.rid }})
         if: steps.cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
+          if [ "${{ matrix.rid }}" == "browser-wasm" ]; then
+            bash SharpMediaInfo.Native/build/build-native-wasm.sh
+          elif [ "$RUNNER_OS" == "Windows" ]; then
             powershell -NoProfile -ExecutionPolicy Bypass -File SharpMediaInfo.Native/build/build-native.ps1 -Rid ${{ matrix.rid }}
           else
             bash SharpMediaInfo.Native/build/build-native.sh ${{ matrix.rid }}
@@ -284,10 +303,54 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPORT_PREFIX: ${{ matrix.label }}
 
+  # Links the browser-wasm archive into a .NET WebAssembly app and runs it under Node:
+  # MediaInfoLib inside the WebAssembly runtime, chunked async stream analysis included.
+  test-wasm:
+    name: Test (WebAssembly)
+    runs-on: ubuntu-latest
+    needs: [native]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Fetch MediaInfoLib submodule
+        shell: bash
+        run: git submodule update --init --depth 1 extern/MediaInfoLib
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'ga'
+
+      - name: Install wasm-tools workload
+        run: dotnet workload install wasm-tools
+
+      # browser-wasm for the app, linux-x64 because SharpMediaInfo.Native itself is built
+      # for the host RID.
+      - name: Download natives
+        uses: actions/download-artifact@v8
+        with:
+          pattern: native-{browser-wasm,linux-x64}
+          path: SharpMediaInfo.Native/native
+          merge-multiple: true
+
+      - name: Publish smoke test
+        run: dotnet publish SharpMediaInfo.Wasm.Smoke -c Release -o artifacts/wasm-smoke
+
+      - name: Run smoke test (Node)
+        shell: bash
+        run: |
+          NODE="$(ls -d "$HOME"/.dotnet/packs/Microsoft.NET.Runtime.Emscripten.*.Node.linux-x64/*/tools/bin/node 2>/dev/null | sort -V | tail -n1)"
+          [ -x "$NODE" ] || NODE="$(command -v node)"
+          cd artifacts/wasm-smoke/wwwroot
+          "$NODE" main.mjs
+
   pack:
     name: Pack NuGet
     runs-on: ubuntu-latest
-    needs: [version, native, test]
+    needs: [version, native, test, test-wasm]
     env:
       VERSION_SUFFIX: ${{ needs.version.outputs.version_suffix }}
     steps:
