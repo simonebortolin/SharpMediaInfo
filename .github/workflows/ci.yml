@@ -364,6 +364,21 @@ jobs:
           cd artifacts/wasm-smoke/wwwroot
           "$NODE" main.mjs
 
+      # The Avalonia GUI for the browser: a static site (wwwroot) that any web server can host.
+      - name: Publish browser GUI
+        shell: bash
+        run: |
+          dotnet publish SharpMediaInfo.GUI.Avalonia.Browser -c Release -o artifacts/web
+          # Fail if the relink silently skipped MediaInfoLib: the runtime would then miss its exports.
+          grep -q MediaInfo_New artifacts/web/wwwroot/_framework/dotnet.native.*.wasm
+
+      - name: Upload browser GUI
+        uses: actions/upload-artifact@v7
+        with:
+          name: SharpMediaInfo-web
+          path: artifacts/web/wwwroot
+          if-no-files-found: error
+
   pack:
     name: Pack NuGet
     runs-on: ubuntu-latest

@@ -1,0 +1,30 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    html, body { background: #202020; color: #ffffff; }
+}
+
+#out {
+    width: 100vw;
+    height: 100vh;
+}
+
+.splash {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-family: system-ui, sans-serif;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+/* Avalonia mounts its own elements inside #out; hide the splash once it has. */
+.splash:not(:only-child) {
+    display: none;
+}
