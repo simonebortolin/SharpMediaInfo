@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - release/*
   pull_request:
     branches:
       - master
@@ -335,6 +336,20 @@ jobs:
               -p:ContinuousIntegrationBuild=true
           done
           ls -lh artifacts
+
+      # NuGet restore rejects packages with '..' in an entry path, and natives belong under
+      # runtimes/<rid>/native only - never as contentFiles.
+      - name: Check package layout
+        run: |
+          BAD=0
+          for PKG in artifacts/*.nupkg; do
+            ENTRIES=$(unzip -Z1 "$PKG")
+            if printf '%s\n' "$ENTRIES" | grep -E '(^|/)\.\.(/|$)|^contentFiles/|^content/'; then
+              echo "::error::$(basename "$PKG") has contentFiles or '..' entries"
+              BAD=1
+            fi
+          done
+          exit $BAD
 
       - name: Upload NuGet artifact
         uses: actions/upload-artifact@v7
@@ -688,7 +703,9 @@ jobs:
     name: Tag & Release
     runs-on: ubuntu-latest
     needs: [version, test, pack, build-windows, build-linux, build-macos]
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    if: >-
+      (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/')) &&
+      github.event_name != 'pull_request'
     permissions:
       contents: write
       statuses: write
@@ -742,6 +759,8 @@ jobs:
           tag_name: v${{ env.VERSION }}
           name: v${{ env.VERSION }}
           generate_release_notes: true
+          # Maintenance releases from release/* branches must not become "Latest".
+          make_latest: ${{ github.ref == 'refs/heads/master' }}
           files: release/*
 
       # A push that does not release on purpose (build, CI or docs changes) carries
