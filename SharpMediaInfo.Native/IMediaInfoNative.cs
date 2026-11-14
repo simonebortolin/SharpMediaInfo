@@ -60,11 +60,22 @@ namespace SharpMediaInfo.Native
         void OpenFile(string path);
 
         /// <summary>
-        /// Opens the specified stream for reading or writing operations.
+        /// Analyzes a readable, seekable stream. The stream is read in chunks, following the
+        /// seek requests of the library, so only the parts MediaInfo needs are read (typically
+        /// a few MB, whatever the size of the file) and nothing is buffered in memory.
         /// </summary>
-        /// <param name="stream">The stream to open. The stream must be readable or writable, depending on the intended operation. Cannot be
-        /// null.</param>
+        /// <param name="stream">A readable, seekable, non-empty stream. Cannot be null.</param>
         void OpenStream(Stream stream);
+
+        /// <summary>
+        /// Asynchronous variant of <see cref="OpenStream(Stream)"/>: reads go through
+        /// <see cref="Stream.ReadAsync(Memory{byte}, CancellationToken)"/>, so the caller's thread is free
+        /// while I/O is pending (needed in the browser, where there is a single thread and
+        /// file reads are asynchronous).
+        /// </summary>
+        /// <param name="stream">A readable, seekable, non-empty stream. Cannot be null.</param>
+        /// <param name="cancellationToken">Cancels the analysis between two reads.</param>
+        Task OpenStreamAsync(Stream stream, CancellationToken cancellationToken = default);
 
         static IMediaInfoNative Create(bool parseCoverData) => new MediaInfoNative(parseCoverData);
 

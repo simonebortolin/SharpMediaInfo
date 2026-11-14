@@ -18,11 +18,14 @@
     <IsWindowsRid>$([System.String]::Copy($(EffectiveRid)).StartsWith('win'))</IsWindowsRid>
     <IsLinuxRid>$([System.String]::Copy($(EffectiveRid)).StartsWith('linux'))</IsLinuxRid>
     <IsOsxRid>$([System.String]::Copy($(EffectiveRid)).StartsWith('osx'))</IsOsxRid>
+    <IsBrowserRid>$([System.String]::Copy($(EffectiveRid)).Equals('browser-wasm'))</IsBrowserRid>
 
     <!-- Native library file names per platform -->
     <NativeFileName Condition="'$(IsWindowsRid)' == 'True'">mediainfo.dll</NativeFileName>
     <NativeFileName Condition="'$(IsLinuxRid)' == 'True'">libmediainfo.so</NativeFileName>
     <NativeFileName Condition="'$(IsOsxRid)' == 'True'">libmediainfo.dylib</NativeFileName>
+    <!-- browser-wasm: static archive, linked into the .NET WebAssembly runtime (see build-native-wasm.sh) -->
+    <NativeFileName Condition="'$(IsBrowserRid)' == 'True'">libmediainfo.a</NativeFileName>
 
     <!-- Native root and paths -->
     <NativeRoot Condition="'$(NativeRoot)' == ''">$(MSBuildThisFileDirectory)..\native</NativeRoot>

@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SharpMediaInfo
 {
@@ -138,11 +140,7 @@ namespace SharpMediaInfo
 #if DEBUG
                 System.Diagnostics.Debug.WriteLine($"MediaInfoBuilder.Build() - parseCoverData: {_parseCoverData}, filePath: {_filePath}");
 #endif
-                // When building from a copy there is no file or stream to open: the data has
-                // already been populated, so we must not touch the native library (creating a
-                // handle without opening anything would both throw on Close() and overwrite the
-                // copied stream counts with zeros).
-                if (_filePath != null || _stream != null)
+                if (HasSource)
                 {
                     // NOW create and open MediaInfoNative with correct parseCoverData value
                     _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
@@ -155,33 +153,89 @@ namespace SharpMediaInfo
                     {
                         _mediaInfoNative.OpenStream(_stream);
                     }
-
-                    // Parse all stream information
-                    GetStreamCount();
-                    ParseAllStreams();
-
-                    // Parse reports if requested
-                    if (_parseCompleteReport)
-                    {
-                        GetCompleteReport();
-                    }
-                    if (_parseStandardReport)
-                    {
-                        GetStandardReport();
-                    }
                 }
 
-                _isBuilt = true;
-
-                // Create immutable MediaInfo instance
-                return MediaInfo.CreateFromBuilder(this);
+                return Complete();
             }
             finally
             {
-                // Dispose native handle properly
-                _mediaInfoNative?.Close();
-                _mediaInfoNative?.Dispose();
+                ReleaseNative();
             }
+        }
+
+        /// <summary>
+        /// Builds an immutable MediaInfo instance, reading a stream source asynchronously.
+        /// Use it for streams whose reads are genuinely asynchronous (browser files, network):
+        /// the stream is read chunk by chunk with <see cref="Stream.ReadAsync(Memory{byte}, CancellationToken)"/>.
+        /// For a file path it behaves like <see cref="Build"/>.
+        /// </summary>
+        /// <param name="cancellationToken">Cancels the analysis between two stream reads.</param>
+        /// <returns>An immutable MediaInfo instance.</returns>
+        public async Task<MediaInfo> BuildAsync(CancellationToken cancellationToken = default)
+        {
+            ThrowIfBuilt();
+
+            try
+            {
+                if (HasSource)
+                {
+                    _mediaInfoNative = IMediaInfoNative.Create(_parseCoverData);
+
+                    if (_filePath != null)
+                    {
+                        _mediaInfoNative.OpenFile(_filePath);
+                    }
+                    else if (_stream != null)
+                    {
+                        await _mediaInfoNative.OpenStreamAsync(_stream, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                return Complete();
+            }
+            finally
+            {
+                ReleaseNative();
+            }
+        }
+
+        // When building from a copy there is no file or stream to open: the data has already
+        // been populated, so we must not touch the native library (creating a handle without
+        // opening anything would both throw on Close() and overwrite the copied stream counts
+        // with zeros).
+        private bool HasSource => _filePath != null || _stream != null;
+
+        /// <summary>Reads everything from the opened native handle and creates the instance.</summary>
+        private MediaInfo Complete()
+        {
+            if (HasSource)
+            {
+                // Parse all stream information
+                GetStreamCount();
+                ParseAllStreams();
+
+                // Parse reports if requested
+                if (_parseCompleteReport)
+                {
+                    GetCompleteReport();
+                }
+                if (_parseStandardReport)
+                {
+                    GetStandardReport();
+                }
+            }
+
+            _isBuilt = true;
+
+            // Create immutable MediaInfo instance
+            return MediaInfo.CreateFromBuilder(this);
+        }
+
+        private void ReleaseNative()
+        {
+            // Dispose native handle properly
+            _mediaInfoNative?.Close();
+            _mediaInfoNative?.Dispose();
         }
 
         #region Initialization Methods

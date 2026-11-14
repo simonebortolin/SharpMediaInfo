@@ -180,42 +180,107 @@ namespace SharpMediaInfo.Native
             }
         }
 
+        /// <summary>
+        /// Size of each chunk fed to the library. MediaInfo only needs a few of them per file
+        /// (headers, an index, maybe the tail), jumping around with seek requests.
+        /// </summary>
+        internal const int StreamChunkSize = 256 * 1024;
+
         public void OpenStream(Stream stream)
         {
+            var reader = BeginStream(stream);
+            while (true)
+            {
+                int read = stream.Read(reader.Buffer, 0, reader.Buffer.Length);
+                if (!reader.Feed(read))
+                    break;
+            }
+            reader.Finish();
+        }
+
+        public async Task OpenStreamAsync(Stream stream, CancellationToken cancellationToken = default)
+        {
+            var reader = BeginStream(stream);
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                int read = await stream.ReadAsync(reader.Buffer.AsMemory(), cancellationToken).ConfigureAwait(false);
+                if (!reader.Feed(read))
+                    break;
+            }
+            reader.Finish();
+        }
+
+        private BufferFeeder BeginStream(Stream stream)
+        {
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead || !stream.CanSeek || stream.Length <= 0)
             {
                 throw new ArgumentException("The stream cannot be read or it's empty");
             }
 
-            //get data from stream
-            using (var memoryStream = new MemoryStream())
+            handle = new MediaInfoHandle();
+            SetCoverDataParsing(parseCoverData);
+
+            var reader = new BufferFeeder(handle.DangerousGetHandle(), stream);
+            reader.Start();
+            return reader;
+        }
+
+        /// <summary>
+        /// Drives MediaInfo's buffer API over a seekable stream without loading it in memory:
+        /// each chunk is passed to <c>Open_Buffer_Continue</c>, and whenever the library asks
+        /// for another position (<c>Open_Buffer_Continue_GoTo_Get</c>) the stream is moved there
+        /// and the parser re-initialised at that offset, exactly like MediaInfo's own file reader.
+        /// Only the reads differ between the sync and async paths; all native calls live here,
+        /// outside any <c>await</c>, so no buffer stays pinned across a suspension.
+        /// </summary>
+        private sealed class BufferFeeder(IntPtr handle, Stream stream)
+        {
+            // Bit 3 of the Open_Buffer_Continue status: the parser has everything it needs.
+            private const long StatusFinalized = 0x08;
+
+            public byte[] Buffer { get; } = new byte[(int)Math.Min(StreamChunkSize, stream.Length)];
+
+            public void Start()
             {
-                stream.CopyTo(memoryStream);
-
-                var rawDataHandle = GCHandle.Alloc(memoryStream.GetBuffer(), GCHandleType.Pinned);
-                try
+                stream.Seek(0, SeekOrigin.Begin);
+                if (!MediaInfoNativeMethods.InitializeBuffer(handle, stream.Length, 0))
                 {
-                    IntPtr pointer = rawDataHandle.AddrOfPinnedObject();
-
-                    //creates a new handle
-                    handle = new MediaInfoHandle();
-
-                    SetCoverDataParsing(parseCoverData);
-
-                    //opens the buffer
-                    if (!MediaInfoNativeMethods.InitializeBuffer(handle.DangerousGetHandle(), stream.Length, 0))
-                    {
-                        throw new MediaInfoNativeOpenException("Unable to open the stream.");
-                    }
-                    MediaInfoNativeMethods.ReadBuffer(handle.DangerousGetHandle(), pointer, (nuint)memoryStream.Length);
-                    if (!MediaInfoNativeMethods.FinalizeBuffer(handle.DangerousGetHandle()))
-                    {
-                        throw new MediaInfoNativeFinalizeException("Unable to finalize the stream.");
-                    }
+                    throw new MediaInfoNativeOpenException("Unable to open the stream.");
                 }
-                finally
+            }
+
+            /// <summary>Feeds <paramref name="count"/> bytes; returns false when parsing is done.</summary>
+            public unsafe bool Feed(int count)
+            {
+                if (count <= 0)
+                    return false; // end of stream
+
+                nint status;
+                fixed (byte* data = Buffer)
                 {
-                    rawDataHandle.Free();
+                    status = MediaInfoNativeMethods.ReadBuffer(handle, (IntPtr)data, (nuint)count);
+                }
+                if ((status & StatusFinalized) != 0)
+                    return false;
+
+                long? seekTo = MediaInfoNativeMethods.GetBufferSeekRequest(handle);
+                if (seekTo is long offset)
+                {
+                    if (offset < 0 || offset >= stream.Length)
+                        return false; // nothing left to read there
+                    stream.Seek(offset, SeekOrigin.Begin);
+                    MediaInfoNativeMethods.InitializeBuffer(handle, stream.Length, offset);
+                }
+                return true;
+            }
+
+            public void Finish()
+            {
+                if (!MediaInfoNativeMethods.FinalizeBuffer(handle))
+                {
+                    throw new MediaInfoNativeFinalizeException("Unable to finalize the stream.");
                 }
             }
         }

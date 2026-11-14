@@ -1,0 +1,30 @@
+<Project>
+  <!--
+    Links the MediaInfoLib static archive into a browser-wasm app (Microsoft.NET.Sdk.WebAssembly,
+    `wasm-tools` workload). The WebAssembly SDK only links native code it is told about through
+    NativeFileReference, so this file is used in two places:
+
+    - in the NuGet package, as buildTransitive/SharpMediaInfo.Native.targets: imported
+      automatically by any app that references SharpMediaInfo / SharpMediaInfo.Native, the
+      archive sits in runtimes/browser-wasm/native/ next to it;
+    - in this repository, imported explicitly by browser-wasm projects that use a *project*
+      reference (project references don't import package targets): the archive is the one
+      built by SharpMediaInfo.Native/build/build-native-wasm.sh in native/browser-wasm/.
+
+    The archive must be named libmediainfo.a: the SDK binds [LibraryImport("libmediainfo")]
+    by the archive's file name.
+  -->
+  <PropertyGroup Condition="'$(SharpMediaInfoBrowserArchive)' == ''">
+    <SharpMediaInfoBrowserArchive Condition="Exists('$(MSBuildThisFileDirectory)../runtimes/browser-wasm/native/libmediainfo.a')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'runtimes', 'browser-wasm', 'native', 'libmediainfo.a'))</SharpMediaInfoBrowserArchive>
+    <SharpMediaInfoBrowserArchive Condition="'$(SharpMediaInfoBrowserArchive)' == ''">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'native', 'browser-wasm', 'libmediainfo.a'))</SharpMediaInfoBrowserArchive>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+    <NativeFileReference Include="$(SharpMediaInfoBrowserArchive)" />
+  </ItemGroup>
+
+  <Target Name="SharpMediaInfoCheckBrowserArchive" BeforeTargets="Build" Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+    <Error Condition="!Exists('$(SharpMediaInfoBrowserArchive)')"
+           Text="MediaInfo browser-wasm archive not found at $(SharpMediaInfoBrowserArchive). Build it with: bash SharpMediaInfo.Native/build/build-native-wasm.sh" />
+  </Target>
+</Project>
