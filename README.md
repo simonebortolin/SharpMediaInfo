@@ -194,7 +194,8 @@ cd artifacts/wasm-smoke/wwwroot && node main.mjs               # prints PASS/FAI
 
 `SharpMediaInfo.GUI.Avalonia.Browser` runs the Avalonia app on the .NET WebAssembly runtime, with the
 same views as the desktop app. The published `wwwroot` is a static site: any web server can host it,
-and CI uploads it as the `SharpMediaInfo-web` artifact. Files are read in chunks straight from the
+CI uploads it as the `SharpMediaInfo-web` artifact, and every push to `master` deploys it to
+GitHub Pages: <https://simonebortolin.github.io/SharpMediaInfo/>. Files are read in chunks straight from the
 browser's `File` objects (open dialog or drag & drop), so even large videos are never loaded whole
 into memory and nothing is uploaded.
 
