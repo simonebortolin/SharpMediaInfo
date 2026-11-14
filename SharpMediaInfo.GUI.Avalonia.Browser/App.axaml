@@ -1,0 +1,9 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SharpMediaInfo.GUI.Avalonia.Browser.App"
+             xmlns:cascadia="https://github.com/simonebortolin/CascadiaUI"
+             RequestedThemeVariant="Default">
+    <Application.Styles>
+        <cascadia:CascadiaTheme Density="Compact" />
+    </Application.Styles>
+</Application>

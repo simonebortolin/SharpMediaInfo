@@ -1,3 +1,4 @@
+using System.Globalization;
 using SharpMediaInfo.Tests.Fixtures;
 
 namespace SharpMediaInfo.Tests.Integration;
@@ -40,6 +41,32 @@ public class MediaInfoBuilderTests
         }
         finally
         {
+            File.Delete(path);
+        }
+    }
+
+    [Test]
+    [NotInParallel(nameof(CultureInfo))]
+    public async Task DecimalValues_AreParsedIndependentlyOfCurrentCulture()
+    {
+        // MediaInfo always emits decimals with '.', so "0.99450" must not become 99450 on en-US.
+        var previous = CultureInfo.CurrentCulture;
+        var path = WavFixture.CreateTempWavFile();
+        try
+        {
+            foreach (var culture in new[] { "en-US", "it-IT", "" })
+            {
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+                var media = MediaInfoBuilder.FromFile(path).Build();
+
+                var proportion = media.Audio[0].StreamSize.Proportion;
+                await Assert.That(proportion).IsNotNull();
+                await Assert.That(proportion!.Value).IsGreaterThan(0.9).And.IsLessThanOrEqualTo(1.0);
+            }
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previous;
             File.Delete(path);
         }
     }

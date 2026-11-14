@@ -1,0 +1,100 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:cascadia="https://github.com/simonebortolin/CascadiaUI"
+             xmlns:views="clr-namespace:SharpMediaInfo.GUI.Avalonia.Views"
+             xmlns:vm="clr-namespace:SharpMediaInfo.GUI.ViewModels;assembly=SharpMediaInfo.GUI"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="SharpMediaInfo.GUI.Avalonia.Browser.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             DragDrop.AllowDrop="True">
+
+    <!-- The desktop MainWindow without the window chrome: no title-bar tabs, no tab tear-out
+         to other windows, no recent files and no Exit. -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveStandardReportCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveCompleteReportCommand}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFilesCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+O" Command="{Binding OpenFolderCommand}" />
+    </UserControl.KeyBindings>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Classes="statusbar">
+            <TextBlock Text="{Binding StatusMessage}"/>
+        </Border>
+
+        <Panel>
+            <cascadia:CascadiaTabControl CanCloseTabs="True"
+                                         ShowAddButton="True"
+                                         ItemsSource="{Binding Tabs}"
+                                         SelectedItem="{Binding SelectedTab}"
+                                         AddTabCommand="{Binding OpenFilesCommand}"
+                                         CloseTabCommand="{Binding CloseTabCommand}">
+                <cascadia:CascadiaTabControl.StripHeader>
+                    <Menu>
+                        <MenuItem Header="_File">
+                            <MenuItem Header="Open _Multiple Files"
+                                      Command="{Binding OpenFilesCommand}"
+                                      HotKey="Ctrl+O"/>
+                            <MenuItem Header="Open F_older"
+                                      Command="{Binding OpenFolderCommand}"
+                                      HotKey="Ctrl+Shift+O"/>
+                            <MenuItem Header="_Close All Files"
+                                      Command="{Binding CloseAllFilesCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="Save _Standard Report"
+                                      Command="{Binding SaveStandardReportCommand}"
+                                      HotKey="Ctrl+S"/>
+                            <MenuItem Header="Save _Complete Report"
+                                      Command="{Binding SaveCompleteReportCommand}"
+                                      HotKey="Ctrl+Shift+S"/>
+                            <MenuItem Header="Save C_over"
+                                      Command="{Binding SaveCoverCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="_Settings"
+                                      Command="{Binding OpenSettingCommand}"/>
+                            <MenuItem Header="_About"
+                                      Command="{Binding OpenAboutCommand}"/>
+                        </MenuItem>
+                    </Menu>
+                </cascadia:CascadiaTabControl.StripHeader>
+
+                <TabControl.DataTemplates>
+                    <DataTemplate DataType="vm:FileTabViewModel">
+                        <views:FileTabView />
+                    </DataTemplate>
+                    <DataTemplate DataType="vm:SettingTabViewModel">
+                        <views:SettingTabView />
+                    </DataTemplate>
+                    <DataTemplate DataType="vm:AboutTabViewModel">
+                        <views:AboutTabView />
+                    </DataTemplate>
+                </TabControl.DataTemplates>
+
+                <TabControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ITabViewModel">
+                        <TextBlock Text="{Binding Header}" ToolTip.Tip="{Binding Header}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{Binding}" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </cascadia:CascadiaTabControl>
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0,42,0,0"
+                        Spacing="6"
+                        IsHitTestVisible="False"
+                        IsVisible="{Binding !Tabs.Count}">
+                <TextBlock Classes="h2" HorizontalAlignment="Center" Text="Drop media files here"/>
+                <TextBlock Classes="secondary" HorizontalAlignment="Center" Text="or use File → Open (Ctrl+O), or the + button above"/>
+                <TextBlock Classes="secondary" HorizontalAlignment="Center" Text="Files are analyzed in your browser and never uploaded."/>
+            </StackPanel>
+        </Panel>
+    </DockPanel>
+</UserControl>

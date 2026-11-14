@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
@@ -8,14 +9,13 @@ namespace SharpMediaInfo.GUI.Avalonia.Services;
 
 public class AvaloniaClipboardService : IClipboardService
 {
-    private IClipboard? GetClipboard()
+    // Desktop: the main window; browser: the top level hosting the single main view.
+    private static IClipboard? GetClipboard() => Application.Current?.ApplicationLifetime switch
     {
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            return desktop.MainWindow?.Clipboard;
-        }
-        return null;
-    }
+        IClassicDesktopStyleApplicationLifetime desktop => desktop.MainWindow?.Clipboard,
+        ISingleViewApplicationLifetime { MainView: { } view } => TopLevel.GetTopLevel(view)?.Clipboard,
+        _ => null
+    };
 
     public void CopyText(string text)
     {

@@ -5,6 +5,7 @@ using SharpMediaInfo.Native.Enum;
 using SharpMediaInfo.Tracks;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Threading;
@@ -546,7 +547,7 @@ namespace SharpMediaInfo
         {
             if (string.IsNullOrEmpty(input)) return null;
 
-            if (double.TryParse(input.Replace(".", ","), out double value))
+            if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
             {
                 return value;
             }
@@ -560,7 +561,7 @@ namespace SharpMediaInfo
         {
             if (string.IsNullOrEmpty(input)) return 0.0;
 
-            if (double.TryParse(input.Replace(".", ","), out double value))
+            if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
             {
                 return value;
             }

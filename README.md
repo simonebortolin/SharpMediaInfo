@@ -56,6 +56,7 @@ The Avalonia GUI with the [Avalonia Cascadia Theme](https://github.com/simonebor
 | `SharpMediaInfo.GUI.WPF` | WPF desktop app (Windows) | net10.0-windows |
 | `SharpMediaInfo.GUI.Avalonia` | Avalonia desktop app (cross-platform) | net10.0 / net10.0-windows |
 | `SharpMediaInfo.*.Tests` | TUnit test suites | net10.0 |
+| `SharpMediaInfo.GUI.Avalonia.Browser` | The Avalonia app in the browser (WebAssembly, files are analyzed locally and never uploaded) | net10.0-browser |
 | `SharpMediaInfo.Wasm.Smoke` | WebAssembly smoke test (MediaInfoLib linked into the .NET wasm runtime, run with Node) | net10.0 (browser-wasm) |
 | `extern/MediaInfoLib`, `extern/ZenLib`, `extern/zlib` | Pinned native sources (submodules) | — |
 
@@ -188,6 +189,23 @@ bash SharpMediaInfo.Native/build/build-native-wasm.sh          # -> native/brows
 dotnet publish SharpMediaInfo.Wasm.Smoke -c Release -o artifacts/wasm-smoke
 cd artifacts/wasm-smoke/wwwroot && node main.mjs               # prints PASS/FAIL per check
 ```
+
+#### The GUI in the browser
+
+`SharpMediaInfo.GUI.Avalonia.Browser` runs the Avalonia app on the .NET WebAssembly runtime, with the
+same views as the desktop app. The published `wwwroot` is a static site: any web server can host it,
+CI uploads it as the `SharpMediaInfo-web` artifact, and every push to `master` deploys it to
+GitHub Pages: <https://simonebortolin.github.io/SharpMediaInfo/>. Files are read in chunks straight from the
+browser's `File` objects (open dialog or drag & drop), so even large videos are never loaded whole
+into memory and nothing is uploaded.
+
+```bash
+bash SharpMediaInfo.GUI.Avalonia.Browser/run.sh                # publish + serve on http://localhost:8080/
+```
+
+Differences from the desktop app: settings live in the browser's `localStorage`; there are no recent
+files, context-menu integration or "open containing folder"; exported reports are downloaded (or
+saved through the browser's save dialog where it has one).
 
 Versions are pinned in `Directory.Build.props` (`MediaInfoVersion`, `LibZenVersion`); bumping them
 means updating the submodules to the matching tags. ZenLib has no release after v0.4.41, so it is
