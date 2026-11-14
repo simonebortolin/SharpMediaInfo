@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <!--
+    SharpMediaInfo GUI in the browser: the Avalonia app on the .NET WebAssembly runtime, with
+    MediaInfoLib linked in (SharpMediaInfo.Native/native/browser-wasm/libmediainfo.a, built by
+    SharpMediaInfo.Native/build/build-native-wasm.sh). Files never leave the browser: they are
+    read in chunks from the File objects the user picks or drops.
+
+    Views, controls and converters are the desktop app's (SharpMediaInfo.GUI.Avalonia), compiled
+    in here as linked files; only the startup, the main view and the services that touch files,
+    settings and the browser differ.
+
+    Requires: the wasm-tools workload (dotnet workload install wasm-tools)
+    Run:      bash SharpMediaInfo.GUI.Avalonia.Browser/run.sh (publish + static server)
+  -->
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)-browser</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <LangVersion>12.0</LangVersion>
+    <!-- [JSImport] interop with wwwroot/main.js -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AssemblyTitle>SharpMediaInfo (Browser)</AssemblyTitle>
+    <IsPackable>false</IsPackable>
+    <!-- Settings are (de)serialized with reflection-based System.Text.Json, which a trimmed
+         publish turns off by default. -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Browser" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="CascadiaUI" Version="0.1.3" />
+    <PackageReference Include="MessageBox.Avalonia" Version="12.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharpMediaInfo.GUI\SharpMediaInfo.GUI.csproj" />
+    <ProjectReference Include="..\SharpMediaInfo\SharpMediaInfo.csproj" />
+  </ItemGroup>
+
+  <!-- Keep the view models, the settings model and the MediaInfo object model whole: they are
+       reached through reflection (some bindings, System.Text.Json). -->
+  <ItemGroup>
+    <TrimmerRootAssembly Include="SharpMediaInfo.GUI" />
+    <TrimmerRootAssembly Include="SharpMediaInfo" />
+    <!-- XAML-only assemblies: their precompiled XAML is looked up by URI at runtime -->
+    <TrimmerRootAssembly Include="CascadiaUI" />
+    <TrimmerRootAssembly Include="MsBox.Avalonia" />
+  </ItemGroup>
+
+  <!-- Shared UI from the desktop app. -->
+  <PropertyGroup>
+    <DesktopGuiDir>..\SharpMediaInfo.GUI.Avalonia\</DesktopGuiDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(DesktopGuiDir)AttachedProperties\**\*.cs" Link="Shared\AttachedProperties\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="$(DesktopGuiDir)Controls\**\*.cs" Link="Shared\Controls\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="$(DesktopGuiDir)Converters\**\*.cs" Link="Shared\Converters\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="$(DesktopGuiDir)Views\**\*.cs" Link="Shared\Views\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="$(DesktopGuiDir)Services\AvaloniaClipboardService.cs;$(DesktopGuiDir)Services\AvaloniaDialogService.cs;$(DesktopGuiDir)Services\AvaloniaFontService.cs" Link="Shared\Services\%(Filename)%(Extension)" />
+    <AvaloniaXaml Include="$(DesktopGuiDir)Controls\**\*.axaml" Link="Shared\Controls\%(RecursiveDir)%(Filename)%(Extension)" />
+    <AvaloniaXaml Include="$(DesktopGuiDir)Views\**\*.axaml" Link="Shared\Views\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Project references don't flow NuGet native assets: link the MediaInfo archive explicitly. -->
+  <Import Project="..\SharpMediaInfo.Native\build\SharpMediaInfo.Native.Browser.targets" />
+</Project>
