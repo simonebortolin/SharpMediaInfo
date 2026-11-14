@@ -356,7 +356,10 @@ jobs:
       - name: Run smoke test (Node)
         shell: bash
         run: |
-          NODE="$(ls -d "$HOME"/.dotnet/packs/Microsoft.NET.Runtime.Emscripten.*.Node.linux-x64/*/tools/bin/node 2>/dev/null | sort -V | tail -n1)"
+          # The workload's Node lives under the SDK root (/usr/share/dotnet on
+          # hosted runners). `ls` exits 2 when nothing matches, which aborts the
+          # step under bash -e -o pipefail, so guard it.
+          NODE="$( (ls -d "${DOTNET_ROOT:-$HOME/.dotnet}"/packs/Microsoft.NET.Runtime.Emscripten.*.Node.linux-x64/*/tools/bin/node 2>/dev/null || true) | sort -V | tail -n1)"
           [ -x "$NODE" ] || NODE="$(command -v node)"
           cd artifacts/wasm-smoke/wwwroot
           "$NODE" main.mjs
