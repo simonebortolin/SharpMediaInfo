@@ -11,9 +11,9 @@
 
   <ItemGroup>
     <!-- Avalonia Core -->
-    <PackageReference Include="Avalonia" Version="12.1.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="Avalonia" Version="12.2.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.2.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.2.0" />
 
     <!-- Avalonia Cascadia Theme (brings Avalonia.Themes.Fluent along) -->
     <PackageReference Include="CascadiaUI" Version="0.1.3" />
