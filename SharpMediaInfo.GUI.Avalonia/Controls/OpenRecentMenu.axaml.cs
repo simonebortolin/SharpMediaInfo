@@ -11,9 +11,6 @@ public partial class OpenRecentMenu : UserControl
     public static readonly StyledProperty<ObservableCollection<string>> ItemsProperty =
             AvaloniaProperty.Register<OpenRecentMenu, ObservableCollection<string>>(nameof(Items));
 
-    public static readonly StyledProperty<ICommand> CommandProperty =
-        AvaloniaProperty.Register<OpenRecentMenu, ICommand>(nameof(Command));
-
     public ObservableCollection<string> Items
     {
         get => GetValue(ItemsProperty);
@@ -32,11 +29,9 @@ public partial class OpenRecentMenu : UserControl
         }
     }
 
-    public ICommand Command
-    {
-        get => GetValue(CommandProperty);
-        set => SetValue(CommandProperty, value);
-    }
+    [GeneratedStyledProperty]
+    public partial ICommand Command { get; set; }
+
     public OpenRecentMenu()
     {
         InitializeComponent();

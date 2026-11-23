@@ -8,20 +8,12 @@ using System.Linq;
 
 namespace SharpMediaInfo.GUI.Avalonia.Controls
 {
-    public class FontFamilyComboBox : ComboBox
+    public partial class FontFamilyComboBox : ComboBox
     {
         protected override Type StyleKeyOverride => typeof(ComboBox);
 
-        public static readonly StyledProperty<string?> SelectedFontFamilyProperty =
-            AvaloniaProperty.Register<FontFamilyComboBox, string?>(
-                nameof(SelectedFontFamily),
-                defaultBindingMode: BindingMode.TwoWay);
-
-        public string? SelectedFontFamily
-        {
-            get => GetValue(SelectedFontFamilyProperty);
-            set => SetValue(SelectedFontFamilyProperty, value);
-        }
+        [GeneratedStyledProperty(DefaultBindingMode = BindingMode.TwoWay)]
+        public partial string? SelectedFontFamily { get; set; }
 
         private bool _updating;
 
