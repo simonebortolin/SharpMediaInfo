@@ -10,50 +10,20 @@ namespace SharpMediaInfo.GUI.Avalonia.Controls;
 
 public partial class SimpleReportViewer : UserControl
 {
-    public static readonly StyledProperty<IEnumerable<ReportSection>?> SectionsProperty =
-        AvaloniaProperty.Register<SimpleReportViewer, IEnumerable<ReportSection>?>(nameof(Sections));
+    [GeneratedStyledProperty]
+    public partial IEnumerable<ReportSection>? Sections { get; set; }
 
-    public static readonly StyledProperty<AppConfiguration?> ConfigurationProperty =
-        AvaloniaProperty.Register<SimpleReportViewer, AppConfiguration?>(nameof(Configuration));
+    [GeneratedStyledProperty]
+    public partial AppConfiguration? Configuration { get; set; }
 
-    public static readonly StyledProperty<byte[]?> CoverDataProperty =
-        AvaloniaProperty.Register<SimpleReportViewer, byte[]?>(nameof(CoverData));
+    [GeneratedStyledProperty]
+    public partial byte[]? CoverData { get; set; }
 
-    public static readonly StyledProperty<bool> HasCoverProperty =
-        AvaloniaProperty.Register<SimpleReportViewer, bool>(nameof(HasCover));
+    [GeneratedStyledProperty]
+    public partial bool HasCover { get; set; }
 
-    public static readonly StyledProperty<ICommand?> SaveCoverCommandProperty =
-        AvaloniaProperty.Register<SimpleReportViewer, ICommand?>(nameof(SaveCoverCommand));
-
-    public IEnumerable<ReportSection>? Sections
-    {
-        get => GetValue(SectionsProperty);
-        set => SetValue(SectionsProperty, value);
-    }
-
-    public AppConfiguration? Configuration
-    {
-        get => GetValue(ConfigurationProperty);
-        set => SetValue(ConfigurationProperty, value);
-    }
-
-    public byte[]? CoverData
-    {
-        get => GetValue(CoverDataProperty);
-        set => SetValue(CoverDataProperty, value);
-    }
-
-    public bool HasCover
-    {
-        get => GetValue(HasCoverProperty);
-        set => SetValue(HasCoverProperty, value);
-    }
-
-    public ICommand? SaveCoverCommand
-    {
-        get => GetValue(SaveCoverCommandProperty);
-        set => SetValue(SaveCoverCommandProperty, value);
-    }
+    [GeneratedStyledProperty]
+    public partial ICommand? SaveCoverCommand { get; set; }
 
     public SimpleReportViewer()
     {
